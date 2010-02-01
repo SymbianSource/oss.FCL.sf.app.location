@@ -1,0 +1,49 @@
+/*
+* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Resource file defintion for project Events Management UI
+*
+*/
+
+
+// SYSTEM INCLUDES
+#include <appinfo.rh>
+#include <data_caging_paths_strings.hrh>
+#include <evtmgmtui.rsg>
+
+// USER INCLUDES
+#include "evtmgmtuiuid.hrh"
+
+#define EVTMGMTUI_RESOURCE_FILE_NAME APP_RESOURCE_DIR"\\evtmgmtui"
+
+// ---------------------------------------------------------------------------
+// UID Defintions
+// ---------------------------------------------------------------------------
+//
+UID2 KUidAppRegistrationResourceFile
+UID3 KEvtMgmtUiUid
+
+// ---------------------------------------------------------------------------
+// Application Information registration resource
+// ---------------------------------------------------------------------------
+//
+RESOURCE APP_REGISTRATION_INFO
+    {    
+    app_file = "evtmgmtui";
+    hidden = KAppIsHidden;
+    embeddability = KAppEmbeddable;    
+    localisable_resource_file = EVTMGMTUI_RESOURCE_FILE_NAME;
+    localisable_resource_id = R_EVTMGMTUI_LOCALISABLE_APP_INFO;
+    }
+
+// End of File

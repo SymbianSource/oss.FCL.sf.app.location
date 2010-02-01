@@ -1,0 +1,10 @@
+Horizontal accuracy=10;
+Vertical accuracy=16;
+TimeToFix min=2;
+TimeToFix max=7;
+Powerup time=5;
+Longitude=23.9385;
+Latitude=61.5285;
+Speed=0;
+Course=113.9;
+Deterministic=0;

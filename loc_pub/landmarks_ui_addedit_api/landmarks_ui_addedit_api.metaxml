@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<api id="da13f555b4b1eb74824cc82c413a30cf" dataversion="2.0">
+  <name>Landmarks UI Add/Edit API</name>
+  <description>This API provides UI components for creating and manipulating Landmarks.</description>
+  <type>c++</type>
+  <collection>landmarksui</collection>
+  <libs>
+    <lib name="LmkCommonUi.lib" />
+  </libs>
+  <release category="public" sinceversion="0"/>
+  <attributes>
+     <!-- This indicates wether the api provedes separate html documentation -->
+     <!-- or is the additional documentation generated from headers. -->
+     <!-- If you are unsuere then the value is "no" -->
+     <htmldocprovided>no</htmldocprovided>
+     <adaptation>no</adaptation>
+  </attributes>
+</api>

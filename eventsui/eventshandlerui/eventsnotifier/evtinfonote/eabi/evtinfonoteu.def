@@ -1,0 +1,5 @@
+EXPORTS
+	_Z13NotifierArrayv @ 1 NONAME
+	_ZTI12CEvtInfoNote @ 2 NONAME ; #<TI>#
+	_ZTV12CEvtInfoNote @ 3 NONAME ; #<VT>#
+

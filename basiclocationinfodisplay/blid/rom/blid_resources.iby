@@ -1,0 +1,42 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: IBY file for BLID resource
+*
+*/
+
+
+#ifndef __BLID_RESOURCES_IBY__
+#define __BLID_RESOURCES_IBY__
+
+#include <bldvariant.hrh>
+
+				///////////////////////
+			        // *** BLID UI*** //
+				///////////////////////
+
+
+/// Blid dll resources 
+
+data=DATAZ_\RESOURCE_FILES_DIR\satinfo.rsC	RESOURCE_FILES_DIR\satinfo.rsc
+
+#if defined(__BASIC_LOCATION_INFO_DISPLAY) 
+
+/// BLid Application Resources 
+
+data=ZRESOURCE\apps\Blid.rsc               APP_RESOURCE_DIR\Blid.rsc
+
+#endif // __BASIC_LOCATION_INFO_DISPLAY
+#endif // __BLID_RESOURCES_IBY__
+
+

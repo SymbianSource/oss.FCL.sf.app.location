@@ -1,0 +1,84 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:   LandmarksUi Content File      
+*
+*/
+
+
+
+
+
+
+#ifndef __LandmarksUI_IBY__
+#define __LandmarksUI_IBY__
+
+#include <bldvariant.hrh>
+
+				///////////////////////
+			        // *** Landmarks UI*** //
+				///////////////////////
+
+
+// Landmarks UI Common UI library
+file=ABI_DIR\BUILD_DIR\LmkCommonUi.dll		SHARED_LIB_DIR\LmkCommonUi.dll
+
+/// Lmk UI Ui dll
+file=ABI_DIR\BUILD_DIR\LmkUi.dll		SHARED_LIB_DIR\LmkUi.dll
+
+
+/// Landmark UI Engine library
+file=ABI_DIR\BUILD_DIR\LmkEng.dll		SHARED_LIB_DIR\LmkEng.dll
+
+
+SCALABLE_IMAGE(resource\apps,resource\apps,Landmarks)
+
+
+
+// LmkUi Mif file 
+data=ZRESOURCE\apps\LmkUi.mif              APP_RESOURCE_DIR\LmkUi.mif
+
+
+#if defined(__LANDMARKS) 
+
+// Landmarks UI application Icons and Resources 
+
+S60_APP_AIF_ICONS(Landmarks)
+S60_UPGRADABLE_APP_REG_RSC(Landmarks)
+
+// Lmk Application
+
+file=ABI_DIR\BUILD_DIR\Landmarks.exe            PROGRAMS_DIR\Landmarks.exe
+
+
+
+#endif // __LANDMARKS
+
+#ifdef __LANDMARKS_CONVERTER
+
+// Landmarks MsgViewer
+
+S60_APP_AIF_ICONS(LmkMsgViewer)
+S60_UPGRADABLE_APP_REG_RSC(LmkMsgViewer)
+
+/// LmkMsgViewer Application
+
+file=ABI_DIR\BUILD_DIR\LmkMsgViewer.exe           PROGRAMS_DIR\LmkMsgViewer.exe 
+
+#endif // __LANDMARKSCONVERTER
+
+data=ZPRIVATE\10283138\import\landmarksui_lc_registration.xml \private\10283138\import\landmarksui_lc_registration.xml
+
+#endif // __LandmarksUI_IBY__
+
+

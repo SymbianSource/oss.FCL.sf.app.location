@@ -1,0 +1,90 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:    LandmarksUi Content File -    Project file for Landmark Message Viewer application.
+*
+*/
+
+
+
+
+
+
+
+// INCLUDES
+
+// To get the APP_LAYER_SYSTEMINCLUDE-definition
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh> //Data caging path defines
+#include "../../inc/LmkUID.h"         // Common Location UID definitions
+
+// Target information
+
+TARGET  LmkMsgViewer.exe
+TARGETTYPE exe 
+UID  KAppUID2 KLmkMsgViewerAppUID3 
+
+EPOCHEAPSIZE  1000 16000000
+EPOCSTACKSIZE 0x5000
+
+
+VENDORID    VID_DEFAULT
+CAPABILITY CAP_APPLICATION
+
+
+
+//exportunfrozen
+
+// Project source directory
+SOURCEPATH ../src
+
+SOURCE CLmkMsgViewerApp.cpp
+SOURCE CLmkMsgViewerAppUi.cpp
+SOURCE CLmkMsgViewerDocument.cpp
+SOURCE CLmkMsgViewerAppView.cpp
+
+// Resources
+// RESOURCE /MsgViewerRss/LmkMsgViewer.rss
+
+START RESOURCE ../data/LmkMsgViewer.rss
+HEADER
+TARGETPATH APP_RESOURCE_DIR
+LANGUAGE_IDS
+END //RESOURCE
+
+// Include paths
+USERINCLUDE . ../src ../data ../inc 
+USERINCLUDE ../../engine/inc ../../uicontrols/inc ../../inc
+
+// Other build related files
+//DOCUMENT ../group/landmarks.loc
+
+
+// Default system include paths for application layer modules.
+APP_LAYER_SYSTEMINCLUDE
+
+
+
+LIBRARY LmkUi.lib
+LIBRARY eposlandmarks.lib LmkEng.lib
+LIBRARY euser.lib apparc.lib cone.lib eikcore.lib 
+LIBRARY avkon.lib efsrv.lib
+LIBRARY AknSkins.lib
+LIBRARY CommonEngine.lib//StringLoader
+
+START RESOURCE ../data/LmkMsgViewer_reg.rss
+DEPENDS lmkmsgviewer.rsg
+HEADER
+TARGETPATH /private/10003a3f/apps
+END
+// End of file

@@ -1,0 +1,84 @@
+/*
+* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Resource file defintion for project Events Handler Application
+*
+*/
+
+
+//  RESOURCE IDENTIFIER
+NAME    EVHN // 4 letter ID
+
+//  SYSTEM INCLUDES
+#include <eikon.rh>
+#include <appinfo.rh>
+#include <avkon.rsg>
+#include <avkon.rh>
+#include <avkon.mbg>
+#include <bldvariant.hrh>
+#include <avkon.hrh>
+#include <avkon.loc>
+#include <data_caging_paths_strings.hrh>
+
+// USER INCLUDES
+#include <evtui.loc>
+
+// CONSTANT DEFINTIONS
+#define EVT_ICON_FILE_NAME APP_RESOURCE_DIR"\\evthandlerapp_aif.mif"
+
+//  RESOURCE DEFINITIONS 
+
+// ---------------------------------------------------------------------------
+// RESOURCE RSS_SIGNATURE 
+// ---------------------------------------------------------------------------
+//
+RESOURCE RSS_SIGNATURE 
+    {
+    }
+
+// ---------------------------------------------------------------------------
+// RESOURCE RSS_SIGNATURE 
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF 
+    {
+    buf="evthandler";
+    }
+
+// ---------------------------------------------------------------------------
+// RESOURCE RSS_SIGNATURE 
+// ---------------------------------------------------------------------------
+//
+RESOURCE EIK_APP_INFO
+    {     
+    }
+
+
+RESOURCE LOCALISABLE_APP_INFO r_evthnd_localisable_app_info
+	{
+	short_caption = qtn_apps_locev_grid;
+	caption_and_icon = CAPTION_AND_ICON_INFO
+		{
+		caption = qtn_apps_locev_list;
+        number_of_icons = 1; 
+        icon_file = EVT_ICON_FILE_NAME;		
+		};
+	}
+    
+RESOURCE HOTKEYS r_evthandlerapp_hotkeys
+   {
+   control=
+        {
+        };
+    }
+

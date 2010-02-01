@@ -1,0 +1,155 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:    LandmarksUi Content File -    Contains all the resources for lmkui.dll.
+*
+*/
+
+
+
+
+
+
+
+//  RESOURCE IDENTIFIER
+
+NAME    LMVI
+
+//  INCLUDES
+// For Data caging
+#include <data_caging_paths_strings.hrh>
+
+#include <eikon.rh>
+#include <uikon.rh>
+#include <avkon.rsg>
+#include <appinfo.rh>
+#include <avkon.rh>
+#include <avkon.hrh>
+#include <avkon.mbg>
+#include <avkon.loc>
+#include <landmarks.loc>
+#include <lmkmsgviewer.loc>
+
+#define KIconFileMif APP_BITMAP_DIR"\\LmkMsgViewer_aif.mif"
+#define KIconFileMbm APP_BITMAP_DIR"\\LmkMsgViewer_aif.mbm"
+
+//  RESOURCE DEFINITIONS
+
+RESOURCE RSS_SIGNATURE { }
+
+
+RESOURCE TBUF { buf=""; }
+
+RESOURCE EIK_APP_INFO
+    {
+    }
+
+RESOURCE LOCALISABLE_APP_INFO r_lmkmsgviewer_localisable_app_info
+        {
+        short_caption = qtn_apps_lm_grid;
+        caption_and_icon = CAPTION_AND_ICON_INFO
+                {
+                caption = qtn_apps_lm_list;
+#ifdef __SCALABLE_ICONS
+                number_of_icons = 1;
+                icon_file = KIconFileMif;
+#else
+                number_of_icons = 2;
+                icon_file = KIconFileMbm;
+#endif
+                };
+
+        }
+
+
+//----------------------------------------------------
+//
+//    r_lmk_msgviewer_menubar
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_lmk_msgviewer_menubar
+    {
+    titles=
+        {
+        MENU_TITLE { menu_pane = r_lmk_msgviewer_menu; txt = ""; }
+        };
+    }
+
+//----------------------------------------------------
+//
+//    r_lmk_msgviewer_menu
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_lmk_msgviewer_menu
+    {
+    items =
+        {
+        MENU_ITEM { command = EAknCmdExit; txt = "Exit"; }
+        };
+    }
+
+RESOURCE AVKON_VIEW r_lmkmsgviewer_view
+    {
+//    menubar=r_lmk_msgviewer_menubar;
+//    cba=R_AVKON_SOFTKEYS_OPTIONS_BACK;
+    }
+
+//----------------------------------------------------
+//
+//    r_lmk_msgviewer_wait
+//    Progress note
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG r_lmk_msgviewer_wait
+    {
+    flags = EAknWaitNoteFlags | EEikDialogFlagWait;
+    buttons = R_AVKON_SOFTKEYS_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EGeneralNote;
+            control= AVKON_NOTE
+                {
+                layout = EWaitLayout;
+                singular_label = qtn_gen_note_opening;
+                animation = R_QGN_GRAF_WAIT_BAR_ANIM;
+                };
+            }
+        };
+    }
+
+RESOURCE TBUF r_lmk_badpackage_error
+    {
+    buf = qtn_lm_badpackage_error;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_err_eikon_general
+//
+//----------------------------------------------------
+//
+
+RESOURCE TBUF r_lmk_err_eikon_general
+    {
+    buf = qtn_err_eikon_general;
+    }
+    
+// End of File

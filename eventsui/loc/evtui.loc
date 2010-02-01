@@ -1,0 +1,647 @@
+/*
+* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Localization file for Events UIs
+*
+*/
+
+
+// d: Title text for Location Events application
+// l: title_pane_t2/opt9
+// r: 9.1tb 
+//
+#define qtn_locev_title_location_events "Location events"
+
+// d: List box entry for creating a new event.
+// l: list_double_large_graphic_pane_t1
+// r: 9.1tb 
+//
+#define qtn_locev_list_create_new_event "Create new event"
+
+// d: Item in the options menu for creating event
+// l: list_single_pane_t1_cp2
+// r: 9.1tb 
+//
+#define qtn_locev_options_create_new_event "Create new event"
+
+// d: Item in the options menu
+// l: list_single_pane_t1_cp2/opt3
+// r: 9.1tb 
+//
+#define qtn_locev_options_show "Show"
+
+// d: Item in the options sub menu for showing all events
+// l: list_single_popup_submenu_pane_t1/opt1
+// r: 9.1tb 
+//
+#define qtn_locev_options_show_all "All"
+
+// d: Item in the options sub menu for showing active events
+// l: list_single_popup_submenu_pane_t1/opt1
+// r: 9.1tb 
+//
+#define qtn_locev_options_active "Active"
+
+// d: Item in the options sub menu for showing draft events
+// l: list_single_popup_submenu_pane_t1/opt1
+// r: 9.1tb 
+//
+#define qtn_locev_options_draft "Draft"
+
+// d: Item in the options sub menu for showing completed events
+// l: list_single_popup_submenu_pane_t1/opt1
+// r: 9.1tb 
+//
+#define qtn_locev_options_completed "Completed"
+
+// d: Item in the options menu to go to positioning methods
+// l: list_single_pane_t1_cp2
+// r: 9.1tb 
+//
+#define qtn_locev_options_posi_settings "Positioning settings"
+
+// d: Item in the options menu to open the event listed in the main view
+// l: list_single_pane_t1_cp2
+// r: 9.1tb 
+//
+#define qtn_locev_options_open "Open"
+
+// d: Item in the options menu to activate the event listed in the main view
+// l: list_single_pane_t1_cp2
+// r: 9.1tb 
+//
+#define qtn_locev_options_activate "Activate"
+
+// d: Item in the options menu to set an event as draft
+// l: list_single_pane_t1_cp2
+// r: 9.1tb 
+//
+#define qtn_locev_options_setdraft "Set as draft "
+
+// d: Item in the options menu to delete an event in the listed menu
+// l: list_single_pane_t1_cp2
+// r: 9.1tb 
+//
+#define qtn_locev_options_delete "Delete"
+/*
+// d: Item in the options menu
+// l: list_single_pane_t1_cp2/opt3
+// r: 9.1tb 
+//
+#define qtn_options_list "Mark/UnMark"
+
+// d: Item in the options sub menu to mark a list event
+// l: list_single_popup_submenu_pane_t1/opt1
+// r: 9.1tb 
+//
+#define qtn_options_list_mark_one "Mark"
+
+// d: Item in the options sub menu to mark all event
+// l: list_single_popup_submenu_pane_t1/opt1
+// r: 9.1tb 
+//
+#define qtn_options_list_mark_all "Mark all"
+
+// d: Item in the options sub menu to unmark a list event
+// l: list_single_popup_submenu_pane_t1/opt1
+// r: 9.1tb 
+//
+#define qtn_options_list_unmark_one "Unmark"
+
+// d: Item in the options sub menu to unmark all
+// l: list_single_popup_submenu_pane_t1/opt1
+// r: 9.1tb 
+//
+#define qtn_options_list_unmark_all "Unmark all"
+*/
+// d: Information note shown when user tries to set an incomplete draft event into an active event
+// l: popup_note_window/opt1
+// r: 9.1tb 
+//
+#define qtn_locev_note_activatingdraft "All events could not be activated. Please check Subject and Place are defined for each event and try again"
+
+// d: Title text for Event Editor When the Subject field has no value
+// l: title_pane_t2/opt9
+// r: 9.1tb 
+//
+#define qtn_locev_title_new_event "New event"
+
+// d: Label name for Subject in the event editor
+// l: list_double_pane_t1
+// r: 9.1tb 
+//
+#define qtn_locev_list_lbl_subject "Subject*"
+
+// d: Label name for Place in the event editor
+// l: list_double_pane_t1
+// r: 9.1tb 
+//
+#define qtn_locev_list_lbl_place "Place*"
+
+// d: ‘Define’  is written in value field to hint user that the MSK Define has to be pressed to define the place
+// l: list_double_pane_t2
+// r: 9.1tb 
+//
+#define qtn_locev_list_value_define "Define"
+
+// d: Label name for Repaat in the event editor
+// l: list_double_pane_t1
+// r: 9.1tb 
+//
+#define qtn_locev_list_lbl_repeat "Repeat"
+
+// d: Label name for Alert tone in the event editor
+// l: list_double_pane_t1
+// r: 9.1tb 
+//
+#define qtn_locev_list_lbl_alert_tone "Alert tone"
+
+// d: Label name for Audio loop in the event editor
+// l: list_double_pane_t1
+// r: 9.1tb 
+//
+#define qtn_locev_list_lbl_audio_loop "Audio loop"
+
+// d: Item in the options menu to define a place
+// l: list_single_pane_t1_cp2
+// r: 9.1tb 
+//
+#define qtn_locev_options_setplace "Set place"
+
+// d: Item in the options menu to change a value in the focussed field
+// l: list_single_pane_t1_cp2
+// r: 9.1tb 
+//
+#define qtn_locev_options_change "Change"
+
+// d: Item in the options menu
+// l: list_single_pane_t1_cp2/opt3
+// r: 9.1tb 
+//
+#define qtn_locev_options_add_desc "Add Description"
+
+// d: Item in the options menu to add new description 
+// l: list_single_popup_submenu_pane_t1/opt1
+// r: 9.1tb 
+//
+#define qtn_locev_options_new_desc "New"
+
+// d: Item in the options menu to use the existing notes from the notes application
+// l: list_single_popup_submenu_pane_t1/opt1
+// r: 9.1tb 
+//
+#define qtn_locev_options_from_notes "Use existing"
+
+// d: List query header for setting place
+// l: heading_pane_t1
+// r: 9.1tb 
+//
+#define qtn_locev_heading_set_place "Set place"
+
+// d: Current Place -Choice item in the "Set place" list selection query 
+// l: list_single_graphic_pane_t1_cp2
+// r: 9.1tb 
+//
+#define qtn_locev_list_current_place "Current place"
+
+// d: Landmarks -Choice item in the "Set place" list selection query
+// l: list_single_graphic_pane_t1_cp2
+// r: 9.1tb 
+//
+#define qtn_locev_list_landmarks "Landmarks"
+
+// d: From map -Choice item in the "Set place" list selection query
+// l: list_single_graphic_pane_t1_cp2
+// r: 9.1tb 
+//
+#define qtn_locev_list_from_map "From map"
+
+// d: Confirmation query to ask the user whether toi replace the old details
+// l: popup_note_window/opt1
+// r: 9.1tb 
+//
+#define qtn_locev_note_replace_details "Replace old place details with new details?"
+
+// d: Wait note when requesting current location details
+// l: popup_note_wait_window
+// r: 9.1tb 
+//
+#define qtn_locev_note_request_loc "Requesting current location"
+
+// d: If the created trigger is between 500m-1500m, an information note is displayed to the user with title text: "Medium Accuracy"
+// l: heading_sub_pane_t1
+// r: 9.1tb 
+//
+#define qtn_locev_note_heading_medium_acc "Medium Accuracy"
+
+// d: If the created trigger is more than 1500m, an information note is displayed to the user with title text: "Low Accuracy"
+// l: heading_sub_pane_t1
+// r: 9.1tb 
+//
+#define qtn_locev_note_heading_low_acc "Low Accuracy"
+
+// d: If the created trigger is less than 500m, an information note is displayed to the user with title text: "High Accuracy"
+// l: heading_sub_pane_t1
+// r: 9.1tb 
+//
+#define qtn_locev_note_heading_high_acc "High Accuracy"
+
+// d: If due to some (network) error, network location cannot be retrieved and saved, an error note is displayed
+// l: popup_note_window/opt1
+// r: 9.1tb 
+//
+#define qtn_locev_note_saving_failed "Saving current place failed. Please try again"
+
+// d: If user presses Cancel while the GPS coordinate or cell ID retrieval is in progress, an error note
+// l: popup_note_window/opt1
+// r: 9.1tb 
+//
+#define qtn_locev_note_not_saved "Current place not saved"
+
+// d: If no suitable positioning method is enabled in positioning settings, a message query is displayed with header ”Positioning unavailable” 
+// l: heading_pane_t1
+// r: 9.1tb 
+//
+#define qtn_locev_note_heading_positioning "Positioning unavailable"
+
+// d: If no suitable positioning method is enabled in positioning settings, a message query is displayed with this text 
+// l: popup_info_list_pane_t1
+// r: 9.1tb 
+//
+#define qtn_locev_note_positioning "To save the current location at least one positioning method must be enabled. Check "
+
+// d: If no suitable positioning method is enabled in positioning settings, a message query is displayed with a link to open the positioning methods for enabling  a method
+// l: popup_info_list_pane_t1
+// r: 9.1tb 
+//
+#define qtn_locev_note_positioning_link "Positioning settings"
+
+// d: Label name for Radius field in the events editor
+// l: list_double_pane_t1
+// r: 9.1tb 
+//
+#define qtn_locev_list_lbl_radius "Radius"
+
+// d: Item in the options menu to remove the existing description in the events editor
+// l: list_single_pane_t1_cp2
+// r: 9.1tb 
+//
+#define qtn_locev_options_remove_desc "Remove description"
+
+// d: Label name for Description in the events editor
+// l: list_double_pane_t1
+// r: 9.1tb 
+//
+#define qtn_locev_list_lbl_description "Description"
+
+// d: Item in the options menu for editing the existing description
+// l: list_single_pane_t1_cp2
+// r: 9.1tb 
+//
+#define qtn_locev_options_edit_desc "Edit description"
+
+// d: List query header for Add description
+// l: heading_pane_t1
+// r: 9.1tb 
+//
+#define qtn_locev_list_heading_add_desc "Add description"
+
+// d: Item in the options menu for "Set alert tone"
+// l: list_single_pane_t1_cp2
+// r: 9.1tb 
+//
+#define qtn_locev_options_set_tone "Set Alert tone"
+
+// d: List query header for Set Alert tone
+// l: heading_pane_t1
+// r: 9.1tb 
+//
+#define qtn_locev_list_heading_alert_tone "Set Alert tone"
+
+// d: Tone -Choice item in the "Set alert tone" list selection query
+// l: list_single_graphic_pane_t1_cp2
+// r: 9.1tb 
+//
+#define qtn_locev_list_alert_tone "Tone"
+
+// d: Record new clip -Choice item in the "Set alert tone" list selection query
+// l: list_single_graphic_pane_t1_cp2
+// r: 9.1tb 
+//
+#define qtn_locev_list_record_clip "Record New Clip"
+
+// d: "Off" Value for the Alert tone field in the editor
+// l: list_set_graphic_pane_t1
+// r: 9.1tb 
+//
+#define qtn_locev_list_value_alert_off "Off"
+
+// d: Item in the options menu to navigate to the place
+// l: list_single_pane_t1_cp2
+// r: 9.1tb 
+//
+#define qtn_locev_options_navigate "Navigate to place"
+
+// d: Item in the options menu to show the event location on the map
+// l: list_single_pane_t1_cp2
+// r: 9.1tb 
+//
+#define qtn_locev_options_show_map "Show place on map"
+
+// d: Item in the options menu to edit the items in the event viewer
+// l: list_single_pane_t1_cp2
+// r: 9.1tb 
+//
+#define qtn_locev_options_edit "Edit"
+/*
+// d: Press MSK to open "Active"/"Draft"/"Completed"/"Invalid" Events
+// l: control_pane_t3/opt7
+// r: 9.1tb 
+//
+#define qtn_msk_open "Open"
+*/
+// d: A maximum number of location events is reached and user tries to create a new event, a message is displayed
+// l: popup_note_window/opt1
+// r: 9.1tb 
+//
+#define qtn_locev_note_many_events "Too many location events. Please delete few events to enable creating new ones"
+
+// d: When selecting a landmark for the trigger and the landmark does not have valid coordinates,an error note is displayed 
+// l: popup_note_window/opt1
+// r: 9.1tb 
+//
+#define qtn_locev_note_invalid_lm "Coordinates missing from selected landmark. Please select another one"
+
+// d; Unit is Miles -Value for radius field
+// l: list_double_graphic_pane_t2/opt2
+// r: 9.1tb 
+//
+#define qtn_locev_list_lbl_radius_miles "mi"
+
+// d: Unit is Kilometer - Value for radius field
+// l: list_double_graphic_pane_t2/opt2
+// r: 9.1tb 
+//
+#define qtn_locev_list_lbl_radius_km "km"
+
+// d: If no Place or Subject is defined for the event, Unnamed is displayed in place of Subject
+// l: list_double_large_graphic_pane_t1
+// r: 9.1tb 
+//
+#define qtn_locev_list_unnamed "Unnamed"
+
+// d: Press MSK to create new event
+// l: control_pane_t3/opt7
+// r: 9.1tb 
+//
+#define qtn_msk_create "Create"
+
+// d: Press MSK to define the place. Opens a list selection query
+// l: control_pane_t3/opt7
+// r: 9.1tb 
+//
+#define qtn_msk_define "Define"
+
+// d: On - Value for Audio loop 
+// l: list_double_pane_t2
+// r: 9.1tb 
+//
+#define qtn_locev_list_value_loop_on "On"
+
+// d: Off- Value for Audio loop 
+// l: list_double_pane_t2
+// r: 9.1tb 
+//
+#define qtn_locev_list_value_loop_off "Off"
+
+// d: On - Value for Repeat 
+// l: list_double_pane_t2
+// r: 9.1tb 
+//
+#define qtn_locev_list_value_repeat_on "On"
+
+// d: Off - Value for Repeat 
+// l: list_double_pane_t2
+// r: 9.1tb 
+//
+#define qtn_locev_list_value_repeat_off "Off"
+
+// d: Item in the context sensitive menu to open the event from the query 
+// l: list_single_pane_t1_cp2
+// r: 9.1tb 
+//
+#define qtn_locev_options_open_event "Open event"
+
+// d: Item in the context sensitive menu to view the description of the event
+// l: list_single_pane_t1_cp2
+// r: 9.1tb 
+//
+#define qtn_locev_options_view_description "View description"
+
+// d: Item in the context sensitive menu to view the description of the event
+// l: list_single_large_graphic_pane_t1
+// r: 9.1tb 
+//
+#define qtn_apps_locev_list "Location events"
+
+// d: Title text for Location Events in Location Centre in Grid View
+// l: cell_app_pane_t1
+// r: 9.1tb 
+//
+#define qtn_apps_locev_grid  "Location events"
+
+// d: If saving the event takes time, wait note with a text “ Saving event. Please wait...”  is displayed
+// l: popup_note_wait_window
+// r: 9.1tb 
+//
+#define qtn_locev_note_saving_event "Saving event. Please wait..."
+
+// d: Confirmation query text while delete an event
+// l: popup_note_window/opt1
+// r: 9.1tb
+//
+#define qtn_locev_confirm_delete_event "Delete event"
+
+// d: Heading of the Pane
+// l: heading_pane_t1
+// r: 9.1tb
+//
+#define qtn_locev_note_disclaimer_heading "NOTICE AND DISCLAIMER"
+
+// d: Notice and Disclaimer body text
+// l: popup_info_list_pane_t1
+// r: 9.1tb
+//
+#define qtn_locev_note_disclaimer_text "The availability and accuracy of this service is dependent, among other things, on wireless networks and satellite systems. They may not function in all areas or at all times. Nokia does not guarantee and shall in no way be held responsible for the reliability and accuracy of the service. Therefore never rely solely on the service e.g. for essential communications, like emergencies. This service is made for non-commercial private use only. Using the service may involve transmission of large amounts of data through your service provider’s network. Contact your network service provider for information about data transmission charges"
+
+// d: SK1 for the disclaimer Pop-up note
+// l: control_pane_t1
+// r: 9.1tb
+//
+#define qtn_locev_softkey_accept "Accept"
+
+// d: SK2 for the disclaimer Pop-up note
+// l: control_pane_t1
+// r: 9.1tb
+//
+#define qtn_locev_softkey_reject "Reject"
+
+// d: Confirmation query text 
+// l: popup_note_window/opt1
+// r: 9.1tb
+//
+#define qtn_locev_confirmation_note_text "Hide notice and disclaimer in the future"
+
+// d: Item in the options sub menu for showing invalid events
+// l: list_single_popup_submenu_pane_t1/opt2
+// r: 9.1tb
+//
+#define qtn_locev_options_invalid "Invalid"
+
+// d: Confirmation query text while deleting multiple events
+// l: popup_note_window/opt1
+// r: 9.1tb
+//
+#define qtn_locev_confirm_multidelete_event "Delete %N events"
+
+// d: Wait note when deleting an event
+// l: popup_note_wait_window
+// r: 9.1tb
+//
+#define qtn_locev_note_singleevt_delete "Deleting event..."
+
+// d: Wait note when deleting multiple events
+// l: popup_note_wait_window
+// r: 9.1tb
+//
+#define qtn_locev_note_multipleevt_delete "Deleting events..."
+
+// d: Wait note shown while activating an event
+// l: popup_note_wait_window
+// r: 9.1tb
+//
+#define qtn_locev_note_singleevt_activate "Activating event..."
+
+// d: Wait note shown while activating multiple events
+// l: popup_note_wait_window
+// r: 9.1tb
+//
+#define qtn_locev_note_multipleevt_activate "Activating events..."
+
+// d: Wait note shown while saving an event as draft
+// l: popup_note_wait_window
+// r: 9.1tb
+//
+#define qtn_locev_note_singleevt_draft "Saving event as draft..."
+
+// d: Wait note shown while saving multiple events as draft
+// l: popup_note_wait_window
+// r: 9.1tb
+//
+#define qtn_locev_note_multipleevt_draft "Saving events as draft..."
+
+// d: Label name for Status in the event editor to set the event status
+// l: list_double_pane_t1
+// r: 9.1tb
+//
+#define qtn_locev_list_lbl_status "Status"
+
+// d: Value name for the "Status" field in the editor
+// l: list_double_pane_t1
+// r: 9.1tb
+//
+#define qtn_locev_list_value_active "Active"
+
+// d: Value name for the "Status" field in the editor
+// l: list_double_pane_t1
+// r: 9.1tb
+//
+#define qtn_locev_list_value_draft "Draft"
+
+// d: Prompt text in the data query to enter location details
+// l: popup_query_data_window/opt1
+// r: 9.1tb
+//
+#define qtn_locev_note_prompt_text "Fetched location details. Save location as:"
+
+// d: Text in the information note mentioning the accuracy level of the trigger in metres
+// l: popup_note_window/opt1
+// r: 9.1tb 
+//
+#define qtn_locev_note_txt_acc_metres "Place saved with %U m accuracy level"
+
+// d: Text in the information note mentioning the accuracy level of the trigger in kilometres
+// l: popup_note_window/opt1
+// r: 9.1tb 
+//
+#define qtn_locev_note_txt_acc_km "Place saved with %U km accuracy level"
+
+// d: Text in the information note mentioning the accuracy level of the trigger in miles
+// l: popup_note_window/opt1
+// r: 9.1tb 
+//
+#define qtn_locev_note_txt_acc_miles "Place saved with %U mi accuracy level"
+
+// d: Text in the information note mentioning the accuracy level of the trigger in foot/feet
+// l: popup_note_window/opt1
+// r: 9.1tb 
+//
+#define qtn_locev_note_txt_acc_ft "Place saved with %U ft accuracy level"
+
+// d: Text in the information note mentioning that the accuracy level is unknown
+// l: popup_note_window/opt1
+// r: 9.1tb
+//
+#define qtn_locev_note_txt_acc_unknown "The accuracy level of the saved location is unavailable"
+
+// d: Confirmation query is displayed when user uses the "Discard changes" command from the options menu
+// l: popup_note_window/opt1
+// r: 9.1tb
+//
+#define qtn_locev_query_discard_changes "Discard all changes made to event entry"
+
+// d: Information note shown when user tries to save the event without filling the mandatory fields
+// l: popup_note_window/opt1
+// r: 9.1tb
+//
+#define qtn_locev_note_missed_info "Please fill all the mandatory fields to save event"
+
+// d: Item in the options menu to discard changes
+// l: list_single_pane_t1_cp2
+// r: 9.1tb
+//
+#define qtn_locev_options_discard "Discard changes"
+
+// d: Event "Status" text in the event viewer
+// l: list_double_pane_t2
+// r: 9.1tb
+//
+#define qtn_locev_list_value_completed "Completed"
+
+// d: Event "Status" text in the event viewer
+// l: list_double_pane_t2
+// r: 9.1tb
+//
+#define qtn_locev_list_value_invalid "Invalid"
+
+// d: Name of the recorded sound clip
+// l: list_double_pane_t2
+// r: 9.1tb
+//
+#define qtn_locev_list_vorec_clip_name "Sound clip"
+
+// d: Snooze text as LSK
+// l: control_pane_t1/opt7
+// r: 9.2tb
+//
+#define qtn_locev_softkey_snooze "Snooze"

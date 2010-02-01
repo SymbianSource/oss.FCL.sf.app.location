@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<location_centre_registration>
+  <service uuid="101F85A2">
+    <feature>PersonalData</feature>
+    <runmode default="child"/>
+    <application>
+      <native sid="[101F85A2]"/>
+    </application>
+  </service>
+</location_centre_registration>

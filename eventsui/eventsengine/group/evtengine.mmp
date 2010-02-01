@@ -1,0 +1,58 @@
+/*
+* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Project definition file for Events Engine
+*
+*/
+
+
+// Includes 
+#include "../inc/evtengineuid.hrh"		// For UID3
+
+// SYSTEM INCLUDE
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh> // For the APP_LAYER_SYSTEMINCLUDE
+
+// Target information
+TARGET  		evtengine.dll
+TARGETTYPE  	dll
+UID  			0x0 EVTENGINE_UID3
+CAPABILITY 		CAP_GENERAL_DLL
+VENDORID 		VID_DEFAULT
+
+// System Includes
+APP_LAYER_SYSTEMINCLUDE
+
+// User Includes
+USERINCLUDE     ../inc ../../inc
+SOURCEPATH      ../src
+
+SOURCE 			        evtmgmtuiengine.cpp
+SOURCE 			        evtmgmtuilbtadapter.cpp
+SOURCE                  evteventmanager.cpp
+SOURCE                  evtbasiceventinfo.cpp
+SOURCE                  evtevent.cpp
+SOURCE                  evtaction.cpp
+SOURCE                  evttoneaction.cpp
+SOURCE                  evtdatabase.cpp
+SOURCE                  evtdbnotifier.cpp
+
+LIBRARY                 estor.lib	
+LIBRARY                 euser.lib 			
+LIBRARY                 sqldb.lib               // Sqlite
+LIBRARY                 centralrepository.lib   // CRepository
+LIBRARY                 evtutils.lib
+LIBRARY		            lbt.lib
+LiBRARY		            lbs.lib 
+
+DEFFILE                 evtengine.def

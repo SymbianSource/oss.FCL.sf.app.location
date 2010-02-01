@@ -1,0 +1,646 @@
+/*
+* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*
+*/
+
+
+/**
+ *  Default (implementation English) Resource localisation file.
+ */
+
+// LOCALISATION STRINGS
+
+//d:Blid application name
+//d:in the App Shell list
+//l: list_single_large_graphic_pane_t1
+//r: 3.0
+//
+#define qtn_blid_caption_string 		"GPS Data"
+
+//d:Blid application name
+//d:in the App Shell grid
+//l: cell_app_pane_t1
+//r: 3.0
+//
+#define qtn_blid_short_caption_string	"GPS Data"
+//d:Title pane text for application's
+//d:Navigation view
+//l:title_pane_t2/opt9
+//r: 3.0
+//
+#define qtn_blid_title_navigation		"Navigation"
+
+
+//d:Title pane text for application's
+//d:Trip meter Data View
+//l: title_pane_t2/opt9
+//r: 3.0
+//
+#define qtn_blid_title_tripmeter		"Trip Meter"
+
+//d:Title pane text for application's
+//d:Settings View
+//l:title_pane_t2/opt9
+//r: 3.0
+//
+#define qtn_blid_title_settings			"Settings"
+
+//d:Title pane text for application's
+//d:Saved waypts View
+//l:title_pane_t2/opt9
+//r: 3.0
+//
+#define qtn_blid_title_waypoints		"Waypoints"
+
+//d:Options menu item for 
+//d:open satellites status view
+//l:list_single_pane_t1_cp2
+//r: 3.0
+//
+#define qtn_blid_opt_satellite_signals		"Satellite signals"
+
+//d:Options menu item for 
+//d:start navigate
+//l:list_single_pane_t1_cp2/opt3
+//r: 3.0
+//
+#define qtn_blid_opt_set_destination		"Set destination"
+
+//d:Options menu item for 
+//d:saved waypoints
+//l:list_single_pane_t1_cp2
+//r: 3.0
+//
+#define qtn_blid_opt_saved_waypoints		"Saved waypoints"
+
+//d:Options menu item for 
+//d:stop navigation
+//l:list_single_pane_t1_cp2
+//r: 3.0
+//
+#define qtn_blid_opt_clear_destination		"Clear destination"
+
+//d:Options menu item for 
+//d:save waypt as landmark
+//l:list_single_pane_t1_cp2
+//r: 3.0
+//
+#define qtn_blid_opt_save_as_lm				"Save as landmark"
+
+//d:Options menu item for 
+//d:rename waypt
+//l:list_single_pane_t1_cp2
+//r: 3.0
+//
+#define qtn_blid_opt_rename_waypoint					"Rename"
+
+//d:Options menu item for 
+//d:delete waypt
+//l:list_single_pane_t1_cp2
+//r: 3.0
+//
+#define qtn_blid_opt_delete_waypoint		"Delete"
+
+//d:Heading text for 
+//d:SettingView's item
+//l:list_double_graphic_pane_t1
+//r: 3.0
+//
+#define qtn_blid_altitude_calibration		"Altitude calibration"
+
+//d:Format text for 
+//d:SettingPage's
+//l:setting_code_pane_t1
+//r: 3.0
+//
+#define qtn_blid_metric_meter			"%0N m"
+
+//d:Format text for 
+//d:SettingPage's
+//l:setting_code_pane_t1
+//r: 3.0
+//
+#define qtn_blid_imperial_foot			"%0N ft"
+
+//d:Format text for NaviDataView's item
+//d:and OwnLocView's item
+//l:list_single_heading_pane_t1
+//r: 3.0
+//
+#define qtn_blid_metric_speed				"%0U km/h"
+
+//d:Format text for NaviDataView's item
+//d:and OwnLocView's item
+//l:list_single_heading_pane_t1
+//r: 3.0
+//
+#define qtn_blid_imperial_speed				"%0U mph"
+
+
+//d:Heading pane for select 
+//d:waypoint pop-up window
+//l:heading_pane_t1
+//r: 3.0
+//
+#define qtn_blid_query_waypoint				"Waypoint:"
+
+//d:Calculating indicator text for
+//d:OwnPos View's item
+//l:list_single_heading_pane_t1
+//r: 3.0
+//
+#define qtn_blid_calculating_list			"(Calculating)"
+
+
+//d:Default waypoint name for
+//d:waypoint name query
+//l:list_single_popup_submenu_pane_t1
+//r: 3.0
+//
+#define  qtn_blid_opt_set_waypoint			"Waypoint"
+
+//d:Default waypoint name for
+//d:waypoint name query
+//l:query_popup_data_pane_t1/opt4
+//r: 3.0
+//
+#define qtn_blid_waypoint_name				"Waypoint"
+
+//d:Blid application's logical
+//d:service name for rule
+//l:list_single_heading_pane_t1
+//r: 3.0
+//
+#define qtn_blid_logical_rule_name				"Blid App"
+
+//d:Information note displayed when user is saving
+//d:a waypoint and all waypoint slots are used.
+//l:popup_note_window
+//r: 3.0
+//
+#define qtn_blid_error_max_waypoints			"Maximum number of waypoints is %N. Delete old waypoints before creating new."
+
+//d:Calculating indicator text for
+//d:View's item
+//l:main_location2_pane_t1
+//r: 3.0
+//
+#define qtn_blid_blank		"-"
+
+//d:Item text for Navigation,Trip meter 
+//d: and My Position View's item
+//l:text_secondary_cp61
+//l:list_single_heading_pane_t1
+//r: 3.0
+//
+#define qtn_blid_connect_gps					"(No GPS data)"
+
+//d:Heading text for TripMeterOption's item
+//l:list_single_pane_t1_cp2
+//r: 3.0
+//
+#define qtn_blid_tripmeter_opt_start			"Start"
+
+//d:Heading text for TripMeterOption's item
+//l:list_single_pane_t1_cp2
+//r: 3.0
+//
+#define qtn_blid_tripmeter_opt_stop				"Stop"
+
+//d:Heading text for TripMeterOption's item
+//l:list_single_pane_t1_cp2
+//r: 3.0
+//
+#define qtn_blid_tripmeter_opt_resume			"Resume"
+
+//d:Heading text for TripMeterOption's item
+//l:list_single_pane_t1_cp2
+//r: 3.0
+//
+#define qtn_blid_tripmeter_opt_reset			"Reset trip"
+
+//d:Heading text for TripMeterOption's item
+//l:list_single_pane_t1_cp2
+//r: 3.0
+//
+#define qtn_blid_tripmeter_opt_clear			"Clear"
+//d:Heading text for TripMeter note string
+//l:popup_note_window
+//r: 3.0
+//
+#define qtn_blid_note_trip_resume				"GPS data was unavailable for sometime. Distances may not be accurate."
+
+//d:Heading text for menu option.
+//l:list_single_popup_submenu_pane_t1
+//r:3.2
+//
+#define qtn_blid_opt_set_landmark			"Landmark"
+
+//d:Heading text for Navigation Data format
+//l:list_single_heading_pane_t1
+//r: 3.0
+//
+#define qtn_blid_nav_distance_m			"m"
+
+//d:Heading text for Navigation Data format
+//l:list_single_heading_pane_t1
+//r: 3.0
+//
+#define qtn_blid_nav_distance_km		"km"
+
+//d:Heading text for Navigation Data format
+//l:list_single_heading_pane_t1
+//r: 3.0
+//
+#define qtn_blid_nav_distance_mi		"mi"
+
+//d:Heading text for Navigation Data format
+//l:list_single_heading_pane_t1
+//r: 3.0
+//
+#define qtn_blid_nav_distance_ft		"ft"
+
+//d:Heading text for Speed string
+//l:list_single_heading_pane_t2
+//r: 3.2
+//
+#define qtn_blid_navigation_speed			"Speed:"
+
+//d:Text saving a already
+//d: existing waypoint
+//l:popup_note_window
+//r: 3.0
+//
+#define qtn_blid_query_waypoint_name_exists		"%U already exists. Replace?"
+
+//d:Confirmation text for deletion of waypoint
+//l:popup_note_window
+//r: 3.0
+//
+#define qtn_blid_query_delete_waypoint			"Delete %U?"
+
+//d:Confirmation text for deletion 
+//d:of multiple waypoints
+//l:popup_note_window
+//r: 3.0
+//
+#define qtn_blid_query_delete_waypoints			"Delete %N waypoints?"
+//d:Heading text for error condition when
+//d:gps data is poor
+//l:popup_note_window
+//r: 3.0
+//
+#define qtn_blid_infonote_poor_gps	"GPS positioning works best outdoors away from closed areas"
+
+//d:Not available indicator text for
+//d:View's item
+//l:list_single_heading_pane_t1
+//r: 3.0
+//
+#define qtn_blid_not_available		"(Not available)"
+
+//d:option for manual destination
+//d:setting using coordinates
+//l:list_single_heading_pane_t1
+//r: 3.0
+//
+#define qtn_blid_opt_set_coordinates	"Coordinates"
+
+//d:Submenu option for co-oridnates
+//l:list_single_heading_pane_t1
+//r: 3.0
+//
+#define qtn_blid_destination_coordinates		"Coordinates"
+
+//d:Text for saved waypoints view
+//d:when no waypoints saved
+//l:list_single_heading_pane_t1
+//r: 3.0
+//
+#define qtn_blid_no_waypoints				"(No saved waypoints)"
+
+//d:Text for saved waypoints view
+//d:when no waypoints saved
+//l:list_single_heading_pane_t1
+//
+#define qtn_blid_coordinate_latitude	"Latitude:"
+
+//d:Text for saved waypoints view
+//d:when no waypoints saved
+//l:list_single_heading_pane_t1
+//
+#define qtn_blid_coordinate_longitude	"Longitude:"
+
+//d:Text for gps data available
+//l:popup_note_window
+//
+#define qtn_blid_note_gps_data			"GPS data might take a while to calculate"
+
+//d:Text when empty landmark is selected
+//l:popup_note_window
+//
+#define qtn_blid_empty_landmark_destination		"%U has no coordinate data available."
+
+//d:Heading pane for select 
+//d:waypoint pop-up window
+//l:heading_pane_t1
+//r: 3.0
+//
+#define qtn_blid_query_waypoint_name	"Waypoint name:"
+
+//d:Set Destination indicator text for
+//d:Navigation View's Destination item
+//l: list_single_heading_pane_t1
+//r: 3.0
+//
+#define qtn_blid_set_destination		"(Set destination)"
+
+//d:Poor accuracy indication query when Landmark 
+//set distination selected for destinaion
+//l:popup_note_window
+//r: 3.0
+//
+#define qtn_blid_conf_dest_inaccurate		"Destination accuracy poor. Continue anyway?"
+
+//d:Format text for Trip Meters and
+//d:My Position view's item
+//d:when satellite are not clearly visible
+//l:list_single_heading_pane_t1
+//r: 3.1
+//
+#define qtn_blid_view_indicator_waiting				"Waiting for GPS data"
+
+//d:Navigation view's item
+//d:when satellite are not clearly visible
+//l:list_single_heading_pane_t1
+//r: 3.1
+//
+
+#define qtn_loc_options_pos_settings				"Positioning settings"
+
+
+//d:Heading text for Backlight settings option
+//d:setting item
+//l:list_set_graphic_pane_t1
+//r: 3.2
+//
+#define qtn_blid_backlight_normal					"Normal"
+
+
+//d:Heading text as Backlight in the Settings view
+//d:choosing the backlight option 
+//l:list_setting_pane_t1
+//r: 3.2
+//
+#define qtn_blid_backlight				"Backlight"
+
+//d:Menu item for stylus pop-up menu
+//l:list_single_pane_t1_cp2
+//r: 3.2
+//
+#define qtn_blid_stylus_clear				"Clear"
+
+//d:Menu item for stylus pop-up menu
+//l:list_single_pane_t1_cp2
+//r: 3.2
+//
+#define qtn_blid_stylus_waypoint				"Waypoint"
+
+//d:Menu item for stylus pop-up menu
+//l:list_single_pane_t1_cp2
+//r: 3.2
+//
+#define qtn_blid_stylus_landmark				"Landmark"
+
+//d:Menu item for stylus pop-up menu
+//l:list_single_pane_t1_cp2
+//r: 3.2
+//
+#define qtn_blid_stylus_coordinates				"Coordinates"
+
+//d:Item text for Navigation,Trip meter 
+//d: and My Position View's item
+//l:list_single_heading_pane_t1
+//r: 3.2
+//
+#define qtn_blid_view_indicator_not_found					"GPS data not found"
+
+//d:Main view option menu item
+//l:list_single_pane_t1_cp2
+//r: 3.2
+//
+#define qtn_blid_opt_settings			"Settings"
+
+
+//d:Message query text
+//l:popup_info_list_pane_t1
+//r: 5.0.1
+//
+#define qtn_blid_msgquery_device_connection_lost			"GPS device not available. Connection to GPS device lost. Try reconnection."
+
+//d:Custom visual pop-up text
+//l:popup_blid2_search_window_t1
+//r: 5.0.1
+//
+#define qtn_blid_gps_device_unavailable_note			"GPS device unavailable"
+
+
+//d:MSK label
+//l:control_pane_t3/opt7
+//r: 5.0.1
+//
+#define text_softkey_info			"Info"
+
+//d:Custom visual pop-up text
+//l:popup_blid2_search_window_t1
+//r: 5.0.1
+//
+#define qtn_blid_waitnote_searching_gps_satellites			"Searching GPS satellites"
+
+//d:Options menu item
+//l:list_single_pane_t1_cp2
+//r: 5.0.1
+//
+#define qtn_options_reset			"Reset"
+
+//d:Confirmation query text
+//l:popup_note_window
+//r: 5.0.1
+//
+#define qtn_blid_reset_odometer_query			"This action will reset total odometer value. Continue?"
+
+//d:Arrival tone off
+//l:set_value_pane_t1
+//r: 5.0.1
+//
+#define qtn_blid_arrival_tone_off			"Off"
+
+//d:Setting alternative
+//l:set_value_pane_t1
+//r: 5.0.1
+//
+#define qtn_blid_backlight_always_on			"Always on"
+
+//d:MSK label
+//l:control_pane_t3/opt7
+//r: 5.0.1
+//
+#define qtn_msk_reset			"Reset"
+
+//d:Setting item header
+//l:list_setting_pane_t1
+//r: 5.0.1
+//
+#define qtn_blid_reset_odometer			"Reset odometer"
+
+//d:Setting item header
+//l:list_setting_pane_t1
+//r: 5.0.1
+//
+#define qtn_blid_arrival_tone			"Arrival tone"
+
+//d:Location details list item
+//l:list_single_heading_pane_t2_cp2
+//r: 5.0.1
+//
+#define qtn_blid_location_details_altitude_accuracy			"Altitude accuracy"
+
+//d:Location details list item
+//l:list_single_heading_pane_t2_cp2
+//r: 5.0.1
+//
+#define qtn_blid_location_details_altitude			"Altitude"
+
+//d:Location details list item
+//l:list_single_heading_pane_t2_cp2
+//r: 5.0.1
+//
+#define qtn_blid_location_details_accuracy			"Accuracy"
+
+//d:Location details list item
+//l:list_single_heading_pane_t2_cp2
+//r: 5.0.1
+//
+#define qtn_blid_location_details_longitude			"Longitude"
+
+//d:Location details list item
+//l:list_single_heading_pane_t2_cp2
+//r: 5.0.1
+//
+#define qtn_blid_location_details_latitude			"Latitude"
+
+//d:Location details header
+//l:heading_pane_t1
+//r: 5.0.1
+//
+#define qtn_blid_location_details_header			"Current location"
+
+//d:Options menu item
+//l:list_single_pane_t1_cp2
+//r: 5.0.1
+//
+#define qtn_blid_opt_current_location_save			"Save"
+
+//d:Options menu item
+//l:list_single_pane_t1_cp2
+//r: 5.0.1
+//
+#define qtn_blid_opt_current_location_details			"Details"
+
+//d:Options menu item
+//l:list_single_pane_t1_cp2
+//r: 5.0.1
+//
+#define qtn_blid_opt_current_location			"Current location"
+
+//d:Unit for speed in navigation view
+//l:blid2_speed_pane_t1
+//r: 5.0.1
+//
+#define qtn_blid_navigation_speed_mph			"mph"
+
+//d:Unit for speed in navigation view
+//l:blid2_speed_pane_t1
+//r: 5.0.1
+//
+#define qtn_blid_navigation_speed_kmph			"km/h"
+
+//d:Navi text
+//l:navi_text_pane_t1
+//r: 5.0.1
+//
+#define qtn_blid_startup_navitext_gps_pos_available			"GPS positioning available"
+
+//d:Navi text
+//l:navi_text_pane_t1
+//r: 5.0.1
+//
+#define qtn_blid_startup_navitext_searching_gps_satellites			"Searching GPS satellites"
+
+//d:Message query text
+//l:popup_info_list_pane_t1
+//r: 5.0.1
+//
+#define qtn_blid_msgquery_accessory_device_needed			"An accessory GPS device is needed for full functionality."
+
+//d:Message query text
+//l:popup_info_list_pane_t1
+//r: 5.0.1
+//
+#define qtn_blid_msgquery_check_positioning_settings			"Check positioning settings"
+
+//d:Message query title
+//l:heading_pane_t1
+//r: 5.0.1
+//
+#define qtn_blid_msgquery_header_nogpsdevice			"No GPS device found"
+
+//d:SK1 label
+//l:control_pane_t1/opt7
+//r: 5.0.1
+//
+#define text_softkey_retry			"Retry"
+
+//d:Functional link on message query
+//l:list_single_touch_info_pane_t2/opt1
+//r: 5.0.1
+//
+#define qtn_blid_msgquery_link_positioning_settings			"Positioning settings"
+
+//d:Message query text
+//l:popup_info_list_pane_t1
+//r: 5.0.1
+//
+#define qtn_blid_msgquery_no_method_enabled			"No satellite capable positioning method enabled. Check positioning settings."
+
+//d:Message query title
+//l:heading_pane_t1
+//r: 5.0.1
+//
+#define qtn_blid_msgquery_no_satellite_methods			"No GPS enabled"
+
+//d:Label in title pane for Searching for GPS and Searching for GPS device views
+//l:title_pane_t1/opt7
+//r: 5.0.1
+//
+#define qtn_blid_title_gps_data			"GPS data"
+
+//d:Custom text in searching device view's main pane
+//l:blid2_search_pane_t1
+//r: 5.0.1
+//
+#define qtn_blid_startup_navitext_searching_gps_device			"Searching GPS device..."
+
+// End of File

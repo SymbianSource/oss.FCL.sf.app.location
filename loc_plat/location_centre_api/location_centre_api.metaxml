@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<api id="cf2b175d7f6596aeba30f6dc00e467e1" dataversion="2.0">
+  <name>Location Centre API</name>
+  <description>Provides the interface for the client applications to use the services provided by Location Centre, like launching the Location Centre (in pop-up form), querying and listing registered applications, launching registered applications etc. Client applications can also provide characteristics based filters while listing or querying for registered applications or while launching Location Centre Pop-up.</description>
+  <type>c++</type>
+  <collection>locationcentre</collection>
+  <libs>
+  </libs>
+  <release category="platform"/>
+  <attributes>
+     <!-- This indicates wether the api provedes separate html documentation -->
+     <!-- or is the additional documentation generated from headers. -->
+     <!-- If you are unsuere then the value is "no" -->
+     <htmldocprovided>no</htmldocprovided>
+     <adaptation>no</adaptation>
+  </attributes>
+</api>
