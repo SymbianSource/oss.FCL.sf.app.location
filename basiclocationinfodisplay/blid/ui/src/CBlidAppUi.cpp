@@ -40,7 +40,7 @@
 #include "CHtkTripMeterControl.h"
 #include "FileSystemInfo.h"
 #include "BlidUID.h"
-
+#include "CBlidSatelliteControl.h"
 
 #ifdef _DEBUG
 _LIT( KPanicMsg, "CBlidAppUi::TabChangedL");
@@ -267,36 +267,66 @@ void CBlidAppUi::HandleForegroundEventL(TBool aForeground)
     iForeground = aForeground;
 
     CBlidEng* engine = BlidDocument()->Engine();
-    if(aForeground)
-    	{
-    	engine->SetAppMode(CBlidEng::EAppForeground);
-    	if(engine->LocationModel() )
-	    	{
-	    	if( engine->LocationModel()->GetRegisteredViewId() == EBlidNavigationView )	
-	    	    {
-	    	    CBlidNavigationView* view = static_cast<CBlidNavigationView*>(View(TUid::Uid(EBlidNavigationView)));
-	    	    view->GetControl()->UpdateL();
-	    	    }
-	    	if( engine->LocationModel()->GetRegisteredViewId() == EBlidTripMeterView )	
-	    	    {
-	    	    CBlidTripMeterView* view = static_cast<CBlidTripMeterView*>( View( TUid::Uid( EBlidTripMeterView ) ) );
-	    	    view->GetControl()->UpdateL();
-	    	    }
-	    	}
-    	}
+    if (aForeground)
+        {
+        engine->SetAppMode(CBlidEng::EAppForeground);
+        if (engine->LocationModel())
+            {
+            if (engine->LocationModel()->GetRegisteredViewId()
+                    == EBlidNavigationView)
+                {
+                CBlidNavigationView* view =
+                        static_cast<CBlidNavigationView*> (View(TUid::Uid(
+                                EBlidNavigationView)));
+                view->GetControl()->UpdateL();
+                }
+            if (engine->LocationModel()->GetRegisteredViewId()
+                    == EBlidTripMeterView)
+                {
+                CBlidTripMeterView* view =
+                        static_cast<CBlidTripMeterView*> (View(TUid::Uid(
+                                EBlidTripMeterView)));
+                view->GetControl()->UpdateL();
+                }
+            if (engine->LocationModel()->GetRegisteredViewId()
+                    == EBlidMainSatelliteView)
+                {
+                CBlidSatelliteView* view = static_cast<CBlidSatelliteView*> (View(
+                        TUid::Uid(EBlidMainSatelliteView)));
+                view->GetControl()->UpdateL();
+                }
+            if (engine->LocationModel()->GetRegisteredViewId()
+                    == EBlidMainView)
+                {
+                CBlidMainView* view = static_cast<CBlidMainView*> (View(
+                        TUid::Uid(EBlidMainView)));
+                view->GetControl()->UpdateL();
+                }        
+            }
+        }
     else
-    	{
-    	engine->SetAppMode(CBlidEng::EAppBackground);
-	    engine->SetBackLightStateL(CBlidEng::EBlidBacklightNormal);
-    	if( engine->LocationModel()->GetRegisteredViewId() == EBlidNavigationView )	
-    	    {
-    	    CBlidNavigationView* view = static_cast<CBlidNavigationView*>( View( TUid::Uid( EBlidNavigationView ) ) );
-    	    view->GetControl()->StopPlayerL();
-    	    }	    
-    	}
-    
-        
-    if ( iSatelliteInfo )
+        {
+        engine->SetAppMode(CBlidEng::EAppBackground);
+        engine->SetBackLightStateL(CBlidEng::EBlidBacklightNormal);
+        if (engine->LocationModel()->GetRegisteredViewId()
+                == EBlidNavigationView)
+            {
+            CBlidNavigationView* view =
+                    static_cast<CBlidNavigationView*> (View(TUid::Uid(
+                            EBlidNavigationView)));
+            view->GetControl()->StopPlayerL();
+            }
+        if (engine->LocationModel()->GetRegisteredViewId()
+                == EBlidNavigationView)
+            {
+            CBlidNavigationView* view =
+                    static_cast<CBlidNavigationView*> (View(TUid::Uid(
+                            EBlidNavigationView)));
+            view->GetControl()->StopPlayerL();
+            }
+        }
+
+    if (iSatelliteInfo)
         {
         iSatelliteInfo->HandleForegroundEventL( aForeground );
         }

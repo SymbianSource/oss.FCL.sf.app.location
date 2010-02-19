@@ -11,7 +11,8 @@
  *
  * Contributors:
  *
- * Description:    LandmarksUi Package viewer implementation
+ * Description:     LandmarksUi Package viewer implementation 
+ *                  For Received Landmark
  *
  */
 
@@ -57,8 +58,8 @@ CLmkPackageEditorImpl::CLmkPackageEditorImpl(CPosLandmarkDatabase& aDb,
     CLmkEditorImpl(aDb, aSender, CLmkEditorDlg::ELmkViewer), // viewing only mode!
             iParser(aParser), iItemIndex(aItemIndex)
     {
-    TCoeHelpContext help(TUid::Uid( KLmkMsgViewerAppUID3),
-            KLM_HLP_RECEIVED_LM);
+    TCoeHelpContext
+            help(TUid::Uid(KLmkMsgViewerAppUID3), KLM_HLP_RECEIVED_LM);
     SetHelpContext(help);
     }
 
@@ -137,91 +138,92 @@ void CLmkPackageEditorImpl::HandleOperationL(TOperationTypes aType,
 // CLmkPackageEditorImpl::DynInitMenuPaneL
 // -----------------------------------------------------------------------------
 //
-void CLmkPackageEditorImpl::DynInitMenuPaneL(
-    TInt aResourceId,
-    CEikMenuPane* aMenuPane )
+void CLmkPackageEditorImpl::DynInitMenuPaneL(TInt aResourceId,
+        CEikMenuPane* aMenuPane)
     {
-    switch( aResourceId )
+    switch (aResourceId)
         {
         case R_AVKON_FORM_MENUPANE:
             {
-            CAknForm::DynInitMenuPaneL( aResourceId, aMenuPane );
+            CAknForm::DynInitMenuPaneL(aResourceId, aMenuPane);
 
             // delete the show on map & Navigate To options
-            aMenuPane->DeleteMenuItem( ELmkShowOnMapPlaceHolder );
-            aMenuPane->DeleteMenuItem( ELmkNavigateToPlaceHolder );
-            
-			aMenuPane->SetItemDimmed( ELmkCmdSendDummy, ETrue);
-            aMenuPane->SetItemDimmed( ELmkCmdSaveLm, ETrue );
-            
-            if ( FeatureManager::FeatureSupported( KFeatureIdHelp ) &&
-                    !iIsHideHelp )
-				{
-				aMenuPane->SetItemDimmed( EAknCmdHelp, EFalse );
-				}
-			else
-				{
-				aMenuPane->SetItemDimmed( EAknCmdHelp, ETrue );
-				}
+            aMenuPane->DeleteMenuItem(ELmkShowOnMapPlaceHolder);
+            aMenuPane->DeleteMenuItem(ELmkNavigateToPlaceHolder);
 
-			DimmMenuItemsL(aMenuPane);
+            aMenuPane->SetItemDimmed(ELmkCmdSendDummy, ETrue);
+            aMenuPane->SetItemDimmed(ELmkCmdSaveLm, ETrue);
 
-			//always dimmed
-            aMenuPane->SetItemDimmed( EAknFormCmdEdit, ETrue );
-		    aMenuPane->SetItemDimmed( EAknFormCmdSave, ETrue );
-		    aMenuPane->SetItemDimmed( EAknFormCmdLabel, ETrue );
-		    aMenuPane->SetItemDimmed( EAknFormCmdAdd, ETrue );
-		    aMenuPane->SetItemDimmed( EAknFormCmdDelete, ETrue );
+            if (FeatureManager::FeatureSupported(KFeatureIdHelp)
+                    && !iIsHideHelp)
+                {
+                aMenuPane->SetItemDimmed(EAknCmdHelp, EFalse);
+                }
+            else
+                {
+                aMenuPane->SetItemDimmed(EAknCmdHelp, ETrue);
+                }
+
+            DimmMenuItemsL(aMenuPane);
+
+            //always dimmed
+            aMenuPane->SetItemDimmed(EAknFormCmdEdit, ETrue);
+            aMenuPane->SetItemDimmed(EAknFormCmdSave, ETrue);
+            aMenuPane->SetItemDimmed(EAknFormCmdLabel, ETrue);
+            aMenuPane->SetItemDimmed(EAknFormCmdAdd, ETrue);
+            aMenuPane->SetItemDimmed(EAknFormCmdDelete, ETrue);
             break;
             }
         case R_SENDUI_MENU: // Dynamically created send ui menu
             {
-            if ( FeatureManager::FeatureSupported( KFeatureIdLandmarksConverter ) )
-	            {
-            	iSender.DisplaySendCascadeMenuL( *aMenuPane );
-	            }
+            if (FeatureManager::FeatureSupported(KFeatureIdLandmarksConverter))
+                {
+                iSender.DisplaySendCascadeMenuL(*aMenuPane);
+                }
             break;
             }
         case R_LMK_EDITOR_MENU:
-	        {
-            TBool hideMN=EFalse;
-            if( iIsHideCoordinate )         
+            {
+            TBool hideMN = EFalse;
+            if (iIsHideCoordinate)
                 {
-                if(IsLandmarkDataEmptyL(iLandmark))
+                if (IsLandmarkDataEmptyL(iLandmark))
                     {
                     hideMN = ETrue;
                     }
-                }       
-            else if( ArePositionFieldEmptyL() )
+                }
+            else if (ArePositionFieldEmptyL())
                 {
                 hideMN = ETrue;
                 }
-            
-            if( hideMN )
+
+            if (hideMN)
                 {
                 // delete the show on map & Navigate To options
-                aMenuPane->DeleteMenuItem( ELmkShowOnMapPlaceHolder );
-                aMenuPane->DeleteMenuItem( ELmkNavigateToPlaceHolder );
+                aMenuPane->DeleteMenuItem(ELmkShowOnMapPlaceHolder);
+                aMenuPane->DeleteMenuItem(ELmkNavigateToPlaceHolder);
                 }
-            iMapNavInterface->AttachMenuPaneL(aMenuPane, R_LMK_EDITOR_MENU, ELmkCmdMnNav);
+            iMapNavInterface->AttachMenuPaneL(aMenuPane, R_LMK_EDITOR_MENU,
+                    ELmkCmdMnNav);
 
             // Send menu is handled by the sender:
-            if ( FeatureManager::FeatureSupported( KFeatureIdLandmarksConverter ) )
-				{
-				aMenuPane->SetItemDimmed(ELmkCmdSendDummy, EFalse);
+            if (FeatureManager::FeatureSupported(KFeatureIdLandmarksConverter))
+                {
+                aMenuPane->SetItemDimmed(ELmkCmdSendDummy, EFalse);
 
                 // Use default "Send" item text from SendUI
-				iSender.DisplaySendMenuL( *aMenuPane, 1);
-				}
-	       	DimmMenuItemsL(aMenuPane);
-	        break;
-	        }
+                iSender.DisplaySendMenuL(*aMenuPane, 1);
+                }
+            DimmMenuItemsL(aMenuPane);
+            break;
+            }
         default:
             {
             break;
             }
         }
-    iMapNavInterface->HandleMenuOperationL(aResourceId, aMenuPane, ELmkCmdMnNav);
+    iMapNavInterface->HandleMenuOperationL(aResourceId, aMenuPane,
+            ELmkCmdMnNav);
     }
 
 // -----------------------------------------------------------------------------
@@ -258,6 +260,8 @@ void CLmkPackageEditorImpl::ProcessCommandL(TInt aCommandId)
             }
         case EAknSoftkeyContextOptions:
             {
+            iContextMenuBar->SetContextMenuTitleResourceId(
+                    R_LMK_MSGVIEWER_CONTEXT_MENUBAR);            
             iContextMenuBar->TryDisplayContextMenuBarL();
             break;
             }
@@ -377,6 +381,7 @@ void CLmkPackageEditorImpl::PostLayoutDynInitL()
     CEikButtonGroupContainer* cba = CEikButtonGroupContainer::Current();
     EnableMskMenuL();
     }
+
 // ----------------------------------------------------
 // CLmkPackageEditorImpl::DimmMenuItems
 // ----------------------------------------------------
@@ -402,32 +407,16 @@ void CLmkPackageEditorImpl::DimmMenuItemsL(CEikMenuPane* aMenuPane)
 // CLmkPackageEditorImpl::HandleDialogPageEventL
 // -----------------------------------------------------------------------------
 //
-void CLmkPackageEditorImpl::HandleDialogPageEventL(TInt /*aEventID*/)
+void CLmkPackageEditorImpl::HandleDialogPageEventL(TInt aEventID)
     {
-    // No Impl
-    }
-
-// -----------------------------------------------------------------------------
-// CLmkPackageEditorImpl::HandlePointerEventL
-// -----------------------------------------------------------------------------
-//
-void CLmkPackageEditorImpl::HandlePointerEventL( const TPointerEvent& aPointerEvent )
-    { 
-    CAknForm::HandlePointerEventL(aPointerEvent);
-    
-    if (aPointerEvent.iType == TPointerEvent::EButton1Up && iIsDragging
-            == EFalse)
+    CAknForm::HandleDialogPageEventL(aEventID);
+    if (aEventID == MEikDialogPageObserver::EDialogPageTapped)
         {
-        iContextMenuBar->TryDisplayContextMenuBarL();
-        }    
-    if (aPointerEvent.iType == TPointerEvent::EButton1Down)
-        {
-        iIsDragging = EFalse;
-        }
-    if (aPointerEvent.iType == TPointerEvent::EDrag)
-        {
-        iIsDragging = ETrue;
+        iContextMenuBar->SetContextMenuTitleResourceId(
+                R_LMK_MSGVIEWER_CONTEXT_MENUBAR);    
+        iContextMenuBar->TryDisplayContextMenuBarL();        
         }
     }
 #endif//RD_SCALABLE_UI_V2
+
 //  End of File

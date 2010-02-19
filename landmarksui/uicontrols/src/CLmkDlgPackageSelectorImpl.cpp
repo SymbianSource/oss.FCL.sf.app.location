@@ -616,7 +616,7 @@ TBool CLmkDlgPackageSelectorImpl::IsLandmarkDataEmptyL(
     TLocality loc;
     TBool isValid = (KErrNone == aLandmark->GetPosition(loc));
     isValid &= !Math::IsNaN(loc.Latitude()) && !Math::IsNaN(loc.Longitude());
-    return isValid;
+    return !isValid;
     
 /*    if (!isValid)
         {

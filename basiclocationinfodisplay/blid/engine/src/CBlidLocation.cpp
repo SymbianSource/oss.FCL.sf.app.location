@@ -302,84 +302,105 @@ void CBlidLocation::RunL()
     iPosStatus = iStatus;
 
     iDeviceStatus = EDeviceConnected;
-    
-    /// Check if we have satellite data
-    if(!(iStatus.Int() == KErrNone ||
-         iStatus.Int() == KPositionPartialUpdate) )
-	    {	    
-	    iPositionInfo.ClearSatellitesInView();
-		}	
     SortSatelliteDataL();
-        
-    switch ( iStatus.Int() )
+
+    switch (iStatus.Int())
         {
         //case KPositionPartialUpdate:
         case KErrNone: // Success
             {
             iOnlineMode = ETrue;
             iUpdateReceived = ETrue;
-            iGPSDataAvailable = ETrue;            
-            iPositionInfo.GetPosition( iPosition );
-            iPositionInfo.GetCourse( iCourse );
+            iGPSDataAvailable = ETrue;
+            iPositionInfo.GetPosition(iPosition);
+            iPositionInfo.GetCourse(iCourse);
             iLastGoodFixTime.UniversalTime();
-    	    
-    	    CalculateCourse();
-    	        	        	   
-			if(iIsTripStart)
-				{
-				if(!iIsPreviousPositionUpdated)
-					{
-					iIsPreviousPositionUpdated = ETrue;
-					iPrevPosition = GetCurrentPosition();            	
-					}
-				UpdateTripData();	       
-				}
-    	    
-    	    //SortSatelliteDataL();
-    	    
-    	    if(iObserver)    	    
-    	        {
-    	        iObserver->NotifyL( iOnlineMode );
-    	        }            
-    	      if ( iRequesting )
-            {
-            //DEBUG("KErrNone : NotifyPositionUpdate");
-            iPositioner.NotifyPositionUpdate( iPositionInfo, iStatus );
-            SetActive();
-            }     
+
+            CalculateCourse();
+
+            if (iIsTripStart)
+                {
+                if (!iIsPreviousPositionUpdated)
+                    {
+                    iIsPreviousPositionUpdated = ETrue;
+                    iPrevPosition = GetCurrentPosition();
+                    }
+                UpdateTripData();
+                }
+            if (iObserver)
+                {
+                iObserver->NotifyL(iOnlineMode);
+                }
+            if (iRequesting)
+                {
+                //DEBUG("KErrNone : NotifyPositionUpdate");
+                iPositioner.NotifyPositionUpdate(iPositionInfo, iStatus);
+                SetActive();
+                }
             break;
             }
         case KErrAccessDenied:
-        /*
-          Happens if we don't specify requestor information.
-          This condition should not be encountered.
-        */
+            /*
+             Happens if we don't specify requestor information.
+             This condition should not be encountered.
+             */
             {
+            iPositionInfo.ClearSatellitesInView();
             iRequesting = EFalse;
-            User::Leave( KErrAccessDenied );
+            User::Leave(KErrAccessDenied);
             break;
             }
         case KErrCancel: // Postion update request cancelled
             {
             // We canceled the request so do nothing
+            iPositionInfo.ClearSatellitesInView();
             break;
             }
         case KPositionPartialUpdate: // Incomplete position information   
-        {
-        if ( iRequesting )
             {
-            //DEBUG("KPositionPartialUpdate : NotifyPositionUpdate");
-            iPositioner.NotifyPositionUpdate( iPositionInfo, iStatus );
-            SetActive();
+            TTime now;
+            now.UniversalTime();
+            TTimeIntervalSeconds secondsSinceLastGoodFix;
+            now.SecondsFrom(iLastGoodFixTime, secondsSinceLastGoodFix);
+            if (secondsSinceLastGoodFix.Int() > 15)
+                {
+                iLastGoodFixTime.UniversalTime();
+                if (iObserver)
+                    {
+                    iObserver->NotifyErrorL(KErrTimedOut);
+                    }
+                }
+
+            else
+                {
+                iLastGoodFixTime.UniversalTime();
+                }
+            // end of addition for TSW error
+
+            iGPSDataAvailable = EFalse;
+            iUpdateReceived = ETrue;
+
+            // All cases are errors and hence go to offline mode
+            iOnlineMode = EFalse;
+            if (iObserver)
+                {
+                iObserver->NotifyErrorL(iStatus.Int());
+                }
+            if (iRequesting)
+                {
+                iPositioner.NotifyPositionUpdate(iPositionInfo, iStatus);
+                SetActive();
+                }
+            break;
             }
-        	break;
-        }     
+
         case KErrTimedOut: // Position update timed out
         case KPositionQualityLoss: //GPS not connected
             {
+            iPositionInfo.ClearSatellitesInView();
             iUpdateReceived = ETrue;
-            iGPSDataAvailable = EFalse;           
-            if(iIsTripStart && !iIsTripClear)
+            iGPSDataAvailable = EFalse;
+            if (iIsTripStart && !iIsTripClear)
                 {
                 iTripGPSDataLost = ETrue;
                 }
@@ -387,71 +408,38 @@ void CBlidLocation::RunL()
             }
             //-fallthrough
         case KErrNotFound: // No PSY selected.
-        case KErrUnknown:  // This will be returned by MLFW        
+        case KErrUnknown: // This will be returned by MLFW        
         case KErrArgument:
-        /*
-         PSY does not support the information type specified
-         by BLID.
-        */
+
+            /*
+             PSY does not support the information type specified
+             by BLID.
+             */
         default:
-            {  
-            if(iStatus.Int() != KPositionPartialUpdate )
-                {
-                iDeviceStatus = EDeviceNotFound;
-                iPositionInfo.ClearSatellitesInView();
-                iWaitingGpsData = EFalse;                
-                }
-            // added for TSW error.    
-            if(iStatus.Int() == KPositionPartialUpdate )
-                {
-                //SortSatelliteDataL();
-                TTime now;
-                now.UniversalTime();
-                TTimeIntervalSeconds secondsSinceLastGoodFix;
-                now.SecondsFrom( iLastGoodFixTime , secondsSinceLastGoodFix );
-                if ( secondsSinceLastGoodFix.Int() > 15 )
-                    {
-                    iLastGoodFixTime.UniversalTime();
-                    if(iObserver)
-                        {
-                        iObserver->NotifyErrorL( KErrTimedOut );
-                        }  
-                    }
-                }
-                else
-                {
-                iLastGoodFixTime.UniversalTime();
-                }
-            // end of addition for TSW error
-                            
-			iGPSDataAvailable = EFalse;
-			iUpdateReceived = ETrue;
-            
-            // All cases are errors and hence go to offline mode
-            iOnlineMode = EFalse;
-            if(iObserver)
-                {
-                iObserver->NotifyErrorL(iStatus.Int());
-                }            
-            if ( iRequesting )
             {
-            
-            iPositioner.NotifyPositionUpdate( iPositionInfo, iStatus );
-            SetActive();
-            }         
+            iDeviceStatus = EDeviceNotFound;
+            iWaitingGpsData = EFalse;
+            if (iObserver)
+                {
+                iObserver->NotifyErrorL(KErrNotFound);
+                }
+            if (iRequesting)
+                {
+                iPositioner.NotifyPositionUpdate(iPositionInfo, iStatus);
+                SetActive();
+                }
+             }
             break;
-            }
         }
-        
     /*if( iStatus.Int() != KErrCancel )
+     {
+     //DEBUG("RUNL  : SetUpdateOptions");
+     SetUpdateOptions();
+     }*/
+    if (iStatus.Int() != KPositionPartialUpdate)
         {
-        //DEBUG("RUNL  : SetUpdateOptions");
-        SetUpdateOptions();
-        }*/
-    if(iStatus.Int() != KPositionPartialUpdate )
-    {
-    	iWaitingGpsData = CheckIfWaitingGPSData();
-    }
+        iWaitingGpsData = CheckIfWaitingGPSData();
+        }
     }
 
 // ----------------------------------------------------------------------------

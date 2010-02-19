@@ -33,7 +33,7 @@
 #include "BlidNotes.h"
 
 // FORWARD DECLARATIONS
-class CBlidMainContainer;
+//class CBlidMainContainer;
 class CBlidDocument;
 class CSatelliteInfoUI;
 

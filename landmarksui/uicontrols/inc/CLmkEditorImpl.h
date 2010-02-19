@@ -162,9 +162,8 @@ public:
 protected:
     // From MEikDialogPageObserver
     void HandleDialogPageEventL(TInt aEventID);
-    void HandlePointerEventL(const TPointerEvent& aPointerEvent);
-
 #endif //RD_SCALABLE_UI_V2
+    
     //from MEikDialogPageObserver
     void LineChangedL(TInt aControlId);
 
@@ -206,9 +205,8 @@ protected:
      * @param aLandmark, Null if create new
      * @param aAttributes
      */
-    void
-            ConstructL(CPosLandmark* aLandmark,
-                    TLmkEditorAttributes aAttributes);
+    void ConstructL(CPosLandmark* aLandmark,
+            TLmkEditorAttributes aAttributes);
 
     /**
      * By default Symbian 2nd phase constructor is private.
@@ -227,6 +225,10 @@ protected:
      * Context menu bar construction
      */
     void ConstructContextMenuL();
+
+    /**
+     * Checks Landmarks Coordinate Data Is available or not.
+     */
     TBool IsLandmarkDataEmptyL(CPosLandmark* aLandmark);
 
     /**
@@ -292,9 +294,6 @@ private:
             CPosLandmark* aLandmark, MLmkFieldData* fieldData,
             TInt aPrevControlId, TInt aPos);
     
-	//Pops up info popup after 1 sec.
-    //void ShowMultipleCategoriesInfoPopupL(TBool aRefresh);
-
     TBool ShowQueryIfLocationFieldsAlreadyFilledL();
 
     TBool ValidateContentL();
@@ -382,7 +381,7 @@ protected:
     /// Reference to database
     CPosLandmarkDatabase& iDb;
 
-    ///Ref: landmark sender
+    /// Ref: landmark sender
     CLmkSender& iSender;
 
     /// Ref: CPosLmPartialReadParameters
@@ -394,13 +393,13 @@ protected:
     /// Own: landmark UI utils
     CLmkUiUtils* iLmkUiUtils;
 
-    ///Own:
+    /// Own:
     CLmkFields* iLmkFields;
 
-    ///Own:
+    /// Own:
     RPointerArray<HBufC> iLabelArray;
 
-    ///Own:
+    /// Own:
     CLmkEditorFieldArray* iEditorFieldArray;
 
     TLmkEditorMode iEditorMode;
@@ -430,7 +429,7 @@ protected:
     TBool iJapaneseInputMode;
     CPosLandmark* iLandmark;
 
-    //Own: Pointer to map and navigation interface
+    // Own: Pointer to map and navigation interface
     CLmkMapNavigationInterface* iMapNavInterface;
     // Flag which indicates receive state of landmark editor dialog
     // Set to true for receive mode
@@ -438,27 +437,27 @@ protected:
     TLmkAppCmdId iMskCmdId;
     TInt iCurrentResourceId;
 
-    //It will be ETrue when coordinates has to be hidden.
+    // It will be ETrue when coordinates has to be hidden.
     TBool iIsHideCoordinate;
 
-    //It will be ETrue when help has to be hidden.
+    // It will be ETrue when help has to be hidden.
     TBool iIsHideHelp;
     
-    // To Handle Drag Pointer Event
-    TBool iIsDragging;
-
 private:
-    //added data members
-    //holds the field type of the current focussed item in the dialog
+    // added data members
+    // holds the field type of the current focussed item in the dialog
     TUint iFieldTypeToFocus;
-    //Set true when editor dialog is launched from view dialog.
+    // Set true when editor dialog is launched from view dialog.
     TBool iIsEditing;
 
     TBool iBackspaceStartForWebAddressField;
 
     TBool iResetWebAddrSize;
-    CAknInfoPopupNoteController* iCatInfoPopupNote;
 
+    CAknInfoPopupNoteController* iCatInfoPopupNote;
+    // Own:
+    CLmkListProviderBase* iListProvider; 
+    
     CLmkEditorImpl* iEditor;
 
     CLmkCentralRepository* iRepository;
@@ -468,12 +467,13 @@ private:
      * Owns
      */
     CLmkWaitDialogLauncher* iWaitDialogLauncher;
+
     TBool iIsEndKey;
+
     TBool iIsEditableField;
 
     // To check the ownership of iLandmark
     TBool iIsLmOwned;
-
     // To Check category selector launched or not
     TBool iIsCategorySelctorOpen;
     };

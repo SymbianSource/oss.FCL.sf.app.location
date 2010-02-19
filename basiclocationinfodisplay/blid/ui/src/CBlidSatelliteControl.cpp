@@ -552,12 +552,15 @@ void CBlidSatelliteControl::DisplaySatellitesRowL( const TDesC& aSatNo,
 // ----------------------------------------------------
 //
 void CBlidSatelliteControl::ChangeNavigationViewL()
-	{
-	iView.ActivateNavigationViewL();	
+    {
+    if (iView.IsForeGroundApp())
+        {
+        iView.ActivateNavigationViewL();
+        }
     //delete the timer if present
     delete iTimer;
     iTimer = NULL;
-	}
+    }
 
 // ----------------------------------------------------
 // CBlidSatelliteControl::ChangeSoftKeyL

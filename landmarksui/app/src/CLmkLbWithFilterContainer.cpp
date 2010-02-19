@@ -27,6 +27,7 @@
 #include "CLmkAppSelectorImplBase.h"
 #include "CLmkLbWithFilterContainer.h"
 #include <lmkerrors.h>
+#include "Debug.h"
 
 // CONSTANTS
 namespace {
@@ -117,6 +118,7 @@ TKeyResponse CLmkLbWithFilterContainer::OfferKeyEventL(
                                      const TKeyEvent& aKeyEvent,
                                      TEventCode aType )
     {
+    DEBUG( CLmkLbWithFilterContainer::OfferKeyEventL start );
     TKeyResponse result( EKeyWasNotConsumed );
     if ( ( aType == EEventKey || aType == EEventKeyUp) )
         {
@@ -130,16 +132,19 @@ TKeyResponse CLmkLbWithFilterContainer::OfferKeyEventL(
 			CLmkAppSelectorImplBase& selector = SelectorImpl();
 			TInt markedCount( selector.ListMarkedItemCountL() );
 			
+			DEBUG1( CLmkLbWithFilterContainer::OfferKeyEventL markedCount = %d,markedCount);
 			CEikMenuBar* menuBar = MenuBar();
 			if( menuBar )
 			    {
-                if( MenuBar()->ItemSpecificCommandsEnabled() 
-                        && markedCount <= 0 )
+                if( MenuBar()->ItemSpecificCommandsEnabled())
                     {
                     return EKeyWasConsumed;
                     }			
 			    }
-
+			if(  markedCount <= 0)
+			    {
+                return EKeyWasConsumed;
+			    }
 			selector.ProcessCommandL( ELmkCmdDeleteLm );
             return EKeyWasConsumed;
             }
@@ -152,6 +157,7 @@ TKeyResponse CLmkLbWithFilterContainer::OfferKeyEventL(
 	        UpdateMskContainerL();
 	        }
         }
+    DEBUG1( CLmkLbWithFilterContainer::OfferKeyEventL End result=%d,result );
     return result;
     }
 

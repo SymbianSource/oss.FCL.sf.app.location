@@ -261,8 +261,8 @@ class CEvtEditor : public CAknForm,
          
         // Inherited from MEvtMgmtUiSOMObserver
         void NotifySOMChangeL( );
-        
-        void HandlePointerEventL(const TPointerEvent& aPointerEvent);
+  
+        void HandleDialogPageEventL( TInt aEventID );
         
         TKeyResponse OfferKeyEventL (const TKeyEvent &aKeyEvent, TEventCode aType); 
         
