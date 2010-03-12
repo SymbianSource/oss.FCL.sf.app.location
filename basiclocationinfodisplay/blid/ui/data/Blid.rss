@@ -1968,6 +1968,29 @@ RESOURCE CBA r_blid_infopopup_softkeys_ok__exit
             }
         };
     }
+
+//----------------------------------------------------
+//   
+//    r_blid_infopopup_softkeys__exit
+//    Accessory Required
+//
+//----------------------------------------------------
+//
+RESOURCE CBA r_blid_infopopup_softkeys_exit
+    {
+    buttons =
+        {
+        CBA_BUTTON 
+            {
+
+            },
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyExit; 
+            txt = text_softkey_exit; 
+            }
+        };
+    }
     
         
 //----------------------------------------------------

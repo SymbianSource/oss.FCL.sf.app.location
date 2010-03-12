@@ -227,6 +227,7 @@ class CBlidMainControl : public CAlfControl
         CAlfImageVisual* iAnimationVisual;
 	    TRect iAnimationRect;
 	    RPointerArray<CAlfTexture> iTextures;
+	    TBool isAccessoryRequired;
 	    
 	public:        
         CAknMessageQueryDialog*		iDialog;

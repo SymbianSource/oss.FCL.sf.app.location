@@ -569,14 +569,17 @@ void CLmkAppLmSelectorImpl::EditLandmarkCmdL(TLmkEditorMode aEditMode)
        {
        iDeletionHelper.StoreListInformation( *iListBox, EFalse );
        }
-
    iDeletionHelper.UpdateListIfDeleteHappenedL();
    if( currentItemIndex >= 0 && currentItemIndex < iListBox->Model()->NumberOfItems() )
        {
        iListBox->SetCurrentItemIndex(currentItemIndex);
-       }
-
+       }   
 #endif // RD_SCALABLE_UI_V2
+   TRAPD(err,CPosLandmark* landmark = iDb.ReadLandmarkLC(iNewLmkItemId);CleanupStack::PopAndDestroy( landmark ));
+   if (err == KErrNotFound)
+       {
+       LmItemListProvider().RemoveItem( iNewLmkItemId );
+       }      
     }
 
 // -----------------------------------------------------------------------------

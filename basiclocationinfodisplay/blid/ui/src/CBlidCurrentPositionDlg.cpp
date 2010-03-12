@@ -146,30 +146,6 @@ void CBlidCurrentPositionDlg::ConstructL()
     }
     
 // ---------------------------------------------------------
-// CBlidCurrentPositionDlg::HandlePointerEventL
-// ---------------------------------------------------------
-//    
-void CBlidCurrentPositionDlg::HandlePointerEventL(const TPointerEvent& aPointerEvent)
-    {
-    if ( AknLayoutUtils::PenEnabled() )
-        {
-        if( aPointerEvent.iPosition.iX > 0 && aPointerEvent.iPosition.iY > 0 )
-	        {
-	        if( iLoc->IsGPSDataAvailable() && !isLmSaved )
-		        {
-		        if( aPointerEvent.iType == TPointerEvent::EButton1Down )
-			        {
-			        isLmSaved = ETrue;
-			        iView.SaveCurrentPositionL();
-			        isLmSaved = EFalse;	
-			        }
-		        }
-	        }
-		CAknPopupList::HandlePointerEventL( aPointerEvent );	        
-        }
-    }
-    
-// ---------------------------------------------------------
 // CBlidCurrentPositionDlg::ChangeDlgSoftKey
 // ---------------------------------------------------------
 //    

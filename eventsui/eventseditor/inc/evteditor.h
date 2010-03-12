@@ -261,8 +261,9 @@ class CEvtEditor : public CAknForm,
          
         // Inherited from MEvtMgmtUiSOMObserver
         void NotifySOMChangeL( );
-  
-        void HandleDialogPageEventL( TInt aEventID );
+               
+        void HandlePointerEventL(const TPointerEvent &aPointerEvent);
+       // void HandleDialogPageEventL( TInt aEventID );
         
         TKeyResponse OfferKeyEventL (const TKeyEvent &aKeyEvent, TEventCode aType); 
         
@@ -340,6 +341,8 @@ class CEvtEditor : public CAknForm,
        * It determines which attributes are modified
        */
       TEvtEventAttributeMask          iEventAttributeMask;
+      
+      TInt                           iIsDragging;
  };
 
 #endif /*EVTEDITOR_H_*/

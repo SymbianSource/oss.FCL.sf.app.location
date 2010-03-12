@@ -84,7 +84,7 @@ CBlidMainControl* CBlidMainControl::NewL(CAlfEnv& aEnv, const TRect& aRect,
 // ---------------------------------------------------------
 //
 CBlidMainControl::CBlidMainControl(CAlfEnv& aEnv, CBlidBaseView& aView) :
-    CAlfControl(), iEnv(aEnv), iView(aView)
+    CAlfControl(), iEnv(aEnv), iView(aView), isAccessoryRequired(EFalse)
     {
     iOnlineMode = EFalse;
     }
@@ -349,22 +349,20 @@ void CBlidMainControl::UpdateL()
                     {
                     iView.ActivateSatelliteViewL();
                     }
-                break;
                 }
-            case KErrNotFound:
+            break;
+            }
+        case KErrNotFound:
             // No module (PSY) selected or invalid PSY
                 {
                 iOnlineMode = EFalse;
-                // Notify not module selected
-                //            if (iPSYTimeoutCount == 0)
-                //                {
                 if (iView.IsForeGroundApp())
                     {
                     iLocation->StopRequesting();
                     TCallBack callback(MessageQueryCallBack, this);
                     result
-                            = DispMsgQueryWithLinkL(R_BLID_NOPSY_ENABLED,
-                                    R_BLID_ERROR_NO_PSY,
+                            = DispMsgQueryWithLinkL(R_BLID_NOGPS_FOUND,
+                                    R_BLID_NOGPS_FOUND_TEXT,
                                     R_BLID_SELECT_POSITIONING_METHOD, ETrue,
                                     callback);
                     if (result == EBlidSoftkeyRetry)
@@ -399,8 +397,8 @@ void CBlidMainControl::UpdateL()
                         iLocation->StopRequesting();
                         iOnlineMode = EFalse;
                         TCallBack callback(MessageQueryCallBack, this);
-                        result = DispMsgQueryWithLinkL(R_BLID_NOGPS_FOUND,
-                                R_BLID_NOGPS_FOUND_TEXT,
+                        result = DispMsgQueryWithLinkL(R_BLID_NOPSY_ENABLED,
+                                R_BLID_ERROR_NO_PSY,
                                 R_BLID_SELECT_POSITIONING_METHOD, ETrue,
                                 callback);
                         if (result == EBlidSoftkeyRetry)
@@ -418,11 +416,15 @@ void CBlidMainControl::UpdateL()
                         {
                         iLocation->StopRequesting();
                         TCallBack callback(MessageQueryCallBack, this);
-                        DispMsgQueryWithLinkL(R_BLID_NOGPS_FOUND,
+                        isAccessoryRequired = ETrue;
+                        result = DispMsgQueryWithLinkL(R_BLID_NOGPS_FOUND,
                                 R_BLID_NOGPS_AVAILABLE_TEXT,
                                 R_BLID_SELECT_POSITIONING_METHOD, EFalse,
                                 callback);
-                        iView.ExitMainApplicationL(EEikCmdExit);
+                        if (result == EAknSoftkeyOk)
+                            {
+                            iView.ExitMainApplicationL(EEikCmdExit);
+                            }
                         }
                     else
                         {
@@ -432,7 +434,6 @@ void CBlidMainControl::UpdateL()
                     }
                 break;
 
-                }
             }
         }
     }
@@ -506,17 +507,24 @@ TInt CBlidMainControl::DispMsgQueryWithLinkL(TInt aHeadingText,
         {
         iLinkText = env->AllocReadResourceL(aLinkText);
         }
-
     if (!iMsgQText)
         {
-        iMsgQText = HBufC::NewL(iMsgQueryText->Length() + KNewLine().Length()
-                + KOpeningLinkTag().Length() + iLinkText->Length()
-                + KClosingLinkTag().Length());
+        if (aLinkShow != EFalse)
+            {
+            iMsgQText = HBufC::NewL(iMsgQueryText->Length()
+                    + KNewLine().Length() + KOpeningLinkTag().Length()
+                    + iLinkText->Length() + KClosingLinkTag().Length());
+            }
+        else
+            {
+            iMsgQText = HBufC::NewL(iMsgQueryText->Length()
+                    + KNewLine().Length() + KOpeningLinkTag().Length());
+            }
         }
 
     iMsgQText->Des().Copy(*iMsgQueryText);
     iMsgQText->Des().Append(KNewLine);
-    if (aLinkShow)
+    if (!isAccessoryRequired)
         {
         iMsgQText->Des().Append(KOpeningLinkTag);
         iMsgQText->Des().Append(*iLinkText);
@@ -544,8 +552,16 @@ TInt CBlidMainControl::DispMsgQueryWithLinkL(TInt aHeadingText,
 
     msgDlg->SetLink(aCallBack);
 
-    msgDlg->ButtonGroupContainer().SetCommandSetL(
-            R_BLID_INFOPOPUP_SOFTKEYS_RETRY__EXIT);
+    if (!isAccessoryRequired)
+        {
+        msgDlg->ButtonGroupContainer().SetCommandSetL(
+                R_BLID_INFOPOPUP_SOFTKEYS_RETRY__EXIT);
+        }
+    else
+        {
+        msgDlg->ButtonGroupContainer().SetCommandSetL(
+                R_BLID_INFOPOPUP_SOFTKEYS_EXIT);
+        }
     isDialogLaunched = ETrue;
     TInt retval = msgDlg->RunLD();
     if (isDialogLaunched)

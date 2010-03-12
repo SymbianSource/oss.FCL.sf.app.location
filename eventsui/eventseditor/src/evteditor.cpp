@@ -602,6 +602,7 @@ void CEvtEditor::HandleControlStateChangeL(TInt aControlId)
                 if( subject )
 	                {
 	                CleanupStack::PushL(subject);
+	                subject->Des().Trim();
 	                iEvent.SetSubjectL(*subject);
                 	MakeTitleL(*subject); 
 	                CleanupStack::PopAndDestroy(subject);
@@ -1513,7 +1514,7 @@ TKeyResponse CEvtEditor::OfferKeyEventL (const TKeyEvent &aKeyEvent, TEventCode 
             {
             case EKeyLeftArrow:
             case EKeyRightArrow:
-           // case EKeyOK:
+            case EKeyOK:
             case EKeyEnter:
                 {
                 CheckStatusL();
@@ -1526,83 +1527,107 @@ TKeyResponse CEvtEditor::OfferKeyEventL (const TKeyEvent &aKeyEvent, TEventCode 
     }
 
 // -----------------------------------------------------------------------------
-// CEvtEditor::HandleDialogPageEventL()
+// CEvtEditor::HandlePointerEventL()
 // Inherited from CAknForm
 // -----------------------------------------------------------------------------
 //
-void CEvtEditor::HandleDialogPageEventL( TInt aEventID )
-    {
-    EVTUIDEBUG("+ CEvtEditor::HandleDialogPageEventL()");
-    CAknForm::HandleDialogPageEventL( aEventID );  
-    if( aEventID == MEikDialogPageObserver::EDialogPageTapped )
-       {
-       EVTUIDEBUG("+ CEvtEditor::HandleDialogPageEventL() EDialogPageTapped");   
-       if( !IsEditable() )
-           {
-           iIsEditMode = ETrue;
-           SetEditableL(ETrue);
-           ChangeRSKCaptionL();
-           ChangeMSKCaptionL( IdOfFocusControl() );            
-                   return;
-           }     
-       
-       CEikEdwin* editor = NULL;
-       CAknPopupFieldText* popupFieldText = NULL;
-       switch(IdOfFocusControl())
-           {
-           case EEvtMgmtUiDlgCIdPlace: // Place Editor
-               editor = static_cast <CEikEdwin*> (ControlOrNull(EEvtMgmtUiDlgCIdPlace));
-                if ( editor )
-                    { 
-                    iCmdHandler->HandleEditorCmdL( EEvtEditorCmdSetPlace );
-                    }
-               break;
-           case EEvtMgmtUiDlgCIdDesc: // Description Editor
-               editor = static_cast <CEikEdwin*> (ControlOrNull(EEvtMgmtUiDlgCIdDesc));
-                if ( editor )
+void CEvtEditor::HandlePointerEventL(const TPointerEvent& aPointerEvent)
+    {    
+    EVTUIDEBUG("+ CEvtEditor::HandlePointerEventL()");
+
+    if( aPointerEvent.iType != TPointerEvent::EButton1Up  )
+        {
+        CAknForm::HandlePointerEventL( aPointerEvent );  
+        if( aPointerEvent.iType == TPointerEvent::EDrag  )
+            iIsDragging++;
+        return;
+        }
+    
+    EVTUIDEBUG1("iIsDragging =%d",iIsDragging );
+    
+    //ToDo: Hack for kinetic scrolling
+    // Must be removed once avkon fix is recieved.
+    if( iIsDragging >6 )
+        {        
+        CAknForm::HandlePointerEventL( aPointerEvent );
+        iIsDragging = 0;  
+        return;
+        }
+        
+    iIsDragging = 0;
+    // End of todo
+    
+    if( !IsEditable() )
+        {
+        iIsEditMode = ETrue;
+        SetEditableL(ETrue);
+        ChangeRSKCaptionL();
+        ChangeMSKCaptionL( IdOfFocusControl() ); 			
+		return;
+        }	  
+    
+    CEikEdwin* editor = NULL;
+    CAknPopupFieldText* popupFieldText = NULL;
+    switch(IdOfFocusControl())
+        {
+        case EEvtMgmtUiDlgCIdPlace: // Place Editor
+            editor = static_cast <CEikEdwin*> (ControlOrNull(EEvtMgmtUiDlgCIdPlace));
+             if ( editor )
+                 { 
+                 iCmdHandler->HandleEditorCmdL( EEvtEditorCmdSetPlace );
+                 }
+            break;
+        case EEvtMgmtUiDlgCIdDesc: // Description Editor
+            editor = static_cast <CEikEdwin*> (ControlOrNull(EEvtMgmtUiDlgCIdDesc));
+             if ( editor )
+                 {
+                 iCmdHandler->HandleEditorCmdL( EEvtEditorCmdEditDesc );
+                 }
+            break;
+        case EEvtMgmtUiDlgCIdAssignTone: // Tone Editor
+            editor = static_cast <CEikEdwin*> (ControlOrNull(EEvtMgmtUiDlgCIdAssignTone));
+             if ( editor )
+                 {
+                 iCmdHandler->HandleEditorCmdL( EEvtEditorCmdAssignTone );
+                 }
+            break;
+        case EEvtMgmtUiDlgCIdStatus: // Status Editor
+            popupFieldText = static_cast <CAknPopupFieldText*> ( ControlOrNull(EEvtMgmtUiDlgCIdStatus) );
+            if( popupFieldText )
+                {
+                TInt editorStatus = popupFieldText->CurrentValueIndex();
+                CheckStatusL();
+                if( ECompleted != editorStatus )
                     {
-                    iCmdHandler->HandleEditorCmdL( EEvtEditorCmdEditDesc );
+                    if( EActive == editorStatus )
+                        {
+                        popupFieldText->SetCurrentValueIndex ( EDraft );
+                        }
+                    else
+                        {
+                        popupFieldText->SetCurrentValueIndex ( EActive );
+                        }
+          					HandleControlStateChangeL( EEvtMgmtUiDlgCIdStatus );
+                    UpdatePageL(ETrue);
+                    return;
                     }
-               break;
-           case EEvtMgmtUiDlgCIdAssignTone: // Tone Editor
-               editor = static_cast <CEikEdwin*> (ControlOrNull(EEvtMgmtUiDlgCIdAssignTone));
-                if ( editor )
+                else
                     {
-                    iCmdHandler->HandleEditorCmdL( EEvtEditorCmdAssignTone );
+                    CAknForm::HandlePointerEventL( aPointerEvent );  
+                    return;
                     }
-               break;
-           case EEvtMgmtUiDlgCIdStatus: // Status Editor
-               popupFieldText = static_cast <CAknPopupFieldText*> ( ControlOrNull(EEvtMgmtUiDlgCIdStatus) );
-               if( popupFieldText )
-                   {
-                   TInt editorStatus = popupFieldText->CurrentValueIndex();
-                   CheckStatusL();
-                   if( ECompleted != editorStatus )
-                       {
-                       if( EActive == editorStatus )
-                           {
-                           popupFieldText->SetCurrentValueIndex ( EDraft );
-                           }
-                       else
-                           {
-                           popupFieldText->SetCurrentValueIndex ( EActive );
-                           }
-                               HandleControlStateChangeL( EEvtMgmtUiDlgCIdStatus );
-                       UpdatePageL(ETrue);
-                      return;
-                       }                  
-                   }
-               break;
-           case EEvtMgmtUiDlgCIdRepeat: // Repeat editor
-           case EEvtMgmtUiDlgCIdAudioLoop: // audio loop editor
-                           TogglePopupFieldControlL( IdOfFocusControl() );
-               break;
-           default:              
-               break;
-           }
-         }
-        EVTUIDEBUG("- CEvtEditor::HandleDialogPageEventL()");
-       }
+                }
+            break;
+        case EEvtMgmtUiDlgCIdRepeat: // Repeat editor
+        case EEvtMgmtUiDlgCIdAudioLoop: // audio loop editor
+        				TogglePopupFieldControlL( IdOfFocusControl() );
+            break;
+        default:
+            CAknForm::HandlePointerEventL( aPointerEvent );  
+            break;
+        }
+		EVTUIDEBUG("- CEvtEditor::HandlePointerEventL()");
+    }
 // ---------------------------------------------------------------------------
 // CEvtEditor::MakeTitleL()
 // Set the Title Text

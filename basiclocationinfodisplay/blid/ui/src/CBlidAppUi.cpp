@@ -316,14 +316,6 @@ void CBlidAppUi::HandleForegroundEventL(TBool aForeground)
                             EBlidNavigationView)));
             view->GetControl()->StopPlayerL();
             }
-        if (engine->LocationModel()->GetRegisteredViewId()
-                == EBlidNavigationView)
-            {
-            CBlidNavigationView* view =
-                    static_cast<CBlidNavigationView*> (View(TUid::Uid(
-                            EBlidNavigationView)));
-            view->GetControl()->StopPlayerL();
-            }
         }
 
     if (iSatelliteInfo)

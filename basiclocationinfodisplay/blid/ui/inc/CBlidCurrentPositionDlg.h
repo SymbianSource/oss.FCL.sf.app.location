@@ -74,12 +74,10 @@ class CBlidCurrentPositionDlg : public CAknPopupList
         /**
          * By default Symbian 2nd phase constructor is private.
          */
-        void ConstructL();
+		void ConstructL();
 
 		void ProcessCommandL(TInt aCommandId);
 		
-		void HandlePointerEventL(const TPointerEvent& aPointerEvent);
-
     private: // data members
         /// Own: default selection listbox
         CAknSingleHeadingPopupMenuStyleListBox* iListBox;

@@ -358,6 +358,7 @@ void CBlidLocation::RunL()
             }
         case KPositionPartialUpdate: // Incomplete position information   
             {
+ 
             TTime now;
             now.UniversalTime();
             TTimeIntervalSeconds secondsSinceLastGoodFix;
