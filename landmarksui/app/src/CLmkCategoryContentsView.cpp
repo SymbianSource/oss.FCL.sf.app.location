@@ -218,18 +218,21 @@ void CLmkCategoryContentsView::HandleCommandL(TInt aCommand)
             if (static_cast<CTextListBoxModel*> (iContainer->ListBox().Model())->ItemTextArray()->MdcaCount()
                     == 0)
                 {
+                DEBUG( CLmkCategoryContentsView::HandleCommandL listbx count = 0 );
                 AppUi()->ActivateLocalViewL(TUid::Uid(ELmkByCategoryView));
                 }
             break;
             }
         case EAknSoftkeyBack:
             {
+            DEBUG( CLmkCategoryContentsView::HandleCommandL Back Button );
             AppUi()->ActivateLocalViewL(TUid::Uid(ELmkByCategoryView));
             break;
             }
 
         case ERemoveFromCat:
             {
+            DEBUG( CLmkCategoryContentsView::HandleCommandL ERemoveFromCat );
             iContainer->RemoveFromThisCategoryL();
             if (static_cast<CTextListBoxModel*> (iContainer->ListBox().Model())->ItemTextArray()->MdcaCount()
                     == 0)

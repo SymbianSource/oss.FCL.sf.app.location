@@ -163,8 +163,9 @@ void CBlidMainView::NotifyL( const TBool aOnlineMode )
     {  
     if( iMainCtrl &&  aOnlineMode )
         {
-        iMainCtrl->UpdateL();
+        iMainCtrl->SetErrorCode( KErrNone );
         iMainCtrl->SetOnlineMode( aOnlineMode );
+        iMainCtrl->UpdateL();
         }
 	DEBUG1(" CBlidMainView::NotifyL called ::%d", aOnlineMode );        
     CBlidBaseView::NotifyL( aOnlineMode );
@@ -180,8 +181,8 @@ void CBlidMainView::NotifyErrorL( TInt aErrorCode )
     DEBUG1(" CBlidMainView::NotifyErrorL errorcode ::%d", aErrorCode );
     if( iMainCtrl )
         {
-        iMainCtrl->UpdateL();
         iMainCtrl->SetErrorCode( aErrorCode );
+        iMainCtrl->UpdateL();
         }
     }
 
@@ -202,6 +203,10 @@ void CBlidMainView::HandleResourceChangeL( TInt aType )
         }
     }
 
+CBlidMainControl* CBlidMainView::GetControl()
+    {
+    return iMainCtrl;
+    }
     
 #ifdef RD_SCALABLE_UI_V2
 // ---------------------------------------------------------------------------

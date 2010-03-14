@@ -102,8 +102,6 @@ private:
 protected:
     // From MEikDialogPageObserver
     void HandleDialogPageEventL(TInt aEventID);
-    void HandlePointerEventL(const TPointerEvent& aPointerEvent);
-
 #endif //RD_SCALABLE_UI_V2
     
 private:

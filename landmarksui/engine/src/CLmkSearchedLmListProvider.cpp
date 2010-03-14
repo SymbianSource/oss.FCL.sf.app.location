@@ -1,20 +1,19 @@
 /*
-* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:    Filtered landmarks list provider
-*
-*/
-
+ * Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
+ *
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:    Filtered landmarks list provider
+ *
+ */
 
 // SYSTEM INCLUDES
 #include <EPos_CPosLmPartialReadParameters.h>
@@ -38,24 +37,24 @@
 #include "CLmkAOOperation.h"
 #include "MLmkSelectorIconMgr.h"
 #include <lmkerrors.h>
+#include "Debug.h"
 
 // CONSTANTS
 _LIT(KSpaceTextCriteria,"* ");
 _LIT(KDefaultTextCriteria,"*");
 
 #if defined(_DEBUG)
-// CONSTANTS
 /// Unnamed namespace for local definitions
-namespace {
-
-_LIT( KPanicMsg, "CLmkSearchedLmListProvider" );
-
-void Panic( TPanicCode aReason )
+namespace
     {
-    User::Panic( KPanicMsg, aReason );
-    }
-}  // namespace
+    _LIT( KPanicMsg, "CLmkSearchedLmListProvider" );
+    void Panic(TPanicCode aReason)
+        {
+        User::Panic(KPanicMsg, aReason);
+        }
+    } // namespace
 #endif
+
 // ============================ MEMBER FUNCTIONS ===============================
 
 // -----------------------------------------------------------------------------
@@ -65,11 +64,9 @@ void Panic( TPanicCode aReason )
 // -----------------------------------------------------------------------------
 //
 CLmkSearchedLmListProvider::CLmkSearchedLmListProvider(
-    CPosLandmarkDatabase& aDb,
-    CPosLmSearchCriteria& aCriteria )
-    : CLmkLmItemListProvider( aDb ),
-      iCriteria( aCriteria ),
-      iIsSecondSearchStarted(EFalse)
+        CPosLandmarkDatabase& aDb, CPosLmSearchCriteria& aCriteria) :
+    CLmkLmItemListProvider(aDb), iCriteria(aCriteria),
+            iIsSecondSearchStarted(EFalse)
     {
     }
 
@@ -85,10 +82,10 @@ void CLmkSearchedLmListProvider::ConstructL()
 
     iReadParams = CPosLmPartialReadParameters::NewLC();
     CleanupStack::Pop(); // iReadParams
-    iReadParams->SetRequestedAttributes( CPosLandmark::ELandmarkName |
-                                         CPosLandmark::EIcon | CPosLandmark::ECategoryInfo);
+    iReadParams->SetRequestedAttributes(CPosLandmark::ELandmarkName
+            | CPosLandmark::EIcon | CPosLandmark::ECategoryInfo);
 
-    iSearch = CPosLandmarkSearch::NewL( iDb );
+    iSearch = CPosLandmarkSearch::NewL(iDb);
     }
 
 // -----------------------------------------------------------------------------
@@ -97,13 +94,12 @@ void CLmkSearchedLmListProvider::ConstructL()
 // -----------------------------------------------------------------------------
 //
 CLmkSearchedLmListProvider* CLmkSearchedLmListProvider::NewL(
-    CPosLandmarkDatabase& aDb,
-    CPosLmSearchCriteria& aCriteria )
+        CPosLandmarkDatabase& aDb, CPosLmSearchCriteria& aCriteria)
     {
     CLmkSearchedLmListProvider* self =
-        new ( ELeave ) CLmkSearchedLmListProvider( aDb, aCriteria );
+            new (ELeave) CLmkSearchedLmListProvider(aDb, aCriteria);
 
-    CleanupStack::PushL( self );
+    CleanupStack::PushL(self);
     self->ConstructL();
     CleanupStack::Pop();
 
@@ -119,9 +115,9 @@ CLmkSearchedLmListProvider::~CLmkSearchedLmListProvider()
     delete iReadParams;
     delete iSearch;
     if (iSearchAO)
-		{
-    	iSearchAO->StopOperation();
-    	}
+        {
+        iSearchAO->StopOperation();
+        }
     delete iSearchAO;
     }
 
@@ -129,7 +125,7 @@ CLmkSearchedLmListProvider::~CLmkSearchedLmListProvider()
 // CLmkSearchedLmListProvider::ItemAtL
 // ---------------------------------------------------------
 //
-CLmkUiItemBase* CLmkSearchedLmListProvider::ItemAtL( TInt aIndex )
+CLmkUiItemBase* CLmkSearchedLmListProvider::ItemAtL(TInt aIndex)
     {
     __ASSERT_DEBUG( iIconMgr, Panic( KLmkPanicNullMember ) );
     //landmark with updated icon, if associated with one cat.
@@ -138,25 +134,25 @@ CLmkUiItemBase* CLmkSearchedLmListProvider::ItemAtL( TInt aIndex )
     TInt iconFileIndex = -1;
     TInt iconListIndex = -1;
     TInt iconMasktIndex = -1;
-    TInt result = landmark->GetIcon( mbmFile, iconFileIndex, iconMasktIndex );
-    if ( result == KErrNone )
+    TInt result = landmark->GetIcon(mbmFile, iconFileIndex, iconMasktIndex);
+    if (result == KErrNone)
         {
         TRAPD(err, iconListIndex =
-                    iIconMgr->GetIconL( mbmFile, iconFileIndex ) );
-        if ( err == KErrNotFound ) // icon file not found -> fallback to default
+                iIconMgr->GetIconL( mbmFile, iconFileIndex ) );
+        if (err == KErrNotFound) // icon file not found -> fallback to default
             {
             iconListIndex = iIconMgr->GetDefaultIconL(
-                MLmkSelectorIconMgr::ELandmarkDefaultIcon );
+                    MLmkSelectorIconMgr::ELandmarkDefaultIcon);
             }
         }
     else
         {
         iconListIndex = iIconMgr->GetDefaultIconL(
-            MLmkSelectorIconMgr::ELandmarkDefaultIcon );
+                MLmkSelectorIconMgr::ELandmarkDefaultIcon);
         }
 
-    CLmkLandmarkUiItem* uiItem =
-        CLmkLandmarkUiItem::NewL( landmark, iconListIndex );
+    CLmkLandmarkUiItem* uiItem = CLmkLandmarkUiItem::NewL(landmark,
+            iconListIndex);
     CleanupStack::Pop(); // landmark, ownership transferred
     return uiItem;
     }
@@ -166,29 +162,29 @@ CLmkUiItemBase* CLmkSearchedLmListProvider::ItemAtL( TInt aIndex )
 // ---------------------------------------------------------
 //
 void CLmkSearchedLmListProvider::PrepareListL()
-    {    
+    {
+    DEBUG( CLmkSearchedLmListProvider::PrepareListL start );
     iCount = 0;
 
-    iDb.SetPartialReadParametersL( *iReadParams );
+    iDb.SetPartialReadParametersL(*iReadParams);
 
-    TPosLmSortPref sortOrder( CPosLandmark::ELandmarkName,
-                              TPosLmSortPref::EAscending );
-    CPosLmOperation* operation =
-        iSearch->StartLandmarkSearchL( iCriteria, sortOrder );
-    CleanupStack::PushL( operation );
+    TPosLmSortPref sortOrder(CPosLandmark::ELandmarkName,
+            TPosLmSortPref::EAscending);
+    CPosLmOperation* operation = iSearch->StartLandmarkSearchL(iCriteria,
+            sortOrder);
+    CleanupStack::PushL(operation);
     if (iSearchAO)
-		{
-    	iSearchAO->StopOperation();
-	    delete iSearchAO; // cancel possibly pending operation
-	    iSearchAO = NULL;
-    	}
-    iSearchAO = CLmkAOOperation::NewL( operation,
-                                       *this,
-                                       MLmkAOOperationObserver::ESearch,
-                                       iOperationNotInUse );
-	iOperationNotInUse = ETrue;
-    CleanupStack::Pop( operation ); // ownership transferred
+        {
+        iSearchAO->StopOperation();
+        delete iSearchAO; // cancel possibly pending operation
+        iSearchAO = NULL;
+        }
+    iSearchAO = CLmkAOOperation::NewL(operation, *this,
+            MLmkAOOperationObserver::ESearch, iOperationNotInUse);
+    iOperationNotInUse = ETrue;
+    CleanupStack::Pop(operation); // ownership transferred
     iSearchAO->StartOperation();
+    DEBUG( CLmkSearchedLmListProvider::PrepareListL End );
     }
 
 // -----------------------------------------------------------------------------
@@ -196,235 +192,246 @@ void CLmkSearchedLmListProvider::PrepareListL()
 // -----------------------------------------------------------------------------
 //
 TBool CLmkSearchedLmListProvider::PrepareListL(const TDesC& aSearchPattern,
-    							TBool aSearchOnlyInPreviousMatches)
-	{
+        TBool aSearchOnlyInPreviousMatches)
+    {
     iCount = 0;
-	iRequestFromFindBox = ETrue;
-	iOperationNotInUse = ETrue;
+    iRequestFromFindBox = ETrue;
+    iOperationNotInUse = ETrue;
     iIsSecondSearchStarted = EFalse;
+    DEBUG1( CLmkSearchedLmListProvider::PrepareListL 2 start with aSearchPattern = %d,aSearchPattern.Length());
 
-	if( aSearchPattern.Compare( KDefaultTextCriteria ) == 0
-			|| aSearchPattern.Length() <= 0  )
-		{
-		PrepareListL();
-		iRequestFromFindBox = EFalse;
-		return ETrue;
-		}
+    if (aSearchPattern.Compare(KDefaultTextCriteria) == 0
+            || aSearchPattern.Length() <= 0)
+        {
+        PrepareListL();
+        iRequestFromFindBox = EFalse;
+        return ETrue;
+        }
 
-	// We need to cancel if we are searching/reading landmarks.
- 	if (iSearchAO)
-	 	{
-	 	iSearchAO->StopOperation();
-	 	delete iSearchAO; // cancel possibly pending operation
-		iSearchAO = NULL;
-	 	}
+    // We need to cancel if we are searching/reading landmarks.
+    if (iSearchAO)
+        {
+        iSearchAO->StopOperation();
+        delete iSearchAO; // cancel possibly pending operation
+        iSearchAO = NULL;
+        }
 
-	// Create the composite criterion
-	CPosLmCompositeCriteria* compCrit = CPosLmCompositeCriteria::NewLC(
-	    CPosLmCompositeCriteria::ECompositionOR );
+    // Create the composite criterion
+    CPosLmCompositeCriteria* compCrit = CPosLmCompositeCriteria::NewLC(
+            CPosLmCompositeCriteria::ECompositionOR);
 
-	// Create the text search criterion and add it to composite
-	CPosLmTextCriteria* textCrit1 = CPosLmTextCriteria::NewLC();
+    // Create the text search criterion and add it to composite
+    CPosLmTextCriteria* textCrit1 = CPosLmTextCriteria::NewLC();
 
     const TInt KExtraChars = 3; // 2 chars wildcards
     HBufC* filterBuf = HBufC::NewLC(aSearchPattern.Length() + KExtraChars);
     TPtr filter = filterBuf->Des();
-	filter.Copy(KSpaceTextCriteria);
-	filter.Append(aSearchPattern);
+    filter.Copy(KSpaceTextCriteria);
+    filter.Append(aSearchPattern);
 
-	textCrit1->SetTextL( filter );
+    textCrit1->SetTextL(filter);
     textCrit1->SetAttributesToSearch(CPosLandmark::ELandmarkName);
 
-	User::LeaveIfError( compCrit->AddArgument( textCrit1 ) );
-	// Ownership of the text criterion has been passed to the composite
-	CleanupStack::PopAndDestroy( filterBuf );
-	CleanupStack::Pop( textCrit1 );
+    User::LeaveIfError(compCrit->AddArgument(textCrit1));
+    // Ownership of the text criterion has been passed to the composite
+    CleanupStack::PopAndDestroy(filterBuf);
+    CleanupStack::Pop(textCrit1);
 
-	// Create the text search criterion and add it to composite
-	CPosLmTextCriteria* textCrit2 = CPosLmTextCriteria::NewLC();
-	textCrit2->SetTextL( aSearchPattern );
+    // Create the text search criterion and add it to composite
+    CPosLmTextCriteria* textCrit2 = CPosLmTextCriteria::NewLC();
+    textCrit2->SetTextL(aSearchPattern);
     textCrit2->SetAttributesToSearch(CPosLandmark::ELandmarkName);
 
-	User::LeaveIfError( compCrit->AddArgument( textCrit2 ) );
-	// Ownership of the text criterion has been passed to the composite
-	CleanupStack::Pop( textCrit2 );
+    User::LeaveIfError(compCrit->AddArgument(textCrit2));
+    // Ownership of the text criterion has been passed to the composite
+    CleanupStack::Pop(textCrit2);
 
-    iDb.SetPartialReadParametersL( *iReadParams );
+    iDb.SetPartialReadParametersL(*iReadParams);
 
-    TPosLmSortPref sortOrder( CPosLandmark::ELandmarkName,
-                              TPosLmSortPref::EAscending );
-	// Start the search
+    TPosLmSortPref sortOrder(CPosLandmark::ELandmarkName,
+            TPosLmSortPref::EAscending);
+    // Start the search
     // Create search operation
-    CPosLmOperation* operation = iSearch->StartLandmarkSearchL(
-    					*compCrit, sortOrder, aSearchOnlyInPreviousMatches );
+    CPosLmOperation* operation = iSearch->StartLandmarkSearchL(*compCrit,
+            sortOrder, aSearchOnlyInPreviousMatches);
 
- 	CleanupStack::PopAndDestroy( compCrit );
- 	CleanupStack::PushL( operation );
+    CleanupStack::PopAndDestroy(compCrit);
+    CleanupStack::PushL(operation);
 
-	iSearchAO = CLmkAOOperation::NewL( operation,
-                                   *this,
-                                   MLmkAOOperationObserver::ESearch,
-                                   ETrue );
-	CleanupStack::Pop( operation ); // ownership transferred
+    iSearchAO = CLmkAOOperation::NewL(operation, *this,
+            MLmkAOOperationObserver::ESearch, ETrue);
+    CleanupStack::Pop(operation); // ownership transferred
 
     iSearchAO->StartOperation();
-
+    DEBUG( CLmkSearchedLmListProvider::PrepareListL 2 End );
     return ETrue;
- 	}
+    }
 
 // ---------------------------------------------------------
 // CLmkSearchedLmListProvider::StartSecondSearchL
 // ---------------------------------------------------------
 //
 void CLmkSearchedLmListProvider::StartSecondSearchL()
-	{
-	// Create the composite criterion
-	CPosLmCompositeCriteria* compCrit = CPosLmCompositeCriteria::NewLC(
-	    CPosLmCompositeCriteria::ECompositionAND );
+    {
+    DEBUG( CLmkSearchedLmListProvider::StartSecondSearchL start );
 
-	// Create the category search criterion and add it to composite
-	CPosLmCategoryCriteria* catCrit = CPosLmCategoryCriteria::NewLC();
-	catCrit->SetCategoryItemId( (static_cast<CPosLmCategoryCriteria&>(iCriteria)).CategoryItemId() );
+    iIsSecondSearchStarted = ETrue;
 
-	User::LeaveIfError( compCrit->AddArgument( catCrit ) );
-	// Ownership of the category criterion has been passed to the composite
-	CleanupStack::Pop( catCrit );
+    // Create the composite criterion
+    CPosLmCompositeCriteria* compCrit = CPosLmCompositeCriteria::NewLC(
+            CPosLmCompositeCriteria::ECompositionAND);
 
-	// Create the text search criterion and add it to composite
-	CPosLmIdListCriteria* idListCrit = CPosLmIdListCriteria::NewLC();
-	idListCrit->SetLandmarkIdsL( iIdArray );
+    // Create the category search criterion and add it to composite
+    CPosLmCategoryCriteria* catCrit = CPosLmCategoryCriteria::NewLC();
+    catCrit->SetCategoryItemId(
+            (static_cast<CPosLmCategoryCriteria&> (iCriteria)).CategoryItemId());
 
-	User::LeaveIfError( compCrit->AddArgument( idListCrit ) );
-	// Ownership of the text criterion has been passed to the composite
-	CleanupStack::Pop( idListCrit );
+    User::LeaveIfError(compCrit->AddArgument(catCrit));
+    // Ownership of the category criterion has been passed to the composite
+    CleanupStack::Pop(catCrit);
 
-    iDb.SetPartialReadParametersL( *iReadParams );
+    // Create the text search criterion and add it to composite
+    CPosLmIdListCriteria* idListCrit = CPosLmIdListCriteria::NewLC();
+    idListCrit->SetLandmarkIdsL(iIdArray);
 
-    TPosLmSortPref sortOrder( CPosLandmark::ELandmarkName,
-                              TPosLmSortPref::EAscending );
-	// Start the search
+    User::LeaveIfError(compCrit->AddArgument(idListCrit));
+    // Ownership of the text criterion has been passed to the composite
+    CleanupStack::Pop(idListCrit);
+
+    iDb.SetPartialReadParametersL(*iReadParams);
+
+    TPosLmSortPref sortOrder(CPosLandmark::ELandmarkName,
+            TPosLmSortPref::EAscending);
+    // Start the search
     // Create search operation
-    CPosLmOperation* operation = iSearch->StartLandmarkSearchL( *compCrit, sortOrder );
+    CPosLmOperation* operation = iSearch->StartLandmarkSearchL(*compCrit,
+            sortOrder);
 
- 	CleanupStack::PopAndDestroy( compCrit );
- 	CleanupStack::PushL( operation );
+    CleanupStack::PopAndDestroy(compCrit);
+    CleanupStack::PushL(operation);
 
-	iSearchAO = CLmkAOOperation::NewL( operation,
-                                   *this,
-                                   MLmkAOOperationObserver::ESearch,
-                                   ETrue );
-	CleanupStack::Pop( operation ); // ownership transferred
+    iSearchAO = CLmkAOOperation::NewL(operation, *this,
+            MLmkAOOperationObserver::ESearch, ETrue);
+    CleanupStack::Pop(operation); // ownership transferred
 
-	iIsSecondSearchStarted = EFalse;
     iSearchAO->StartOperation();
-
-	}
+    DEBUG( CLmkSearchedLmListProvider::StartSecondSearchL End );
+    }
 
 // ---------------------------------------------------------
 // CLmkSearchedLmListProvider::HandleOperationL
 // ---------------------------------------------------------
 //
-void CLmkSearchedLmListProvider::HandleOperationL(
-    TOperationTypes aType,
-    TReal32 aProgress,
-    TInt aStatus )
+void CLmkSearchedLmListProvider::HandleOperationL(TOperationTypes aType,
+        TReal32 aProgress, TInt aStatus)
     {
-    if ( aType == MLmkAOOperationObserver::EDeleteLandmarks )
-    	{
-    	return;
-    	}
-    if ( aType == MLmkAOOperationObserver::ERemoveCategory )
-    	{
-    	return;
-    	}
-    if ( aType == MLmkAOOperationObserver::ESearch )
+    DEBUG1( CLmkSearchedLmListProvider::HandleOperationL start aType=%d,aType);
+    if (aType == MLmkAOOperationObserver::EDeleteLandmarks)
         {
-   		ReadItemsToArrayL();
-       	if ( aStatus == KErrNone )
-	        {
-	        if( iSearchAO )
-	        	{
-	        	iSearchAO->StopOperation();
-				delete iSearchAO;
-		        iSearchAO = NULL;
-	        	}
-
-			// reset operation values
-	        iOperationCmd = ELmkCmdStopOperation;//temp default value
-	        iCount = 0;
-
-	        if( iIsSecondSearchStarted )
-	        	{
-	        	StartSecondSearchL();
-	        	}
-
-	        if(iOperationNotInUse == EFalse )
-	        	{
-	        	NotifyObservers( ELmkEventItemAdditionComplete );
-	        	}
-	        else
-		        {
-		        if (iRequestFromFindBox)
-			        {
-			        NotifyObservers( ELmkEventFindListReady );
-			        }
-				else
-					{
-		        	NotifyObservers( ELmkEventListReady );
-					}
-		        }
-
-	        iOperationNotInUse = ETrue;
-
-            if ( iCatDelete )
+        return;
+        }
+    if (aType == MLmkAOOperationObserver::ERemoveCategory)
+        {
+        return;
+        }
+    if (aType == MLmkAOOperationObserver::ESearch)
+        {
+        ReadItemsToArrayL();
+        if (aStatus == KErrNone)
+            {
+            if (iSearchAO)
                 {
-                NotifyObservers( ELmkEventCategoryDeleted );
+                iSearchAO->StopOperation();
+                delete iSearchAO;
+                iSearchAO = NULL;
+                }
+
+            // reset operation values
+            iOperationCmd = ELmkCmdStopOperation;//temp default value
+            iCount = 0;
+
+            DEBUG2( CLmkSearchedLmListProvider::HandleOperationL iRequestFromFindBox=%d iIsSecondSearchStarted=%d
+                    ,iRequestFromFindBox,iIsSecondSearchStarted);
+
+            if (iRequestFromFindBox && iIsSecondSearchStarted == EFalse)
+                {
+                DEBUG( CLmkSearchedLmListProvider::HandleOperationL start secondsearch );
+                StartSecondSearchL();
+                return;
+                }
+
+            DEBUG( CLmkSearchedLmListProvider::HandleOperationL refresh list );
+
+            iIsSecondSearchStarted = EFalse;
+
+            if (iOperationNotInUse == EFalse)
+                {
+                NotifyObservers(ELmkEventItemAdditionComplete);
+                }
+            else
+                {
+                if (iRequestFromFindBox)
+                    {
+                    NotifyObservers(ELmkEventFindListReady);
+                    }
+                else
+                    {
+                    NotifyObservers(ELmkEventListReady);
+                    }
+                }
+
+            iOperationNotInUse = ETrue;
+
+            if (iCatDelete)
+                {
+                NotifyObservers(ELmkEventCategoryDeleted);
                 iCatDelete = EFalse;
                 }
-            else if(iCatUpdate)
-	            {
-	            NotifyObservers( ELmkEventCategoryUpdated );
+            else if (iCatUpdate)
+                {
+                NotifyObservers(ELmkEventCategoryUpdated);
                 iCatUpdate = EFalse;
                 }
 
-    		if(iItemsDeleted < iItemsToDelete)
-    			{
-    			PrepareForDeleteL();
-    			}
-    		else
-    			{
-    			if(iWaitNote)
-    				{
-		            iWaitNote->ProcessFinishedL();
-		            iWaitNote = NULL;
-    				}
-    			}
-	        return;
-	        } // end of if ( aStatus == KErrNone )
+            if (iItemsDeleted < iItemsToDelete)
+                {
+                PrepareForDeleteL();
+                }
+            else
+                {
+                if (iWaitNote)
+                    {
+                    iWaitNote->ProcessFinishedL();
+                    iWaitNote = NULL;
+                    }
+                }
+            return;
+            } // end of if ( aStatus == KErrNone )
 
-	    if ( iCount == ELmkStepOne || iCount == ELmkStepTwo )
-	        {
-			if (iOperationNotInUse == EFalse )
-	        	{
-	        	NotifyObservers( ELmkEventItemAdditionComplete );
-	        	}
-	        else
-		        {
-		        if (iRequestFromFindBox)
-			        {
-			        NotifyObservers( ELmkEventFindListReady );
-			        }
-				else
-					{
-		        	NotifyObservers( ELmkEventListReady );
-					}
-		        }
-		    iOperationNotInUse = EFalse;
-	        }
+        if (iCount == ELmkStepOne || iCount == ELmkStepTwo)
+            {
+            if (iOperationNotInUse == EFalse)
+                {
+                NotifyObservers(ELmkEventItemAdditionComplete);
+                }
+            else
+                {
+                if (iRequestFromFindBox)
+                    {
+                    NotifyObservers(ELmkEventFindListReady);
+                    }
+                else
+                    {
+                    NotifyObservers(ELmkEventListReady);
+                    }
+                }
+            iRequestFromFindBox = EFalse;
+            iOperationNotInUse = EFalse;
+            }
         }
     else
         { // This is not this classes' operation
-        CLmkLmItemListProvider::HandleOperationL( aType, aProgress, aStatus);
+        CLmkLmItemListProvider::HandleOperationL(aType, aProgress, aStatus);
         }
     }
 
@@ -432,87 +439,87 @@ void CLmkSearchedLmListProvider::HandleOperationL(
 // CLmkSearchedLmListProvider::HandleDatabaseEvent
 // ---------------------------------------------------------
 //
-void CLmkSearchedLmListProvider::HandleDatabaseEvent( TPosLmEvent& aEvent )
+void CLmkSearchedLmListProvider::HandleDatabaseEvent(TPosLmEvent& aEvent)
     {
     iCatDelete = EFalse;
 
-	TBool needRefresh = ETrue;
+    TBool needRefresh = ETrue;
 
-	// check any items are selected to do operations like iconchanges or add to category.
-	if( iSelectedItemsCount > 0 
-		&& iOperationCmd != ELmkCmdAddToCat
-		&& iOperationCmd != ERemoveFromCat )
-		{
-		iCount++;
-		if( iSelectedItemsCount == iCount )
-			{
-			iSelectedItemsCount = 0;
-			iCount = 0;
-			}
-		needRefresh = EFalse;
-		}
-
-    switch ( aEvent.iEventType )
+    // check any items are selected to do operations like iconchanges or add to category.
+    if (iSelectedItemsCount > 0 && iOperationCmd != ELmkCmdAddToCat
+            && iOperationCmd != ERemoveFromCat)
         {
-        case EPosLmEventLandmarkUpdated: 		// lm icon changes, lm renaming
-        case EPosLmEventLandmarkUnknownChanges:	// lm multiple deletion, lm add to category
+        iCount++;
+        if (iSelectedItemsCount == iCount)
+            {
+            iSelectedItemsCount = 0;
+            iCount = 0;
+            }
+        needRefresh = EFalse;
+        }
+
+    switch (aEvent.iEventType)
+        {
+        case EPosLmEventLandmarkUpdated: // lm icon changes, lm renaming
+        case EPosLmEventLandmarkUnknownChanges: // lm multiple deletion, lm add to category
         case EPosLmEventUnknownChanges:
         case EPosLmEventLandmarkCreated:
         case EPosLmEventCategoryDeleted:
         case EPosLmEventCategoryUpdated:
             {
             iOperationNotInUse = EFalse;
-           	if (aEvent.iEventType == EPosLmEventCategoryDeleted )
-	            {
-	            iCatDelete = ETrue;
-	            }
-	        if (aEvent.iEventType == EPosLmEventCategoryUpdated )
-	            {
-	            iCatUpdate = ETrue;
-	            }
+            if (aEvent.iEventType == EPosLmEventCategoryDeleted)
+                {
+                iCatDelete = ETrue;
+                }
+            if (aEvent.iEventType == EPosLmEventCategoryUpdated)
+                {
+                iCatUpdate = ETrue;
+                }
 
-			if( needRefresh )
-				{
-		        if( iSearchAO )
-		        	{
-		        	iSearchAO->StopOperation();
-					delete iSearchAO;
-			        iSearchAO = NULL;
-		        	}
-	            iOperationNotInUse = EFalse;
-	            TInt err = KErrNone;
-	            do
-	                {
-	                TRAP( err, PrepareListL() );
-	                }while(err == KErrLocked);
-	            if ( err )
-	                {
-	                HandleError( err );
-	                }
-				}
-			else
-				{
-				NotifyObservers( ELmkEventListReady );
-				}
+            if (needRefresh)
+                {
+                if (iSearchAO)
+                    {
+                    iSearchAO->StopOperation();
+                    delete iSearchAO;
+                    iSearchAO = NULL;
+                    }
+                iOperationNotInUse = EFalse;
+                TInt err = KErrNone;
+                do
+                    {
+                    TRAP( err, PrepareListL() );
+                    }
+                while (err == KErrLocked);
+                if (err)
+                    {
+                    HandleError(err);
+                    }
+                }
+            else
+                {
+                NotifyObservers(ELmkEventListReady);
+                }
             break;
             }
         case EPosLmEventLandmarkDeleted:
-        	{
-		   	TInt index = iIdArray.Find( aEvent.iLandmarkItemId );
-		   	if( index != KErrNotFound && index < iIdArray.Count())
-		   		{
-		   		iIdArray.Remove(index);
-			   	NotifyObservers( ELmkEventListReady );
-		   		}
-		   	break;
-        	}
+            {
+            TInt index = iIdArray.Find(aEvent.iLandmarkItemId);
+            if (index != KErrNotFound && index < iIdArray.Count())
+                {
+                iIdArray.Remove(index);
+                NotifyObservers(ELmkEventListReady);
+                }
+            break;
+            }
         default:
             { // Not interesting event for this provider
             break;
             }
         }
     // Remember to call base class observer method too
-    CLmkLmItemListProvider::HandleDatabaseEvent( aEvent );
+    CLmkLmItemListProvider::HandleDatabaseEvent(aEvent);
     }
 
 // ---------------------------------------------------------
@@ -523,87 +530,86 @@ void CLmkSearchedLmListProvider::ReadItemsToArrayL()
     {
     iIdArray.Reset();
     CPosLmItemIterator* iterator = iSearch->MatchIteratorL();
-    CleanupStack::PushL( iterator );
+    CleanupStack::PushL(iterator);
     iCount = iterator->NumOfItemsL();
-    if ( iCount > 0 )
+    if (iCount > 0)
         { // can only be called if there are some items
-        iterator->GetItemIdsL( iIdArray, 0, iCount ); // array is first reseted
+        iterator->GetItemIdsL(iIdArray, 0, iCount); // array is first reseted
         }
-    CleanupStack::PopAndDestroy( iterator );
+    CleanupStack::PopAndDestroy(iterator);
     }
 
 // ---------------------------------------------------------
 // CLmkSearchedLmListProvider::RemoveLandmarksL
 // ---------------------------------------------------------
 //
-void CLmkSearchedLmListProvider::RemoveLandmarksL(const RArray<TPosLmItemId>& aSelectedItems )
-	{
-	iItemsToDelete = aSelectedItems.Count();
-	iSelectedForDelete.Reset();
-	for(TInt i=0;i<iItemsToDelete;i++)
-		iSelectedForDelete.Append(aSelectedItems[i]);
-	iItemsDeleted = 0;
-	iIsRemoveLandmarks = ETrue;
+void CLmkSearchedLmListProvider::RemoveLandmarksL(
+        const RArray<TPosLmItemId>& aSelectedItems)
+    {
+    iItemsToDelete = aSelectedItems.Count();
+    iSelectedForDelete.Reset();
+    for (TInt i = 0; i < iItemsToDelete; i++)
+        iSelectedForDelete.Append(aSelectedItems[i]);
+    iItemsDeleted = 0;
+    iIsRemoveLandmarks = ETrue;
 
-	if(iWaitNote)
-		{
-		delete iWaitNote;
-		iWaitNote = NULL;
-		}
-	PrepareForDeleteL();
-	}
+    if (iWaitNote)
+        {
+        delete iWaitNote;
+        iWaitNote = NULL;
+        }
+    PrepareForDeleteL();
+    }
 
 // ---------------------------------------------------------
 // CLmkSearchedLmListProvider::PrepareForDelete
 // ---------------------------------------------------------
 //
 void CLmkSearchedLmListProvider::PrepareForDeleteL()
-	{
-	RArray<TPosLmItemId> lmItemsChunk;
-	TInt count = iItemsDeleted;
-	if(iItemsToDelete > (iItemsDeleted + 10))
-		{
-		iItemsDeleted = iItemsDeleted + 10;
-		}
-	else
-		{
-		iItemsDeleted = iItemsDeleted + (iItemsToDelete - iItemsDeleted);
-		}
+    {
+    RArray<TPosLmItemId> lmItemsChunk;
+    TInt count = iItemsDeleted;
+    if (iItemsToDelete > (iItemsDeleted + 10))
+        {
+        iItemsDeleted = iItemsDeleted + 10;
+        }
+    else
+        {
+        iItemsDeleted = iItemsDeleted + (iItemsToDelete - iItemsDeleted);
+        }
 
-	for(TInt i=count;i<iItemsDeleted;i++)
-		{
-		lmItemsChunk.Append(iSelectedForDelete[i]);
-		}
+    for (TInt i = count; i < iItemsDeleted; i++)
+        {
+        lmItemsChunk.Append(iSelectedForDelete[i]);
+        }
 
-	CPosLmOperation* operation = NULL;
-	if(iType == MLmkAOOperationObserver::EDeleteLandmarks)
-		{
-		operation = iDb.RemoveLandmarksL( lmItemsChunk );
-		}
-	if(iType == MLmkAOOperationObserver::ERemoveCategory)
-		{
-		CPosLmCategoryManager* mgr = CPosLmCategoryManager::NewL( iDb );
-		CleanupStack::PushL(mgr);
-		operation = mgr->RemoveCategoryFromLandmarksL( iCategoryId, lmItemsChunk );
-		CleanupStack::PopAndDestroy();//mgr
-		}
-	User::LeaveIfNull( operation );
+    CPosLmOperation* operation = NULL;
+    if (iType == MLmkAOOperationObserver::EDeleteLandmarks)
+        {
+        operation = iDb.RemoveLandmarksL(lmItemsChunk);
+        }
+    if (iType == MLmkAOOperationObserver::ERemoveCategory)
+        {
+        CPosLmCategoryManager* mgr = CPosLmCategoryManager::NewL(iDb);
+        CleanupStack::PushL(mgr);
+        operation = mgr->RemoveCategoryFromLandmarksL(iCategoryId,
+                lmItemsChunk);
+        CleanupStack::PopAndDestroy();//mgr
+        }
+    User::LeaveIfNull(operation);
 
-	CleanupStack::PushL( operation );
-	iSearchAO = CLmkAOOperation::NewL( operation,
-	               *this,
-	               iType,
-	               EFalse );
-	CleanupStack::Pop( operation ); // ownership transferred
+    CleanupStack::PushL(operation);
+    iSearchAO = CLmkAOOperation::NewL(operation, *this, iType, EFalse);
+    CleanupStack::Pop(operation); // ownership transferred
 
-    if( iSearchAO )
+    if (iSearchAO)
         {
         iSearchAO->StartOperation();
 
-        if(!iWaitNote)
+        if (!iWaitNote)
             {
             iWaitNote = new (ELeave) CAknWaitDialog(NULL, ETrue);
-            if(!iWaitNote->ExecuteLD(R_LMK_PROCESSING_WAIT_NOTE))
+            if (!iWaitNote->ExecuteLD(R_LMK_PROCESSING_WAIT_NOTE))
                 {
                 iSearchAO->StopOperation();
                 delete iSearchAO;
@@ -612,8 +618,8 @@ void CLmkSearchedLmListProvider::PrepareForDeleteL()
                 }
             }
         }
-	
-	lmItemsChunk.Close();
-	}
+
+    lmItemsChunk.Close();
+    }
 
 //  End of File

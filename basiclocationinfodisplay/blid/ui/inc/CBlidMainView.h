@@ -21,6 +21,8 @@
 // INCLUDES
 #include "CBlidBaseView.h"
 #include "CBlidLocSettingLauncher.h"
+#include "CBlidMainControl.h"
+
 
 // FORWARD DECLARATIONS
 class CBlidMainControl;
@@ -48,6 +50,11 @@ class CBlidMainView : public CBlidBaseView
          * Destructor.
          */
         ~CBlidMainView();
+        
+        /**
+         * View Getter
+         */
+        CBlidMainControl* GetControl();
 
     private: // constructor
         /**

@@ -117,7 +117,7 @@ void CEvtEditor ::ConstructL()
     
     // Observer for a change in System of Measurement
     iSysOfMeas = CEvtMgmtUiSysOfMeasurement::NewL(*this);
-	EVTUIDEBUG("- CEvtEditor::ConstructL()");
+    	EVTUIDEBUG("- CEvtEditor::ConstructL()");
     }
 
 // ---------------------------------------------------------------------------
@@ -495,20 +495,19 @@ void CEvtEditor ::DynInitMenuPaneL(TInt aResourceId, CEikMenuPane* aMenuPane)
 	                aMenuPane->SetItemDimmed(EAknFormCmdEdit, ETrue);
 	                aMenuPane->SetItemDimmed(EEvtEditorCmdAssignTone, EFalse);
 	                break;
-	                } 
+	                }    
 	            case EEvtMgmtUiDlgCIdRepeat:
 	            case EEvtMgmtUiDlgCIdAudioLoop:   
-              case EEvtMgmtUiDlgCIdStatus:            
+                case EEvtMgmtUiDlgCIdStatus:            
 	                {
-	        				aMenuPane->SetItemDimmed(EAknFormCmdEdit, EFalse);
-        					aMenuPane->SetItemTextL(EAknFormCmdEdit,R_EVTUI_CREATENEW_FORM_CMDCHANGE);
-	                break; 
-	                }
+	        		aMenuPane->SetItemDimmed(EAknFormCmdEdit, EFalse);
+        			aMenuPane->SetItemTextL(EAknFormCmdEdit,R_EVTUI_CREATENEW_FORM_CMDCHANGE);
+	                break;
+	                }    
 	            default:
 	                {
 	                break;
 	                }                
-	                   
 	            }//switch
  
             // Activate and Draft are absent in Edit mode
@@ -1514,7 +1513,7 @@ TKeyResponse CEvtEditor::OfferKeyEventL (const TKeyEvent &aKeyEvent, TEventCode 
             {
             case EKeyLeftArrow:
             case EKeyRightArrow:
-            case EKeyOK:
+           // case EKeyOK:
             case EKeyEnter:
                 {
                 CheckStatusL();
@@ -1527,82 +1526,83 @@ TKeyResponse CEvtEditor::OfferKeyEventL (const TKeyEvent &aKeyEvent, TEventCode 
     }
 
 // -----------------------------------------------------------------------------
-// CEvtEditor::HandlePointerEventL()
+// CEvtEditor::HandleDialogPageEventL()
 // Inherited from CAknForm
 // -----------------------------------------------------------------------------
 //
-void CEvtEditor::HandlePointerEventL(const TPointerEvent& aPointerEvent)
-    {    
-	EVTUIDEBUG("+ CEvtEditor::HandlePointerEventL()");
-
-	/* As default HandlePointerEventL() calls control's HandlePointerEventL()
-	 * We have to modify status's array before CAknForm::HandlePointerEventL() is called.
-	 */
-	if(aPointerEvent.iType == TPointerEvent::EButton1Up )
-	   {
-        CAknPopupFieldText* statusEditor = static_cast <CAknPopupFieldText*> ( ControlOrNull(EEvtMgmtUiDlgCIdStatus) );
-        if (statusEditor)
-            {
-            if( statusEditor->Rect().Contains(aPointerEvent.iPosition) ) 
-                CheckStatusL();
-            }
-	    }
-	                
-	EVTUIDEBUG1("+ b4 HandlePointerEventL- %d", aPointerEvent.iType);
-	CAknForm::HandlePointerEventL( aPointerEvent );  
-	EVTUIDEBUG1("+ after HandlePointerEventL- %d", aPointerEvent.iType);
-	if(aPointerEvent.iType == TPointerEvent::EButton1Up )
-	   {
-        if( !IsEditable() )
-	        {
-	        iIsEditMode = ETrue;
-	        SetEditableL(ETrue);
-	        ChangeRSKCaptionL();
-	        ChangeMSKCaptionL( IdOfFocusControl() ); 			
-			return;
-	        }	  
-      
-        switch ( IdOfFocusControl() )
+void CEvtEditor::HandleDialogPageEventL( TInt aEventID )
+    {
+    EVTUIDEBUG("+ CEvtEditor::HandleDialogPageEventL()");
+    CAknForm::HandleDialogPageEventL( aEventID );  
+    if( aEventID == MEikDialogPageObserver::EDialogPageTapped )
+       {
+       EVTUIDEBUG("+ CEvtEditor::HandleDialogPageEventL() EDialogPageTapped");   
+       if( !IsEditable() )
            {
-           case EEvtMgmtUiDlgCIdPlace:
-               {
-               CEikEdwin* placeEditor = static_cast <CEikEdwin*> (ControlOrNull(EEvtMgmtUiDlgCIdPlace));
-                if (placeEditor)
-                    {
-                    if( placeEditor->Rect().Contains(aPointerEvent.iPosition) ) 
-                        iCmdHandler->HandleEditorCmdL( EEvtEditorCmdSetPlace );
+           iIsEditMode = ETrue;
+           SetEditableL(ETrue);
+           ChangeRSKCaptionL();
+           ChangeMSKCaptionL( IdOfFocusControl() );            
+                   return;
+           }     
+       
+       CEikEdwin* editor = NULL;
+       CAknPopupFieldText* popupFieldText = NULL;
+       switch(IdOfFocusControl())
+           {
+           case EEvtMgmtUiDlgCIdPlace: // Place Editor
+               editor = static_cast <CEikEdwin*> (ControlOrNull(EEvtMgmtUiDlgCIdPlace));
+                if ( editor )
+                    { 
+                    iCmdHandler->HandleEditorCmdL( EEvtEditorCmdSetPlace );
                     }
                break;
-               }
-           case EEvtMgmtUiDlgCIdDesc:
-               {
-               CEikEdwin* descEditor = static_cast <CEikEdwin*> (ControlOrNull(EEvtMgmtUiDlgCIdDesc));
-                if (descEditor)
+           case EEvtMgmtUiDlgCIdDesc: // Description Editor
+               editor = static_cast <CEikEdwin*> (ControlOrNull(EEvtMgmtUiDlgCIdDesc));
+                if ( editor )
                     {
-                    if( descEditor->Rect().Contains(aPointerEvent.iPosition) ) 
-                        iCmdHandler->HandleEditorCmdL( EEvtEditorCmdEditDesc );
+                    iCmdHandler->HandleEditorCmdL( EEvtEditorCmdEditDesc );
                     }
                break;
-               }
-           case EEvtMgmtUiDlgCIdAssignTone:
-               {
-               CEikEdwin* toneEditor = static_cast <CEikEdwin*> (ControlOrNull(EEvtMgmtUiDlgCIdAssignTone));
-                if (toneEditor)
+           case EEvtMgmtUiDlgCIdAssignTone: // Tone Editor
+               editor = static_cast <CEikEdwin*> (ControlOrNull(EEvtMgmtUiDlgCIdAssignTone));
+                if ( editor )
                     {
-                    if( toneEditor->Rect().Contains(aPointerEvent.iPosition) ) 
-                        iCmdHandler->HandleEditorCmdL( EEvtEditorCmdAssignTone );
+                    iCmdHandler->HandleEditorCmdL( EEvtEditorCmdAssignTone );
                     }
                break;
-               }         
-           default:
-               {
+           case EEvtMgmtUiDlgCIdStatus: // Status Editor
+               popupFieldText = static_cast <CAknPopupFieldText*> ( ControlOrNull(EEvtMgmtUiDlgCIdStatus) );
+               if( popupFieldText )
+                   {
+                   TInt editorStatus = popupFieldText->CurrentValueIndex();
+                   CheckStatusL();
+                   if( ECompleted != editorStatus )
+                       {
+                       if( EActive == editorStatus )
+                           {
+                           popupFieldText->SetCurrentValueIndex ( EDraft );
+                           }
+                       else
+                           {
+                           popupFieldText->SetCurrentValueIndex ( EActive );
+                           }
+                               HandleControlStateChangeL( EEvtMgmtUiDlgCIdStatus );
+                       UpdatePageL(ETrue);
+                      return;
+                       }                  
+                   }
                break;
-               }
+           case EEvtMgmtUiDlgCIdRepeat: // Repeat editor
+           case EEvtMgmtUiDlgCIdAudioLoop: // audio loop editor
+                           TogglePopupFieldControlL( IdOfFocusControl() );
+               break;
+           default:              
+               break;
            }
+         }
+        EVTUIDEBUG("- CEvtEditor::HandleDialogPageEventL()");
        }
-    
-	EVTUIDEBUG("- CEvtEditor::HandlePointerEventL()");
-    }
 // ---------------------------------------------------------------------------
 // CEvtEditor::MakeTitleL()
 // Set the Title Text

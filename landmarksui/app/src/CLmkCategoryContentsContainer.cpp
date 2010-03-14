@@ -173,8 +173,8 @@ TKeyResponse CLmkCategoryContentsContainer::OfferKeyEventL(
     CLmkAppSelectorImplBase& selector = SelectorImpl();
     TInt markedCount(selector.ListMarkedItemCountL());
     TInt visibleCount(selector.ListVisibleItemCount());
-    DEBUG1( CLmkByLmContainer::OfferKeyEventL markedCount=%d,markedCount );
-    DEBUG1( CLmkByLmContainer::OfferKeyEventL visibleCount=%d,visibleCount );
+    DEBUG1( CLmkCategoryContentsContainer::OfferKeyEventL markedCount=%d,markedCount );
+    DEBUG1( CLmkCategoryContentsContainer::OfferKeyEventL visibleCount=%d,visibleCount );
 
     if (aKeyEvent.iCode == EKeyOK && !shiftKeyPressed && aType == EEventKey)
         {
@@ -232,14 +232,8 @@ TKeyResponse CLmkCategoryContentsContainer::OfferKeyEventL(
     iIsEditorOpened = EFalse;
     TKeyResponse response = CLmkLbWithFilterContainer::OfferKeyEventL(
             aKeyEvent, aType);
-
-    if (static_cast<CTextListBoxModel*> (ListBox().Model())->ItemTextArray()->MdcaCount()
-            == 0)
-        {
-        (static_cast<CLmkCategoryContentsView *> (&iView))->HandleCommandL(
-                EAknSoftkeyBack);
-        }
-
+    
+    DEBUG( CLmkCategoryContentsContainer::OfferKeyEventL End );
     return response;
     }
 
@@ -254,6 +248,15 @@ void CLmkCategoryContentsContainer::HandleControlEventL(
     if (aEventType == EEventStateChanged && aControl == iFindBox)
         {
         SelectorImpl().ProcessCommandL(ELmkCmdFindBoxSearchAfresh);
+        }
+    if (aEventType == EEventStateChanged && aControl == iListBox )
+        {
+        if (static_cast<CTextListBoxModel*> (ListBox().Model())->ItemTextArray()->MdcaCount()
+                == 0)
+            {
+            (static_cast<CLmkCategoryContentsView *> (&iView))->HandleCommandL(
+                    EAknSoftkeyBack);
+            }
         }
     }
 

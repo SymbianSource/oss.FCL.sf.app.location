@@ -1,28 +1,19 @@
 /*
-* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description:    LandmarksUi Content File -
-*
-*/
-
-
-
-
-
-
-
-
-
+ * Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
+ *
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:    LandmarksUi Content File -
+ *
+ */
 // INCLUDE FILES
 #include <StringLoader.h>
 #include <lmkui.rsg>
@@ -509,36 +500,36 @@ void CLmkSelectorDialog::PrepareLC(TInt aDlgResourceId)
 // -----------------------------------------------------------------------------
 //
 void CLmkSelectorDialog::SetCbaResourceAndCommandId(TInt aaDlgResourceId)
-	{
-	switch(aaDlgResourceId)
-		{
-		case R_LMK_SELECTOR_OK_BACK_DLG://R_AVKON_SOFTKEYS_OK_BACK
-		case R_LMK_SELECTOR_OK_BACK_MULTI_DLG://R_AVKON_SOFTKEYS_OK_BACK
-			{
-			iCbaResourceId = R_LMK_SELECTOR_SOFTKEYS_OK_BACK_OK;
-			iMskCmdId = EAknSoftkeyOk;
-			break;
-			}
-		case R_LMK_CATEGORY_SELECTOR_OK_CANCEL_MULTI_DLG://r_lmk_catsel_softkeys_done_cancel
-			{
-			iCbaResourceId = R_LMK_SELECTOR_SOFTKEYS_DONE_CANCEL_DONE;
-			iMskCmdId = EAknSoftkeyDone;
-			break;
-			}
-		case R_LMK_SELECTOR_OPEN_CANCEL_DLG://r_lmk_softkeys_open(ok)_cancel
-			{
-			iCbaResourceId = R_LMK_SELECTOR_SOFTKEYS_OPEN_CANCEL_OPEN;
-			iMskCmdId = EAknSoftkeyOk;
-			break;
-			}
-		case R_LMK_SELECTOR_OK_CANCEL_DLG://R_AVKON_SOFTKEYS_OK_CANCEL
-		case R_LMK_SELECTOR_OK_CANCEL_MULTI_DLG://R_AVKON_SOFTKEYS_OK_CANCEL
-			iCbaResourceId = R_LMK_SELECTOR_SOFTKEYS_OK_CANCEL_OK;
-			iMskCmdId = EAknSoftkeyOk;
-		default:
-		break;
-		}
-	}
+    {
+    switch (aaDlgResourceId)
+        {
+        case R_LMK_SELECTOR_OK_BACK_DLG:
+        case R_LMK_SELECTOR_OK_BACK_MULTI_DLG:
+            {
+            iCbaResourceId = R_AVKON_SOFTKEYS_BACK;
+            iMskCmdId = EAknSoftkeyOk;
+            break;
+            }
+        case R_LMK_CATEGORY_SELECTOR_OK_CANCEL_MULTI_DLG:
+            {
+            iCbaResourceId = R_AVKON_SOFTKEYS_CANCEL;
+            iMskCmdId = EAknSoftkeyDone;
+            break;
+            }
+        case R_LMK_SELECTOR_OPEN_CANCEL_DLG:
+            {
+            iCbaResourceId = R_AVKON_SOFTKEYS_CANCEL;
+            iMskCmdId = EAknSoftkeyOk;
+            break;
+            }
+        case R_LMK_SELECTOR_OK_CANCEL_DLG:
+        case R_LMK_SELECTOR_OK_CANCEL_MULTI_DLG:
+            iCbaResourceId = R_AVKON_SOFTKEYS_CANCEL;
+            iMskCmdId = EAknSoftkeyOk;
+        default:
+            break;
+        }
+    }
 
 // -----------------------------------------------------------------------------
 // CLmkSelectorDialog::SetDlgEmptyResource()

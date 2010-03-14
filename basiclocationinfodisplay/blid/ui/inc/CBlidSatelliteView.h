@@ -47,6 +47,11 @@ class CBlidSatelliteView : public CBlidBaseView
          * Destructor.
          */
         ~CBlidSatelliteView();
+        
+        /**
+         * Control Getter
+         */
+        CBlidSatelliteControl* GetControl();
 
     private: // constructor
         /**

@@ -227,6 +227,14 @@ void CBlidSatelliteView::HandleResourceChangeL( TInt aType )
         iEnv.PrimaryDisplay().SetVisibleArea(rect);
         }
     }
+
+/**
+ * 
+ */
+CBlidSatelliteControl* CBlidSatelliteView::GetControl()
+    {
+    return iMainSatelliteCtrl;
+    }
         
 #ifdef RD_SCALABLE_UI_V2
 // ---------------------------------------------------------------------------
