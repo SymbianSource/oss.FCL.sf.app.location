@@ -20,9 +20,9 @@
 #define C_LCREGISTRATIONPARSER_H
 
 // SYSTEM INCLUDES
-#include <Xml/Parser.h>
-#include <Xml/ContentHandler.h>
-#include <Xml/documentparameters.h>
+#include <xml/parser.h>
+#include <xml/contenthandler.h>
+#include <xml/documentparameters.h>
 #include <f32file.h>
 
 //USER INCLUDE

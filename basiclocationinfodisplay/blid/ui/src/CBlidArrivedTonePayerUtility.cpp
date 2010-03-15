@@ -90,7 +90,7 @@ CBlidArrivedTonePlayerUtility::~CBlidArrivedTonePlayerUtility()
 // Plays the appropriate tone
 // ---------------------------------------------------------
 //
-void CBlidArrivedTonePlayerUtility::PlayToneL( TFileName aFileName )
+void CBlidArrivedTonePlayerUtility::PlayToneL( const TFileName& aFileName )
     {
     iFileName = aFileName;
     CanclePayer();

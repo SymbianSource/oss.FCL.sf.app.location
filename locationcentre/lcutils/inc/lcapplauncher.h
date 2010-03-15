@@ -22,7 +22,7 @@
 
 // SYSTEM INCLUDES
 #include <e32std.h>
-#include <aknserverapp.h>
+#include <AknServerApp.h>
 
 // USER INCLUDES
 

@@ -305,13 +305,18 @@ void CLmkCategorySettingsView::EnableMskMenuL(TBool aEnable)
 //
 void CLmkCategorySettingsView::HandleListBoxEventL(CEikListBox* aListBox,
         TListBoxEvent aEventType)
-    {
+    {    
+    TInt count(aListBox->Model()->NumberOfItems());
+    if( count == 0 )    
+        return;
+    
+    TInt markedCount = aListBox->SelectionIndexes()->Count();
+    
     switch (aEventType)
         {
-        //case EEventItemDoubleClicked:
         case EEventItemSingleClicked:
             {
-            if( aListBox->SelectionIndexes()->Count() > 0 )
+            if( markedCount > 0 )
                 {
                 CEikMenuBar* menubar = MenuBar();
                 if (menubar)
@@ -319,17 +324,18 @@ void CLmkCategorySettingsView::HandleListBoxEventL(CEikListBox* aListBox,
                     menubar->SetContextMenuTitleResourceId(R_LMK_CATEGORY_SETTINGS_OK_MENUBAR);
                     TRAP_IGNORE( menubar->TryDisplayContextMenuBarL() );
                     }            
-                }                
-            break;
-            }
-        //case EEventItemClicked:
-        case EEventPanningStarted:
-        case EEventPanningStopped:
-        case EEventFlickStarted:
-        case EEventFlickStopped:
-        case EEventPenDownOnItem:
-        case EEventItemDraggingActioned:
-            {
+                }
+            else
+                {
+                CLmkAppCategorySettingsImpl& LCategorySettingsImpl =
+                        iContainer->SelectorImpl();
+                // Checkif the category is a global category only when some items present
+                TBool retVal = LCategorySettingsImpl.IsPredefinedCategoryL();
+                if( retVal  )
+                    HandleCommandL( ELmkCmdChangeIcon );                
+                else
+                    HandleCommandL( ELmkCmdRenameCat );                
+                }            
             break;
             }
         default:

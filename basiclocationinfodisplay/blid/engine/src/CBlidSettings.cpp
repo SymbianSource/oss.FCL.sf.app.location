@@ -25,7 +25,7 @@
 #include "MBlidEngObserver.h"
 #include "CBlidMeasurementSettingListener.h"
 #include "BlidSettingsCrkeys.h"
-#include "blid.hrh"
+#include "Blid.hrh"
 
 // CONSTANTS
 

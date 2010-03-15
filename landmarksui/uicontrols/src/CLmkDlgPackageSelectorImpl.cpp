@@ -396,7 +396,6 @@ void CLmkDlgPackageSelectorImpl::DynInitDlgMenuPaneL(TInt aResourceId,
                 isLandmarkDataEmpty = ETrue;
                 }
 
-            TInt showOnMapCmd = -1;
             TInt cnt = aMenuPane->NumberOfItemsInPane();
             for (TInt i = 0; i < cnt; ++i)
                 {
@@ -405,17 +404,12 @@ void CLmkDlgPackageSelectorImpl::DynInitDlgMenuPaneL(TInt aResourceId,
                 if (iMapNavInterface->GetServiceCmdByMenuCmd(
                         itemData.iCommandId) == KAiwCmdMnShowMap)
                     {
-                    showOnMapCmd = itemData.iCommandId;
+		            if (isLandmarkDataEmpty)
+		                aMenuPane->SetItemDimmed(itemData.iCommandId, ETrue);
+		            else 
+		                aMenuPane->SetItemDimmed(itemData.iCommandId, EFalse);
+		            break;
                     }
-                }
-
-            if (isLandmarkDataEmpty)
-                {
-                aMenuPane->SetItemDimmed(showOnMapCmd, ETrue);
-                }
-            else if (showOnMapCmd != -1)
-                {
-                aMenuPane->SetItemDimmed(showOnMapCmd, EFalse);
                 }
             break;
             }

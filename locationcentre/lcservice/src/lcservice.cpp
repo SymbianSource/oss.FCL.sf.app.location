@@ -233,7 +233,9 @@ EXPORT_C TPtrC CLcService::SelectLocationApplicationL()
     {
     // The Filter construction without any arguments will act as no filtering
     // applied on the list of Location based Applications and Contents/Services.
+    // coverity[var_decl : FALSE]
     TLcLocationAppFilter filter;    
+    // coverity[uninit_use_in_call : FALSE]
     return iImplementation->SelectLocationApplicationL( filter );
     }
 

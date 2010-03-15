@@ -18,6 +18,7 @@
 
 // SYSTEM INCLUDES
 #include <avkon.hrh>
+#include <avkon.mbg>
 #include <barsread.h> 
 #include <aknlists.h>
 #include <AknIconArray.h>		// Icon Array
@@ -480,6 +481,12 @@ void CEvtMgmtUiStartupContainer::UpdateIconsL()
     CleanupStack::PushL( icons );
 
 	TFileName *iconFile = IconFileNameLC();
+
+    //mark
+    AddColorIconL( *icons, 
+              AknIconUtils::AvkonIconFileName(),
+              KAknsIIDQgnIndiMarkedAdd,
+              EMbmAvkonQgn_indi_marked_add, EMbmAvkonQgn_indi_marked_add_mask );
 
 //Create new event
     AddIconL( *icons, 

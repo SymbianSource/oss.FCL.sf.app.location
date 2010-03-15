@@ -179,7 +179,7 @@ void CBlidBaseView::DynInitMenuPaneL(
             }
         case R_BLID_MAIN_MENU:
             {
-            CBlidBaseView::HandleHelpFeature( aMenuPane );
+            CBlidBaseView::HandleHelpFeatureL( aMenuPane );
             break;
             }
             
@@ -274,11 +274,11 @@ void CBlidBaseView::NotifyErrorL( TInt /*aErrorCode*/ )
     }
 
 // ---------------------------------------------------------
-// CBlidBaseView::HandleHelpFeature
+// CBlidBaseView::HandleHelpFeatureL
 // Handles the Help option command
 // ---------------------------------------------------------
 //
-void CBlidBaseView::HandleHelpFeature( CEikMenuPane* aMenuPane ) const
+void CBlidBaseView::HandleHelpFeatureL( CEikMenuPane* aMenuPane ) const
     {
     //implementation for req 406-917. Hide position view based on feature variation flag
     TInt helpSettingValue = ELocHelpNotHidden;
@@ -306,7 +306,6 @@ void CBlidBaseView::HandleHelpFeature( CEikMenuPane* aMenuPane ) const
 //
 TBool CBlidBaseView::InsertWaypointL()
     {
-    TInt index(KErrCancel);
     TBuf<KBlidWaypointNameMaxLen> textData;
     StringLoader::Load( textData, R_BLID_WAYPOINT_NAME, iCoeEnv );
     TInt errorCode(KErrNone);	
@@ -330,58 +329,41 @@ TBool CBlidBaseView::InsertWaypointL()
             
         }while( CheckIfExistL( textData, errorCode, removedIndex ) );
         
-        if(errorCode != KErrNone)
-        	{
-        	return EFalse;
-        	}
+		if(errorCode != KErrNone)
+				{
+				return EFalse;
+				}
 
-        /// if KMaxNumberOfWaypoints or more than that is already present
-        /// display note.
-        if ( iRouter->Count() >= KMaxNumberOfWaypoints )
-            {
-            static_cast<CBlidAppUi*>(AppUi()
-                )->ShowDialogL( BlidNotes::EBlidOverWriteWaypointNote );            
-            return EFalse;            
-            }    
+		/// if KMaxNumberOfWaypoints or more than that is already present
+		/// display note.
+		if ( iRouter->Count() >= KMaxNumberOfWaypoints )
+		    {
+		    static_cast<CBlidAppUi*>(AppUi()
+		        )->ShowDialogL( BlidNotes::EBlidOverWriteWaypointNote );            
+		    return EFalse;            
+		    }    
 
-        TInt retVal(KErrNone);
-        if ( index >=0 )
-            {
-            if ( iRouter->IndexOfWaypoint() >=0 && 
-                 index >= iRouter->IndexOfWaypoint() )
-                {                
-                index++;
-                }
-            retVal = iRouter->RemoveL( index );
-            if(retVal == KErrDiskFull)
-	        	{
-	        	BlidNotes::OutOfMemoryNoteL();
-	        	}
-            }
-        
-        if(retVal == KErrNone)
-        	{
-        	TNamedCoordinate* waypoint = new(ELeave)TNamedCoordinate();
-	        CleanupStack::PushL( waypoint );
-	        waypoint->SetName( textData );
-	        TPosition position = iLocation->GetCurrentPosition();
-	        waypoint->SetCoordinate( position.Latitude(),
-	                                 position.Longitude(),
-	                                 position.Altitude() );
-	        position.SetHorizontalAccuracy(position.HorizontalAccuracy());
-	        waypoint->SetAccuracy(position.HorizontalAccuracy());
-	        //iRouter takes waypoint's ownership
-	        TInt retVal = iRouter->AppendL( waypoint, ETrue);
-	        if(retVal == KErrDiskFull)
-	        	{
-	        	delete waypoint;
-	        	BlidNotes::OutOfMemoryNoteL();
-	        	returnValue = EFalse;
-	        	}
-	        CleanupStack::Pop(); //waypoint
-        	}                
-        return returnValue;
-        }
+		TNamedCoordinate* waypoint = new(ELeave)TNamedCoordinate();
+		CleanupStack::PushL( waypoint );
+		waypoint->SetName( textData );
+		TPosition position = iLocation->GetCurrentPosition();
+		waypoint->SetCoordinate( position.Latitude(),
+		                         position.Longitude(),
+		                         position.Altitude() );
+		position.SetHorizontalAccuracy(position.HorizontalAccuracy());
+		waypoint->SetAccuracy(position.HorizontalAccuracy());
+		//iRouter takes waypoint's ownership
+		TInt retVal = iRouter->AppendL( waypoint, ETrue);
+		if(retVal == KErrDiskFull)
+				{
+				delete waypoint;
+				BlidNotes::OutOfMemoryNoteL();
+				returnValue = EFalse;
+				}
+		CleanupStack::Pop(); //waypoint
+
+		return returnValue;
+		}
 
 // ----------------------------------------------------------------------------
 // CBlidBaseView::SelectWaypoint

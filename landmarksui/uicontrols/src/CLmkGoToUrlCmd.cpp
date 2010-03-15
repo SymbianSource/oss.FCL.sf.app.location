@@ -22,8 +22,8 @@
 
 
 // INCLUDE FILES
-#include <BrowserLauncher.h>
-#include <DownloadedContentHandler.h>
+#include <browserlauncher.h>
+#include <downloadedcontenthandler.h>
 #include "clmkgotourlcmd.h"
 
 _LIT(KProtocolForURL, "4 ");

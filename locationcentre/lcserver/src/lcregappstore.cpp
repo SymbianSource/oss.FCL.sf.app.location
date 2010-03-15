@@ -112,7 +112,7 @@ void CLcRegAppStore::ConstructL()
 // void CLcRegAppStore::OpenDbL
 // ---------------------------------------------------------------------------
 //
-void CLcRegAppStore::OpenDbL( const TFileName aRegAppInfoFile )
+void CLcRegAppStore::OpenDbL( const TFileName& aRegAppInfoFile )
     {  	
     // if it is already open then close it.
     Close();
@@ -143,7 +143,7 @@ void CLcRegAppStore::OpenDbL( const TFileName aRegAppInfoFile )
 //
 // Create a new database. The database will be in exclusive access mode.
 // ---------------------------------------------------------------------------
-void CLcRegAppStore::CreateDbL( const TFileName aRegAppInfoFile )
+void CLcRegAppStore::CreateDbL( const TFileName& aRegAppInfoFile )
     {
     // if it is already open then close it.
     Close();

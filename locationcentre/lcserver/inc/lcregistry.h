@@ -205,7 +205,7 @@ private:
      * @param aLcRegAppInfo		Pointer reference to regappinfo.
      * @return KErrBadName if the regappinfo file name is not correct one.
      */
-	CLcRegAppInfo* CreateAppRegInfoL( TFileName	aFileName );
+	CLcRegAppInfo* CreateAppRegInfoL( TFileName&	aFileName );
 
     /**
      * This function insert single registration info into
@@ -227,7 +227,7 @@ private:
      * @param aFileName[ in ]		Name of the file to check if in MMC.
      * @return If file is in MMC then return ETrue else EFalse.
      */
-	TBool IsInMMc( TFileName aFileName );
+	TBool IsInMMc( TFileName& aFileName );
 
     /**
      * This function checks presence for a certain registration file
@@ -241,7 +241,7 @@ private:
      * @return 					On successfull 
      *							execution return ETrue else EFalse.
      */
-	TBool DoesApplicationExists( TFileName 		aFileName,
+	TBool DoesApplicationExists( TFileName& 		aFileName,
 								 CLcRegAppInfo*& 	alcRegAppInfoPtr );
 
    /**
@@ -273,7 +273,7 @@ private:
      * @param aFileName[ in ]		Name of the current file to compare.
      * @return ETrue else EFalse.
      */
-	TBool IsAppUpgraded( TFileName aFileName );
+	TBool IsAppUpgraded( TFileName& aFileName );
 	
     /**
      * This function sets name for certains application name 

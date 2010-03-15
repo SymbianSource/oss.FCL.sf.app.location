@@ -17,9 +17,9 @@
 
 
 // SYSTEM INCLUDES
-#include <PathInfo.h>
+#include <pathinfo.h>
 #include <apgcli.h>
-#include <documenthandler.h>            // CDocumentHandler
+#include <DocumentHandler.h>            // CDocumentHandler
 #include <pathinfo.h>
 
 // USER INCLUDES
@@ -350,7 +350,8 @@ void CLcRegistry::RunL()
 				{
 				// Check if the Application suffered an Upgrade. If its an upgrade
 				// then its equivalent to a new installation.
-				if ( IsAppUpgraded( regAppInfo->FileName()))
+				TFileName fileName = regAppInfo->FileName();
+				if ( IsAppUpgraded(fileName) )
 					{
 					// Remove the element from the Old array
 					TInt index = iAppInfoArray.Find( regAppInfo );
@@ -514,7 +515,7 @@ void CLcRegistry::FinalRegistrationUpdateL()
 // CLcRegistry::IsInMMc
 // ----------------------------------------------------------------------------
 //
-TBool CLcRegistry::IsInMMc( TFileName aFileName )
+TBool CLcRegistry::IsInMMc( TFileName& aFileName )
 	{
 	TBool lResult = EFalse;
 	TParse parse;
@@ -540,7 +541,7 @@ TBool CLcRegistry::IsInMMc( TFileName aFileName )
 // CLcRegistry::DoesApplicationExists
 // ----------------------------------------------------------------------------
 //
-TBool CLcRegistry::DoesApplicationExists( TFileName 		aFileName,
+TBool CLcRegistry::DoesApplicationExists( TFileName& 		aFileName,
 										  CLcRegAppInfo*& 	alcRegAppInfoPtr )
 	{
 	// This function checks wheather registration info with same file name
@@ -564,7 +565,7 @@ TBool CLcRegistry::DoesApplicationExists( TFileName 		aFileName,
 // CLcRegistry::CreateAppRegInfoL
 // ----------------------------------------------------------------------------
 //
-CLcRegAppInfo* CLcRegistry::CreateAppRegInfoL(  TFileName	aFileName )
+CLcRegAppInfo* CLcRegistry::CreateAppRegInfoL(  TFileName&	aFileName )
 	{
 	DEBUG( "+ CLcRegistry::CreateAppRegInfoL" );
 
@@ -913,7 +914,7 @@ void CLcRegistry::SetAppSysCharacteristicsL( RApaLsSession&		alsSession,
 // CLcRegistry::IsAppUpgraded
 // -----------------------------------------------------------------------------
 //	
-TBool CLcRegistry::IsAppUpgraded( TFileName aFileName )
+TBool CLcRegistry::IsAppUpgraded( TFileName& aFileName )
 	{
 	DEBUG( "+ CLcRegistry::CheckforAppUpgrade(");
 	

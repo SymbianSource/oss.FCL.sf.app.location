@@ -92,7 +92,7 @@ class CBlidBaseView : public CAknView, public MKeyProcessor,
          *
          * @param aMenuPane A pointer to CEikMenuPane
          */
-        void HandleHelpFeature( CEikMenuPane* aMenuPane ) const;
+        void HandleHelpFeatureL( CEikMenuPane* aMenuPane ) const;
 
         /**
         * Insert waypoint to MBlidRouter's array

@@ -237,7 +237,7 @@ void CBlidSettingsView::DynInitMenuPaneL( TInt aResourceId,
         { 
         case R_BLID_MAIN_MENU:
             {
-            CBlidBaseView::HandleHelpFeature( aMenuPane );
+            CBlidBaseView::HandleHelpFeatureL( aMenuPane );
             break;
             }
         case R_BLID_SETTINGS_MENU:

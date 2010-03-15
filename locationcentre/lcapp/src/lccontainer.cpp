@@ -21,16 +21,16 @@
 #include <barsread.h> 
 #include <lclocationappinfo.h>
 #include <aknlists.h>
-#include <akniconarray.h>		// Icon Array
+#include <AknIconArray.h>		// Icon Array
 #include <eikclbd.h>			// Column Listbox
 #include <gulicon.h>			// Gul Icon
 #include <barsread.h>   		// TResourceReader
 #include <lcapp.rsg>
 #include <csxhelp/loccentre.hlp.hrh>
-#include <aknutils.h>
+#include <AknUtils.h>
 #include <eikspane.h> 		    // Status pane
 #include <akntitle.h>       	// CAknTitlePane
-#include <stringloader.h>
+#include <StringLoader.h>
 
 // USER INCLUDES
 #include "lccontainer.h"

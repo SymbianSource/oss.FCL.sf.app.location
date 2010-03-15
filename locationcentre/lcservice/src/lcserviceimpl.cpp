@@ -21,7 +21,7 @@
 #include <aknsutils.h>
 #include <gulicon.h>
 #include <aknlists.h>
-#include <aknpopup.h>
+#include <aknPopup.h>
 #include <avkon.rsg>
 
 // USER INCLUDES

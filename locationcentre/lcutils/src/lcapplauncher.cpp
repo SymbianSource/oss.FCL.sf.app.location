@@ -22,8 +22,8 @@
 #include <apgtask.h>
 #include <eikenv.h>
 #include <lcappexitobserver.h>
-#include <SchemeHandler.h>
-#include <documenthandler.h>
+#include <schemehandler.h>
+#include <DocumentHandler.h>
 #include <e32math.h>
 #include <eikappui.h>
 #include <avkon.hrh>

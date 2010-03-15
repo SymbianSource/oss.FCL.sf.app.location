@@ -25,8 +25,8 @@
 #define CLMKGOTOURLCMD_H
 
 //  INCLUDES
-#include <BrowserLauncher.h>
-#include <DownloadedContentHandler.h>
+#include <browserlauncher.h>
+#include <downloadedcontenthandler.h>
 #include <AknServerApp.h>
 
 class MDownloadedContentHandler;

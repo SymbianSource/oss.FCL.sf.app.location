@@ -182,8 +182,6 @@ void CLmkByLmView::HandleCommandL(TInt aCommand)
         case ELmkCmdSendVia10:
         case ELmkCmdSend:
         case ELmkCmdOpenLm:
-        case ELmkCmdGoToUrl:
-        case ELmkCmdCall:
         case EAknCmdMark:
         case EAknCmdUnmark:
         case EAknMarkAll:
@@ -202,7 +200,6 @@ void CLmkByLmView::HandleCommandL(TInt aCommand)
             if (markedCount > 0 && aCommand == ELmkCmdOpenLm
                     && !iContainer->IsEditorOpened())
                 {
-                DEBUG( CLmkByLmView::HandleCommandL ELmkCmdOpenLm showing c menu);
                 if (MenuBar())
                     {
                     MenuBar()->SetContextMenuTitleResourceId(R_LMK_OK_MENUBAR);
@@ -212,13 +209,11 @@ void CLmkByLmView::HandleCommandL(TInt aCommand)
             else if (aCommand == ELmkCmdOpenLm
                     && !iContainer->IsEditorOpened())
                 {
-                DEBUG( CLmkByLmView::HandleCommandL ELmkCmdOpenLm );
                 iContainer->SelectorImpl().ProcessCommandL(aCommand);
                 iContainer->SetEditorOpenedBool(ETrue);
                 }
             else
                 {
-                DEBUG( CLmkByLmView::HandleCommandL ProcessCommandL aCommand );
                 iContainer->SelectorImpl().ProcessCommandL(aCommand);
                 }
             // Set pointer event handling ETrue	
@@ -227,12 +222,11 @@ void CLmkByLmView::HandleCommandL(TInt aCommand)
             }
         default:
             {
-            DEBUG( CLmkByLmView::HandleCommandL default );
             (static_cast<CLmkAppUi*> (AppUi()))->HandleCommandL(aCommand);
             break;
             }
         }
-DEBUG    ( CLmkByLmView::HandleCommandL End );
+    DEBUG ( CLmkByLmView::HandleCommandL End );
     }
 
 // ---------------------------------------------------------
@@ -256,20 +250,27 @@ void CLmkByLmView::DynInitMenuPaneL(TInt aResourceId, CEikMenuPane* aMenuPane)
 
     switch (aResourceId)
         {
-        case R_LMK_APP_CALL_SUBMENU:
-            {
-            // Initialise the call UI AIW menu via selector
-            selector.AttachToAIWMenuL(R_LMK_APP_CALL_SUBMENU,
-                    R_LMK_APP_AIW_INTEREST);
-            selector.InitializeMenuPaneL(*aMenuPane, aResourceId);
-            selector.AttachInterestL(R_LMK_APP_AIW_INTEREST);
-            break;
-            }
         case R_LMK_BYLM_MENU1:
             {
+            //always dimmed
+            aMenuPane->SetItemDimmed(ERemoveFromCat, ETrue);
             aMenuPane->SetItemDimmed(ELmkCmdSendDummy, ETrue);
-            aMenuPane->SetItemDimmed(ELmkAppMenuAiwId, ETrue);
-            aMenuPane->SetItemDimmed(ELmkCmdGoToUrl, ETrue);
+
+            // Send menu is handled by the sender:
+            if ( FeatureManager::FeatureSupported( KFeatureIdLandmarksConverter ) )
+                {
+                iLmkSender.DisplaySendMenuL( *aMenuPane, visibleCount );
+                if( visibleCount > 0 )
+                    {
+                    TInt pos( 0 );
+                    aMenuPane->ItemAndPos( ELmkCmdSend, pos );    
+                    if( pos > 0 )
+                        {            
+                        aMenuPane->SetItemDimmed(ELmkCmdSend,EFalse );
+                        aMenuPane->SetItemSpecific(ELmkCmdSend,ETrue);
+                        }                       
+                    }   
+                }
 
             /*
              If multiple landmarks are selected then we have to dim
@@ -342,13 +343,6 @@ void CLmkByLmView::DynInitMenuPaneL(TInt aResourceId, CEikMenuPane* aMenuPane)
                 aMenuPane->SetItemDimmed(navigateToCmd, EFalse);
                 aMenuPane->SetItemSpecific(navigateToCmd, ETrue);
                 }
-            break;
-            }
-        case R_LMK_BYLM_MENU2:
-            {
-            //always dimmed
-            aMenuPane->SetItemDimmed(ELmkCmdChangeIcon, ETrue);
-            aMenuPane->SetItemDimmed(ERemoveFromCat, ETrue);
             break;
             }
         case R_LMK_OK_MENU:
@@ -433,8 +427,6 @@ void CLmkByLmView::DoActivateL(const TVwsViewId& /*aPrevViewId*/,
         //for touch event
         iContainer->SetListBoxObserver(this);
 #endif//RD_SCALABLE_UI_V2
-        // Attach CAll UI base service Interest
-        selector.AttachInterestL(R_LMK_APP_AIW_INTEREST);
         if (!iListMemento)
             { // Memento not created yet, create it now:
             iListMemento = selector.MementoL();
@@ -603,35 +595,30 @@ TBool CLmkByLmView::HandleAIWserviceCommandsL(TInt aServiceCommand,
         {
         case KAiwCmdMnNavigateTo:
             {
-            iContainer->GetSelectedLandmarksL(lmkArray);
-            CleanupStack::PushL(TCleanupItem(CleanupArray, &lmkArray));
-            iMapNavInterface->NavigateToLandmarkL(lmkArray[0], aMenuCommand);
-            CleanupStack::PopAndDestroy(); // lmkArray
+            if (iContainer->GetSelectedLandmarksL(lmkArray) == KErrNone)
+                {
+                CleanupStack::PushL(TCleanupItem(CleanupArray, &lmkArray));
+                iMapNavInterface->NavigateToLandmarkL(lmkArray[0],
+                        aMenuCommand);
+                CleanupStack::PopAndDestroy(); // lmkArray
+                }
             break;
             }
         case KAiwCmdMnShowMap:
             {
-            TInt retval = iContainer->GetSelectedLandmarksL(lmkArray);
-            CleanupStack::PushL(TCleanupItem(CleanupArray, &lmkArray));
-            iMapNavInterface->ShowLandmarksOnMapL(lmkArray, aMenuCommand,
-                    CLmkMapNavigationInterface::EByLmkView);
-            CleanupStack::PopAndDestroy(); // lmkArray
+            if (iContainer->GetSelectedLandmarksL(lmkArray) == KErrNone)
+                {
+                CleanupStack::PushL(TCleanupItem(CleanupArray, &lmkArray));
+                iMapNavInterface->ShowLandmarksOnMapL(lmkArray, aMenuCommand,
+                        CLmkMapNavigationInterface::EByLmkView);
+                CleanupStack::PopAndDestroy(); // lmkArray
+                }
             break;
             }
         case KAiwCmdMnSelectFromMap:
             {
             iMapNavInterface->SetObserver(&iContainer->SelectorImpl());
             iMapNavInterface->GetLandmarkFromMapL(aMenuCommand);
-            break;
-            }
-        case KAiwCmdCall:
-            {
-            // Handle AIW specific service commands
-            CLmkAppSelectorImplBase& selector = iContainer->SelectorImpl();
-            if (selector.ListVisibleItemCount() > 0)
-                {
-                selector.ExecuteAIWCallCmdL(aMenuCommand);
-                }
             break;
             }
         default:

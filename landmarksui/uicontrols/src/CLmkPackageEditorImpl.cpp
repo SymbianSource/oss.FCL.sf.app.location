@@ -146,13 +146,40 @@ void CLmkPackageEditorImpl::DynInitMenuPaneL(TInt aResourceId,
         case R_AVKON_FORM_MENUPANE:
             {
             CAknForm::DynInitMenuPaneL(aResourceId, aMenuPane);
+            TBool hideMN = EFalse;
+            if (iIsHideCoordinate)
+                {
+                if (IsLandmarkDataEmptyL(iLandmark))
+                    {
+                    hideMN = ETrue;
+                    }
+                }
+            else if (ArePositionFieldEmptyL())
+                {
+                hideMN = ETrue;
+                }
 
-            // delete the show on map & Navigate To options
-            aMenuPane->DeleteMenuItem(ELmkShowOnMapPlaceHolder);
-            aMenuPane->DeleteMenuItem(ELmkNavigateToPlaceHolder);
+            if (hideMN)
+                {
+                // delete the show on map & Navigate To options
+                aMenuPane->DeleteMenuItem(ELmkShowOnMapPlaceHolder);
+                aMenuPane->DeleteMenuItem(ELmkNavigateToPlaceHolder);
+                }
+            iMapNavInterface->AttachMenuPaneL(aMenuPane, R_LMK_EDITOR_MENU,
+                    ELmkCmdMnNav);
 
-            aMenuPane->SetItemDimmed(ELmkCmdSendDummy, ETrue);
-            aMenuPane->SetItemDimmed(ELmkCmdSaveLm, ETrue);
+            // Send menu is handled by the sender:
+            if ( FeatureManager::FeatureSupported( KFeatureIdLandmarksConverter ) )
+                {
+                aMenuPane->SetItemDimmed(ELmkCmdSendDummy, EFalse);
+
+                // Use default "Send" item text from SendUI
+                iSender.DisplaySendMenuL(*aMenuPane, 1);
+                }
+            else
+                {
+                aMenuPane->SetItemDimmed(ELmkCmdSendDummy, ETrue);
+                }
 
             if (FeatureManager::FeatureSupported(KFeatureIdHelp)
                     && !iIsHideHelp)
@@ -164,8 +191,9 @@ void CLmkPackageEditorImpl::DynInitMenuPaneL(TInt aResourceId,
                 aMenuPane->SetItemDimmed(EAknCmdHelp, ETrue);
                 }
 
+            //shown in package editor mode:
+            aMenuPane->SetItemDimmed(ELmkCmdSaveLm, EFalse);
             DimmMenuItemsL(aMenuPane);
-
             //always dimmed
             aMenuPane->SetItemDimmed(EAknFormCmdEdit, ETrue);
             aMenuPane->SetItemDimmed(EAknFormCmdSave, ETrue);

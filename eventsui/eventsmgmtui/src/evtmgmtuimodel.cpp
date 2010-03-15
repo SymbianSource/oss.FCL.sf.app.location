@@ -149,7 +149,7 @@ TPtrC16 CEvtMgmtUiModel::MdcaPoint( TInt  aIndex ) const
 	
 	// Append the Icon ID
 	if( aIndex==0 )
-	    ptr.AppendNum( 0 );
+	    ptr.AppendNum( 1 );
 	else
 	    {	
 		// Get the Index based on the Status Filter
@@ -158,17 +158,17 @@ TPtrC16 CEvtMgmtUiModel::MdcaPoint( TInt  aIndex ) const
             {
             case EActive:
                 {
-                ptr.AppendNum( 1 );
+                ptr.AppendNum( 2 );
                 break;
                 }
             case EDraft:
                 {
-                ptr.AppendNum( 2 );
+                ptr.AppendNum( 3 );
                 break;
                 }           
             case ECompleted:
                 {
-                ptr.AppendNum( 3 );
+                ptr.AppendNum( 4 );
                 break;
                 }
             }
@@ -209,7 +209,7 @@ TPtrC16 CEvtMgmtUiModel::MdcaPoint( TInt  aIndex ) const
     	    }
     	ptr.Append( EKeyTab );	
     	if( iEventsArray[aIndex-1]->Repeat() )
-    	    ptr.AppendNum(4);
+    	    ptr.AppendNum(5);
 	    }	
 	
     return *iBuffer;

@@ -432,7 +432,7 @@ void CBlidTripMeterView::DynInitMenuPaneL(
             }
         case R_BLID_MAIN_MENU:
             {
-            CBlidBaseView::HandleHelpFeature( aMenuPane );
+            CBlidBaseView::HandleHelpFeatureL( aMenuPane );
             break;
             }  
         case R_BLID_SAVE_CURRENT_LOCATION_MENU:

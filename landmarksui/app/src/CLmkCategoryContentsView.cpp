@@ -180,8 +180,6 @@ void CLmkCategoryContentsView::HandleCommandL(TInt aCommand)
         case ELmkCmdSendVia10:
         case ELmkCmdSend:
         case ELmkCmdOpenLm:
-        case ELmkCmdGoToUrl:
-        case ELmkCmdCall:
         case EAknCmdMark:
         case EAknCmdUnmark:
         case EAknMarkAll:
@@ -272,20 +270,29 @@ void CLmkCategoryContentsView::DynInitMenuPaneL(TInt aResourceId,
 
     switch (aResourceId)
         {
-        case R_LMK_APP_CALL_SUBMENU:
-            {
-            // Initialise the call UI AIW menu via selector
-            selector.AttachToAIWMenuL(R_LMK_APP_CALL_SUBMENU,
-                    R_LMK_APP_AIW_INTEREST);
-            selector.InitializeMenuPaneL(*aMenuPane, aResourceId);
-            selector.AttachInterestL(R_LMK_APP_AIW_INTEREST);
-            break;
-            }
         case R_LMK_BYLM_MENU1:
             {
+            if (iContainer->IsUncategorizedCategory() || visibleCount == 0)
+                {
+                aMenuPane->SetItemDimmed(ERemoveFromCat, ETrue);
+                }            
             aMenuPane->SetItemDimmed(ELmkCmdSendDummy, ETrue);
-            aMenuPane->SetItemDimmed(ELmkAppMenuAiwId, ETrue);
-            aMenuPane->SetItemDimmed(ELmkCmdGoToUrl, ETrue);
+
+            // Send menu is handled by the sender:
+            if ( FeatureManager::FeatureSupported( KFeatureIdLandmarksConverter ) )
+                {
+                iLmkSender.DisplaySendMenuL( *aMenuPane, visibleCount );
+                if( visibleCount > 0 )
+                    {
+                    TInt pos( 0 );
+                    aMenuPane->ItemAndPos( ELmkCmdSend, pos );    
+                    if( pos > 0 )
+                        {            
+                        aMenuPane->SetItemDimmed(ELmkCmdSend,EFalse );
+                        aMenuPane->SetItemSpecific(ELmkCmdSend,ETrue);
+                        }                       
+                    }   
+                }
 
             /*
              If multiple landmarks are selected then we have to dim
@@ -344,32 +351,18 @@ void CLmkCategoryContentsView::DynInitMenuPaneL(TInt aResourceId,
                 {
                 break;
                 }
-
+            // dimming navigate to item
+            aMenuPane->SetItemDimmed(navigateToCmd, ETrue);
+            
+            // handling of showonmap item
             if (isLandmarkDataEmpty || markedCount > 1)
                 {
                 aMenuPane->SetItemDimmed(showOnMapCmd, ETrue);
-                aMenuPane->SetItemDimmed(navigateToCmd, ETrue);
                 }
             else
                 {
                 aMenuPane->SetItemDimmed(showOnMapCmd, EFalse);
                 aMenuPane->SetItemSpecific(showOnMapCmd, ETrue);
-                if (iContainer->IsUncategorizedCategory())
-                    {
-                    aMenuPane->SetItemDimmed(navigateToCmd, EFalse);
-                    aMenuPane->SetItemSpecific(navigateToCmd, ETrue);
-                    }
-                else
-                    aMenuPane->SetItemDimmed(navigateToCmd, ETrue);
-                }
-            break;
-            }
-        case R_LMK_BYLM_MENU2:
-            {
-            aMenuPane->SetItemDimmed(ELmkCmdChangeIcon, ETrue);
-            if (iContainer->IsUncategorizedCategory() || visibleCount == 0)
-                {
-                aMenuPane->SetItemDimmed(ERemoveFromCat, ETrue);
                 }
             break;
             }
@@ -460,8 +453,6 @@ void CLmkCategoryContentsView::DoActivateL(const TVwsViewId& /*aPrevViewId*/,
 
         CLmkAppSelectorImplBase& selector = iContainer->SelectorImpl();
         AppUi()->AddToStackL(*this, iContainer);
-        // Attach CAll UI base service Interest
-        selector.AttachInterestL(R_LMK_APP_AIW_INTEREST);
 
 #ifdef RD_SCALABLE_UI_V2
         //for touch event
@@ -653,19 +644,24 @@ TBool CLmkCategoryContentsView::HandleAIWserviceCommandsL(
         {
         case KAiwCmdMnNavigateTo:
             {
-            iContainer->GetSelectedLandmarksL(lmkArray);
-            CleanupStack::PushL(TCleanupItem(CleanupArray, &lmkArray));
-            iMapNavInterface->NavigateToLandmarkL(lmkArray[0], aMenuCommand);
-            CleanupStack::PopAndDestroy(); // lmkArray
+            if (iContainer->GetSelectedLandmarksL(lmkArray) == KErrNone)
+                {
+                CleanupStack::PushL(TCleanupItem(CleanupArray, &lmkArray));
+                iMapNavInterface->NavigateToLandmarkL(lmkArray[0],
+                        aMenuCommand);
+                CleanupStack::PopAndDestroy(); // lmkArray
+                }
             break;
             }
         case KAiwCmdMnShowMap:
             {
-            TInt retval = iContainer->GetSelectedLandmarksL(lmkArray);
-            CleanupStack::PushL(TCleanupItem(CleanupArray, &lmkArray));
-            iMapNavInterface->ShowLandmarksOnMapL(lmkArray, aMenuCommand,
-                    CLmkMapNavigationInterface::EByLmkView);
-            CleanupStack::PopAndDestroy(); // lmkArray
+            if (iContainer->GetSelectedLandmarksL(lmkArray) == KErrNone)
+                {
+                CleanupStack::PushL(TCleanupItem(CleanupArray, &lmkArray));
+                iMapNavInterface->ShowLandmarksOnMapL(lmkArray, aMenuCommand,
+                        CLmkMapNavigationInterface::EByLmkView);
+                CleanupStack::PopAndDestroy(); // lmkArray
+                }
             break;
             }
         case KAiwCmdMnSelectFromMap:
@@ -681,16 +677,6 @@ TBool CLmkCategoryContentsView::HandleAIWserviceCommandsL(
             TPosLmItemId categoryId = categoryMemento.MemorizedItemId();
             iMapNavInterface->GetLandmarkFromMapForCategoryL(aMenuCommand,
                     categoryId);
-            break;
-            }
-        case KAiwCmdCall:
-            {
-            // Handle AIW specific service commands
-            CLmkAppSelectorImplBase& selector = iContainer->SelectorImpl();
-            if (selector.ListVisibleItemCount() > 0)
-                {
-                selector.ExecuteAIWCallCmdL(aMenuCommand);
-                }
             break;
             }
         default:

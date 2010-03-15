@@ -82,7 +82,7 @@ class CBlidArrivedTonePlayerUtility : public CBase,
         void ConstructL( );
 
 	public:
-		void PlayToneL( TFileName aFileName );
+		void PlayToneL( const TFileName& aFileName );
 		void CanclePayer(); 
 		
 	private:

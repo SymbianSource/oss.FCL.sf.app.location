@@ -19,7 +19,7 @@
 // SYSTEM INCLUDES 
 #include <eikclbd.h>
 #include <gulicon.h>
-#include <akniconarray.h>
+#include <AknIconArray.h>
 
 // USER INCLUDES
 #include "lclistbox.h"

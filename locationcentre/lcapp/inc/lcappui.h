@@ -24,7 +24,7 @@
 #include <eikdoc.h>
 #include <e32std.h>
 #include <coeccntx.h>
-#include <aknviewappui.h>
+#include <aknViewAppUi.h>
 #include <lcnotification.h>
 
 // FORWARD DECLARATIONS

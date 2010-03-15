@@ -23,8 +23,8 @@
 #include <data_caging_path_literals.hrh>
 #include <s32mem.h>
 #include <SVGEngineInterfaceImpl.h>
-#include <aknutils.h>
-#include <AknLayoutScalable_Avkon.cdl.h>
+#include <AknUtils.h>
+#include <aknlayoutscalable_avkon.cdl.h>
 #include <AknLayout2Def.h>
 #include <lcicons.mbg>
 

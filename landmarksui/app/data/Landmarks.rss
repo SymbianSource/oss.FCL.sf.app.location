@@ -137,27 +137,9 @@ RESOURCE MENU_PANE r_lmk_bylm_menu1
             },
         MENU_ITEM
             {
-            command = ELmkCmdEditLm;
-            txt = qtn_lm_opt_edit_landmark;
-            flags = EEikMenuItemSpecific;
-            },
-        MENU_ITEM
-            {
             command = ELmkCmdNewLm;
             txt = qtn_lm_opt_new_landmark;
             cascade = r_lmk_new_landmark_submenu;
-            },
-        MENU_ITEM
-            {
-            command = ELmkCmdDeleteLm;
-            txt = qtn_lm_opt_delete_landmark;
-            flags = EEikMenuItemSpecific;
-            },
-        MENU_ITEM
-            {
-            command = ELmkCmdAddToCat;
-            txt = qtn_lm_opt_add_to_category;
-            flags = EEikMenuItemSpecific;
             },
         MENU_ITEM
             {
@@ -173,64 +155,26 @@ RESOURCE MENU_PANE r_lmk_bylm_menu1
             },
         MENU_ITEM
             {
+            command = ELmkCmdAddToCat;
+            txt = qtn_lm_opt_add_to_category;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = ERemoveFromCat;
+            txt = qtn_lm_opt_remove_from_category;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
             command = ELmkCmdSendDummy;
             txt = qtn_options_send_via;
             },
-        // This menu item will be replaced by AIW.
         MENU_ITEM
             {
-            command = ELmkAppMenuAiwId; // The same ID than in interest.
-            txt = qtn_options_call; // Will be replaced by AIW (plugin).
-            cascade = r_lmk_app_call_submenu; // Added submenu for AIW usage.
-            },
-        MENU_ITEM
-            {
-            command = ELmkCmdGoToUrl;
-            txt = qtn_lm_opt_go_to_url;
-            }
-        };
-    }
-
-// -----------------------------------------------------------------------------
-//   
-//    r_lmk_app_call_submenu
-//    
-//    The submenu where call menu options are put by AVKON.
-// -----------------------------------------------------------------------------
-//
-RESOURCE MENU_PANE r_lmk_app_call_submenu
-    {
-    items =
-        {
-        // This menu item will be replaced by AIW.
-        MENU_ITEM
-            {
-            command = ELmkAppSubMenuAiwId; // The same ID than in interest.
-            txt = ""; // Will be replaced by AIW (plugin).
-            }
-        };
-    }
-
-// -----------------------------------------------------------------------------
-//   
-//    r_lmk_app_aiw_interest
-//
-// -----------------------------------------------------------------------------
-//
-RESOURCE AIW_INTEREST r_lmk_app_aiw_interest
-    {
-    items=
-        {
-        // This application is interested in calling from menu.
-        AIW_CRITERIA_ITEM
-            {
-            // Some unique id in this RSS, by default use KaiwCmdCall.
-            id = ELmkAppSubMenuAiwId;
-            serviceCmd = KAiwCmdCall;
-            serviceClass = KAiwClassMenu;
-            contentType = "*";
-            defaultProvider = 0x101F868E;
-            maxProviders = 1;
+            command = ELmkCmdDeleteLm;
+            txt = qtn_lm_opt_delete_landmark;
+            flags = EEikMenuItemSpecific;
             }
         };
     }
@@ -249,17 +193,6 @@ RESOURCE MENU_PANE r_lmk_bylm_menu2
             {
             command = ELmkCmdEditCats;
             txt = qtn_lm_opt_edit_categories;
-            },
-        MENU_ITEM
-            {
-            command = ELmkCmdChangeIcon;
-            txt = qtn_lm_opt_change_landmark_icon;
-            },
-        MENU_ITEM
-            {
-            command = ERemoveFromCat;
-            txt = qtn_lm_opt_remove_from_category;
-            flags = EEikMenuItemSpecific;
             },
         MENU_ITEM
             {
@@ -333,11 +266,6 @@ RESOURCE MENU_PANE r_lmk_ok_menu
             },
         MENU_ITEM
             {
-            command = ELmkCmdDeleteLm;
-            txt = qtn_lm_opt_delete_landmark;
-            },
-        MENU_ITEM
-            {
             command = ELmkCmdAddToCat;
             txt = qtn_lm_opt_add_to_category;
             },
@@ -345,6 +273,11 @@ RESOURCE MENU_PANE r_lmk_ok_menu
             {
             command = ELmkCmdSendDummy;
             txt = qtn_options_send_via;
+            },
+        MENU_ITEM
+            {
+            command = ELmkCmdDeleteLm;
+            txt = qtn_lm_opt_delete_landmark;
             }
         };
     }
@@ -478,9 +411,9 @@ RESOURCE MENU_BAR r_lmk_category_settings_menubar
         MENU_TITLE
             {menu_pane=r_lmk_main_menu; txt="";},
         MENU_TITLE
-            {menu_pane=r_lmk_category_settings_menu2; txt="";},
-        MENU_TITLE
             {menu_pane = R_AVKON_MENUPANE_MARKABLE_LIST;},
+        MENU_TITLE
+            {menu_pane=r_lmk_category_settings_menu2; txt="";},
         MENU_TITLE
             {menu_pane=r_lmk_category_settings_menu1; txt="";}
         };

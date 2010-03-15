@@ -17,7 +17,7 @@
 
 
 // SYSTEM INCLUDES 
-#include <akniconarray.h>		// Icon Array
+#include <AknIconArray.h>		// Icon Array
 #include <eikclbd.h>			// Column Listbox
 
 // USER INCLUDES

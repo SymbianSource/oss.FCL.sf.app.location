@@ -17,10 +17,10 @@
 
 
 // INCLUDE FILES
-#include <Xml/Parser.h>
-#include <Xml/MatchData.h>
+#include <xml/parser.h>
+#include <xml/matchData.h>
 #include <utf.h>
-#include <Xml/XmlParserErrors.h>
+#include <xml/xmlparsererrors.h>
 #include <javaregistryincludes.h>
 
 // USER INCLUDE

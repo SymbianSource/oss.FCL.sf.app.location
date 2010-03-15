@@ -117,7 +117,7 @@ private: // private API for database operations
      * @param aRegAppInfoFile	is full path to app info
      *              			database file.
      */
-    void OpenDbL( const TFileName aRegAppInfoFile );
+    void OpenDbL( const TFileName& aRegAppInfoFile );
 
     /**
      *  Creates and opens a new app info database. Creates a
@@ -130,7 +130,7 @@ private: // private API for database operations
      * @param aRegAppInfoFile	is full path to app info
      *              			database file.
      */
-    void CreateDbL( const TFileName aRegAppInfoFile );
+    void CreateDbL( const TFileName& aRegAppInfoFile );
 
     /**
 	 * Closes the database opened with either OpenDbL or

@@ -21,7 +21,7 @@
 
 //  SYSTEM INCLUDES
 #include <aknview.h>
-#include <aknviewappui.h>
+#include <aknViewAppUi.h>
 
 // FORWARD DECLARATIONS
 class CLcContainer;

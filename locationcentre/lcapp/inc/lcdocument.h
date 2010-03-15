@@ -20,7 +20,7 @@
 #define C_LCDOCUMENT_H
 
 // SYSTEM INCLUDES
-#include <akndoc.h>
+#include <AknDoc.h>
 
 // FORWARD DECLARATIONS
 class  CEikAppUi;
