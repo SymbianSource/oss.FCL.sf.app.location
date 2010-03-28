@@ -85,7 +85,7 @@ class CLmkLmItemListProvider
                         RArray<TPosLmItemId>& aSelectedItems,
                         const CArrayFix<TInt>& aSelectedIndexes ) const;
 
-		IMPORT_C void CLmkLmItemListProvider::GetAllItemIdsL(
+		IMPORT_C void GetAllItemIdsL(
 		    RArray<TPosLmItemId>& aSelectedItems ) const;
 
         /**

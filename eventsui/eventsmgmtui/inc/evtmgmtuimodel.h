@@ -84,7 +84,7 @@ public:
      * It will return Events array object reference.
      * @ret Events array object reference
      */
-    RPointerArray<CEvtBasicEventInfo>& CEvtMgmtUiModel::EventsArray();
+    RPointerArray<CEvtBasicEventInfo>& EventsArray();
     
 	/**
      * returns eventinfo object.

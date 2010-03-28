@@ -77,7 +77,7 @@ private: //Data
     /**
      * Retrieve the application specific status pane
      */
-    CEikStatusPane* CEvtMgmtUiAppUi::StatusPane();
+    CEikStatusPane* StatusPane();
     
     /**
      * Legal Note
