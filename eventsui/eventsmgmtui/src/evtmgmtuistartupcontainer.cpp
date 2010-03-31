@@ -39,7 +39,7 @@
 #include <AknsConstants.h> 		// Skin Ids
 #include <AknIconUtils.h>
 #include <AknLayout.lag>          // AVKON LAF layouts
-#include <AknLayoutDef.h>
+#include <aknlayoutdef.h>
 #include <aknsfld.h> // For SearchField
 
 // USER INCLUDES

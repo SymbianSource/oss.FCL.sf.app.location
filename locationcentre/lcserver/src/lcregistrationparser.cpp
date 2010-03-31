@@ -18,7 +18,7 @@
 
 // INCLUDE FILES
 #include <xml/parser.h>
-#include <xml/matchData.h>
+#include <xml/matchdata.h>
 #include <utf.h>
 #include <xml/xmlparsererrors.h>
 #include <javaregistryincludes.h>

@@ -17,7 +17,7 @@
 
 
 // SYSTEM INCLUDES 
-#include <aknsutils.h>
+#include <AknsUtils.h>
 #include <gulicon.h>
 #include <fbs.h>
 #include <data_caging_path_literals.hrh>
@@ -25,7 +25,7 @@
 #include <SVGEngineInterfaceImpl.h>
 #include <AknUtils.h>
 #include <aknlayoutscalable_avkon.cdl.h>
-#include <AknLayout2Def.h>
+#include <aknlayout2def.h>
 #include <lcicons.mbg>
 
 // USER INCLUDES

@@ -18,7 +18,7 @@
 
 // SYSTEM INCLUDES
 #include <s32mem.h>
-#include <aknsutils.h>
+#include <AknsUtils.h>
 #include <gulicon.h>
 #include <aknlists.h>
 #include <aknPopup.h>
