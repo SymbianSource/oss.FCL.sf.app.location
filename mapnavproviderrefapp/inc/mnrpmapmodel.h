@@ -173,7 +173,7 @@ class CMnrpMapModel : public CBase, public MMnrpPositionObserver
             };
 
         /** Returns grid for current viewport and scale */
-        void GetGrid( TGrid& aGrid ) const;
+        IMPORT_C void GetGrid( TGrid& aGrid ) const;
 
         /** Information about current location */
         class TCurrentLocation
