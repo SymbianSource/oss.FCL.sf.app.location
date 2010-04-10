@@ -1,7 +1,7 @@
 /*
 * ============================================================================
 *  Name        : lclocationappinfo.h
-/*
+*
 * Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
