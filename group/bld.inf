@@ -26,7 +26,6 @@ WINSCW ARMV5
 #include "../locationsatviewrefapp/group/bld.inf"
 #include "../simpsyconfigurator/group/bld.inf"
 #include "../mapnavproviderrefapp/group/bld.inf"
-#include "../locationcentre/group/bld.inf"
 
 #include "../loc_pub/group/bld.inf"
 #include "../loc_plat/group/bld.inf"

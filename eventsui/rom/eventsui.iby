@@ -64,10 +64,6 @@ S60_UPGRADABLE_APP_REG_RSC( evthandlerapp )
 // Other Icons
 SCALABLE_IMAGE( APP_BITMAP_DIR, APP_BITMAP_DIR, evthandlerapp )
 
-// Location Centre Registration file
-data=ZPRIVATE\10283138\import\evtmgmtui_reg.xml     \private\10283138\import\evtmgmtui_reg.xml
-
-
 // Notifier
 ECOM_PLUGIN(evtnotifierplugin.dll,evtnotifierplugin.rsc)
 file=ABI_DIR\BUILD_DIR\evtinfonote.dll   SHARED_LIB_DIR\evtinfonote.dll

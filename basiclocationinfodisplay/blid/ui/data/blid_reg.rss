@@ -26,7 +26,6 @@ UID3 KBLIDUID3
 RESOURCE APP_REGISTRATION_INFO
     {
     app_file = "Blid"; 
-    hidden = KAppIsHidden;       
     localisable_resource_file = APP_RESOURCE_DIR"\\Blid"; 
     localisable_resource_id = R_BLID_LOCALISABLE_APP_INFO;
     }

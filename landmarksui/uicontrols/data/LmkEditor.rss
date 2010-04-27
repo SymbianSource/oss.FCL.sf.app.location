@@ -876,15 +876,29 @@ RESOURCE LONGITUDE_EDITOR r_lmk_long_editor
 	}
 //----------------------------------------------------
 //   
-//    r_lmk_unit_editor
-//    Avkon's distance editor
+//    r_lmk_unit_editor_metric
+//    Avkon's distance editor using metric units
 //
 //----------------------------------------------------
 //     
-RESOURCE AVKON_UNIT_EDITOR r_lmk_unit_editor
+RESOURCE AVKON_UNIT_EDITOR r_lmk_unit_editor_metric
     {
     min = 0;
-    max = 99999;
+    max = 20000;	// KMaxAccuracy
+    maxfractionaldigits = 2;
+    flags = EAknUnitEditorAllowUninitialized;
+    }
+//----------------------------------------------------
+//   
+//    r_lmk_unit_editor_imperial
+//    Avkon's distance editor using imperial units
+//
+//----------------------------------------------------
+//     
+RESOURCE AVKON_UNIT_EDITOR r_lmk_unit_editor_imperial
+    {
+    min = 0;
+    max = 6099;		// KMaxAccuracy/KMetreToFoot
     maxfractionaldigits = 2;
     flags = EAknUnitEditorAllowUninitialized;
     }

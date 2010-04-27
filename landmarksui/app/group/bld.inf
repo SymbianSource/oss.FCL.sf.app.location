@@ -30,8 +30,6 @@ PRJ_PLATFORMS
 DEFAULT
 
 PRJ_EXPORTS
-../data/landmarksui_lc_registration.xml   /epoc32/release/winscw/udeb/z/private/10283138/import/landmarksui_lc_registration.xml
-../data/landmarksui_lc_registration.xml   /epoc32/data/z/private/10283138/import/landmarksui_lc_registration.xml
 
 // Export landmarksstub.sis file
 ../data/landmarksstub.sis  /epoc32/data/z/system/install/landmarksstub.sis

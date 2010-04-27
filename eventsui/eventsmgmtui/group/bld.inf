@@ -20,8 +20,6 @@ PRJ_PLATFORMS
 DEFAULT
 
 PRJ_EXPORTS
-../data/evtmgmtui_reg.xml       /epoc32/data/z/private/10283138/import/evtmgmtui_reg.xml
-../data/evtmgmtui_reg.xml       /epoc32/release/winscw/udeb/z/private/10283138/import/evtmgmtui_reg.xml
 ../data/eventsuistub.sis        /epoc32/data/z/system/install/eventsuistub.sis
 
 PRJ_MMPFILES

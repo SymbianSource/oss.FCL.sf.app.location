@@ -204,24 +204,35 @@ void CLmkEditorNumberField::UpdateL()
 //
 void CLmkEditorNumberField::CreateAvkonUnitEditorL()
 	{
-	 // Create Distance editor using AVKON's unit editor
-    // and insert a line in the dialog
-   iControl = static_cast<CAknUnitEditor*>( iUiBuilder.CreateLineL(
+	// Create Distance editor using AVKON's unit editor
+	// and insert a line in the dialog
+	iControl = static_cast<CAknUnitEditor*>( iUiBuilder.CreateLineL(
             FieldLabel(), LandmarkItemField().UniqueFieldIdentity(),
             EAknCtUnitEditor ) );
-    //read control from resource file.
-    TResourceReader reader;
-	iEnv->CreateResourceReaderLC(reader, R_LMK_UNIT_EDITOR);
-	iControl->ConstructFromResourceL(reader);
-	CleanupStack::PopAndDestroy();// reader
-	ResolveUnitL();
 
+
+	
 	// Obtain the current system of measurement
 	TInt sysOfMeasurement = EAknUnitEditorMeter;
 	if( !IsSystemUnitMetric())
 		{
 		sysOfMeasurement = EAknUnitEditorFoot;
 		}
+	
+	//read control from resource file.
+	TResourceReader reader;
+	if( sysOfMeasurement == EAknUnitEditorMeter)
+		{
+		iEnv->CreateResourceReaderLC(reader, R_LMK_UNIT_EDITOR_METRIC);
+		}
+	else
+		{
+		iEnv->CreateResourceReaderLC(reader, R_LMK_UNIT_EDITOR_IMPERIAL);
+		}
+	
+	iControl->ConstructFromResourceL(reader);
+	CleanupStack::PopAndDestroy(); //reader
+	ResolveUnitL();
 
     /*
      if ( LandmarkItemField().FieldType() == EPositionAccuracy ||

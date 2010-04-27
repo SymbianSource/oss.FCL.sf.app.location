@@ -40,7 +40,6 @@ UID3 KEvtMgmtUiUid
 RESOURCE APP_REGISTRATION_INFO
     {    
     app_file = "evtmgmtui";
-    hidden = KAppIsHidden;
     embeddability = KAppEmbeddable;    
     localisable_resource_file = EVTMGMTUI_RESOURCE_FILE_NAME;
     localisable_resource_id = R_EVTMGMTUI_LOCALISABLE_APP_INFO;

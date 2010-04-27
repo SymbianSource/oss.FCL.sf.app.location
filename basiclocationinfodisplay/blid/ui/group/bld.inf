@@ -28,10 +28,6 @@ PRJ_EXPORTS
 ../inc/Blid.hrh		|../../../inc/Blid.hrh
 ../inc/BlidSettingsCrkeys.h	|../../../inc/BlidSettingsCrkeys.h
 
-// Export the lc registration file
-../data/blid_lc_registration.xml   /epoc32/release/winscw/udeb/z/private/10283138/import/blid_lc_registration.xml
-../data/blid_lc_registration.xml   /epoc32/data/z/private/10283138/import/blid_lc_registration.xml
-
 
 // Export blidstub.sis file
 ../data/blidstub.sis  /epoc32/data/z/system/install/blidstub.sis

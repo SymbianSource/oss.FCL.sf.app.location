@@ -48,9 +48,6 @@ file=ABI_DIR\BUILD_DIR\Blid.exe            PROGRAMS_DIR\Blid.exe
 file=ABI_DIR\BUILD_DIR\SatInfoStub.dll		SHARED_LIB_DIR\SatInfo.dll
 #endif // __LOCATIONFRAMEWORKCORE
 
-// export blid lc registration file
-data=ZPRIVATE\10283138\import\blid_lc_registration.xml		\private\10283138\import\blid_lc_registration.xml
-
 // backup-restore registration file to take backup
 data=DATAZ_\private\101F85A0\backup_registration.xml    private\101F85A0\backup_registration.xml
 

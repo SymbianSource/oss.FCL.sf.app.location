@@ -34,8 +34,7 @@ RESOURCE APP_REGISTRATION_INFO
     {    
     app_file = "Landmarks";
     embeddability = KAppEmbeddable;
-    hidden = KAppIsHidden;
-		localisable_resource_file = APP_RESOURCE_DIR"\\landmarks";
+	localisable_resource_file = APP_RESOURCE_DIR"\\landmarks";
     localisable_resource_id = R_LANDMARKS_LOCALISABLE_APP_INFO;
     }
 
