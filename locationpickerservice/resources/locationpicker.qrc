@@ -1,13 +1,9 @@
 <RCC>
     <qresource>
-        <file>qtg_large_maps.png</file>
-        <file>qtg_mono_favourites.png</file>
-        <file>qtg_mono_home.png</file>
-        <file>qtg_mono_location.png</file>
-        <file>qtg_mono_location_collection.png</file>
-        <file>qtg_mono_search.png</file>
-        <file>qtg_mono_work.png</file>
-        <file>qtg_small_calendar.png</file>
-        <file>qtg_small_contacts.png</file>
+        <file>locationpickerpotrait.docml</file>
+        <file>locationpickerlandscape.docml</file>
+        <file>locationpickersearchview.docml</file>
+        <file>locationgrid.css</file>
+        <file>locationgrid.hbgridviewitem.widgetml</file>
     </qresource>
 </RCC>

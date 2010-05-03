@@ -11,53 +11,37 @@
 *
 * Contributors:
 *
-* Description: LocationPickerCollectionListView declaration
+* Description: LocationPickerCollectionContent declaration
 *
 */
 
 #ifndef LOCATIONPICKERCOLLECTIONCONTENT_H
 #define LOCATIONPICKERCOLLECTIONCONTENT_H
 
-#include <HbView>
-
-class HbListView;
-class HbAction;
 class QStandardItemModel;
 class LocationPickerProxyModel;
 class LocationPickerDataManager;
-class LocationPickerAppWindow;
 
-/**  Class for handling a view collection content
- *
+/**  
+ * Class for handling collection content
  */
-class LocationPickerCollectionContent : public HbView
+class LocationPickerCollectionContent : public QObject
 {
-    Q_OBJECT
 public:
     // constructor
-    LocationPickerCollectionContent( LocationPickerAppWindow *aWindow,
-                                     quint32 aCollectionid, QGraphicsItem* aParent = 0);
+    LocationPickerCollectionContent( Qt::Orientations aOrientation , quint32 aCollectionid );
+    //Destructor
     ~LocationPickerCollectionContent();
-private slots:
-    // slot triggered when sort ascending is selected in menu
-    void sortAscending();
-    // slot triggered when sort descending is selected in menu
-    void sortDescending();
-
-    // slot used to handle when a location is selected in list view
-    void handleActivated(const QModelIndex &aIndex);
+    //get proxy model
+    LocationPickerProxyModel* getProxyModel();
+    //get LocationPickerDataManager
+    LocationPickerDataManager* getDataManager();
 
 private:
-    // constructs a menu for the view
-    void constructMenu();
-
-private:
-    HbListView  *mListView;
+    Qt::Orientations mOrientation;
     LocationPickerProxyModel *mProxyModel;
     QStandardItemModel *mModel;
     LocationPickerDataManager *mDataManager;
-    LocationPickerAppWindow* mWindow;
-    HbAction *mSecondaryBackAction;
 };
 
 #endif // LOCATIONPICKERCOLLECTIONCONTENT_H

@@ -18,6 +18,8 @@ TEMPLATE = subdirs
 BLD_INF_RULES.prj_exports += "$${LITERAL_HASH}include <platform_paths.hrh>"
 
 include(location_picker_service_api/location_picker_service_api.pri)
+include(location_data_harvester_api/location_data_harvester_api.pri)
+
 
 for(filename,PLATFORM_HEADERS){
     BLD_INF_RULES.prj_exports *= "$$filename APP_LAYER_PLATFORM_EXPORT_PATH($$basename(filename))"

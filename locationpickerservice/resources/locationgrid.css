@@ -1,0 +1,31 @@
+HbGridViewItem#locationgrid
+{
+    layout:layout-1;
+}
+HbGridViewItem#locationgrid::icon{
+	fixed-width: 24.375un;
+	fixed-height: 32.5un;
+}
+
+HbGridViewItem#locationgrid::text{
+    text-height: var(hb-param-text-height-tiny);
+    font-variant: primary;
+    text-align: center center;
+    color: qtc_grid;
+	text-line-count-min: 1;
+	text-line-count-max: 2;
+}
+
+HbGridViewItem#locationgrid::selection-icon{
+    fixed-width: 3.0un;
+    fixed-height: 3.0un;
+}
+
+HbGridViewItem#locationgrid::multiselection-toucharea{
+    fixed-width: 9.0un;
+    fixed-height: 9.0un;
+}
+
+HbGridViewItem#locationgrid::frame{
+	border-width: var(hb-param-background-grid-main);
+}

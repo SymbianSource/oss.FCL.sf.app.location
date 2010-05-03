@@ -43,40 +43,44 @@ symbian: {
 # ##### qthighway
 CONFIG += service
 LIBS += -lxqservice \
-    -lxqserviceutil \
-    -lflogger
+    -lxqserviceutil 
 SERVICE.FILE = service_conf.xml
 SERVICE.OPTIONS = embeddable
 SERVICE.OPTIONS += hidden
 
 # #### /qthighway
 
-RESOURCES += .\resources\locationpicker.qrc 
+RESOURCES += ./resources/locationpicker.qrc 
 
+TRANSLATIONS += lilpicker.ts
 
 SOURCES += src/main.cpp \
-    src/locationpickerallview.cpp \
+    src/locationpickercontent.cpp \
     src/locationpickerappwindow.cpp \
-    src/locationpickertoolbar.cpp \
     src/locationpickersearchview.cpp \
     src/locationpickerproxymodel.cpp \
-    src/locationpickercollectionlistview.cpp \
+    src/locationpickercollectionlistcontent.cpp \
     src/locationpickercollectioncontent.cpp \
     src/locationpickerservice.cpp \
     src/locationpickerdatamanager.cpp \
-    src/locationpickerdatamanager_p.cpp 
+    src/locationpickerdatamanager_p.cpp \
+    src/locationpickerpotraitview.cpp \
+    src/locationpickerlandscapeview.cpp \
+    src/locationpickerdocumentloader.cpp
     
     
 
-HEADERS += inc/locationpickerallview.h \
+HEADERS += inc/locationpickercontent.h \
     inc/locationpickerappwindow.h \
-    inc/locationpickertoolbar.h \
     inc/locationpickersearchview.h \
     inc/locationpickerproxymodel.h \
-    inc/locationpickercollectionlistview.h \
+    inc/locationpickercollectionlistcontent.h \
     inc/locationpickercollectioncontent.h \
     inc/locationpickertypes.h \
     inc/locationpickerservice.h \
     inc/locationpickerdatamanager.h \
-    inc/locationpickerdatamanager_p.h
+    inc/locationpickerdatamanager_p.h \
+    inc/locationpickerpotraitview.h \
+    inc/locationpickerlandscapeview.h \
+    inc/locationpickerdocumentloader.h
 

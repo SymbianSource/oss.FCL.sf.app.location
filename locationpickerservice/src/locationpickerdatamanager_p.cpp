@@ -35,7 +35,7 @@
 
 LocationPickerDataManagerPrivate::LocationPickerDataManagerPrivate() :
         mModel( NULL ),
-        mViewType( ELocationPickerAllView ),
+        mViewType( ELocationPickerContent ),
         mIterator(NULL),
         mLandmarkDb(NULL),
         mLmCategoryManager(NULL),
@@ -78,9 +78,10 @@ LocationPickerDataManagerPrivate::~LocationPickerDataManagerPrivate()
 // ----------------------------------------------------------------------------
 // LocationPickerDataManagerPrivate::populateModel()
 // ----------------------------------------------------------------------------
-bool LocationPickerDataManagerPrivate::populateModel( quint32 aCollectionId )
+bool LocationPickerDataManagerPrivate::populateModel( const Qt::Orientations aOrientation, quint32 aCollectionId )
 {
     bool retValue = false;
+    mOrientation = aOrientation;
     TRAP_IGNORE( retValue = populateModelL( aCollectionId ) );
     return retValue;
 }
@@ -92,20 +93,20 @@ bool LocationPickerDataManagerPrivate::populateModelL( quint32 aCollectionId )
 {
     // Handle to the landmark database
     mLandmarkDb = NULL;
-
+    
     //Open and intialize Landmark DB
     mLandmarkDb = CPosLandmarkDatabase::OpenL();
     ExecuteAndDeleteLD( mLandmarkDb->InitializeL() );
 
     switch( mViewType )
     {
-        case ELocationPickerAllView:
+        case ELocationPickerContent:
         case ELocationPickerSearchView:
              {
                  // Create an iterator for iterating the landmarks in the database
                  mIterator = mLandmarkDb->LandmarkIteratorL();
 
-                 if( ( mIterator == NULL ) || (mIterator->NumOfItemsL() == 0) )
+                 if( ( !mIterator ) || (mIterator->NumOfItemsL() == 0) )
                  {
                      // no items in the landmark database, so return false.
                      return false;
@@ -115,7 +116,7 @@ bool LocationPickerDataManagerPrivate::populateModelL( quint32 aCollectionId )
                  CleanupStack::Pop( mIterator );
              }
              break;
-        case ELocationPickerCollectionListView:
+        case ELocationPickerCollectionListContent:
              {
 
                  // Create category manager for landmarks
@@ -128,7 +129,7 @@ bool LocationPickerDataManagerPrivate::populateModelL( quint32 aCollectionId )
                  // Create an iterator for iterating the referenced categories in the database
                  mIterator = mLmCategoryManager->ReferencedCategoryIteratorL();
 
-                 if( ( mIterator == NULL ) || (mIterator->NumOfItemsL() == 0) )
+                 if( ( !mIterator ) || (mIterator->NumOfItemsL() == 0) )
                  {
                      // no items in the landmark database, so return false.
                      return false;
@@ -140,7 +141,7 @@ bool LocationPickerDataManagerPrivate::populateModelL( quint32 aCollectionId )
              }
              break;
 
-        case ELocationPickerCollectionContentView:
+        case ELocationPickerCollectionContent:
              {
 
                  // create a search object.
@@ -157,7 +158,7 @@ bool LocationPickerDataManagerPrivate::populateModelL( quint32 aCollectionId )
 
                  // Retrieve an iterator to access the matching landmarks.
                  mIterator = mLandmarkSearch->MatchIteratorL();
-                 if( ( mIterator == NULL ) || (mIterator->NumOfItemsL() == 0) )
+                 if( ( !mIterator ) || (mIterator->NumOfItemsL() == 0) )
                  {
                      // no landmarks in this collection
                      CleanupStack::Pop(mLandmarkSearch);
@@ -181,10 +182,11 @@ void LocationPickerDataManagerPrivate::populateLandmarksL()
 {
     // Read each landmark in the database and copy to the model.
     TPosLmItemId lmId;
-    while ((lmId = mIterator->NextL()) != KPosLmNullItemId )
+    mModel->clear();
+    while ( ( lmId = mIterator->NextL() ) != KPosLmNullItemId )
     {
         CPosLandmark* readLandmark = mLandmarkDb->ReadLandmarkLC(lmId );
-
+        
         if( readLandmark )
         {
             QString lmAddressLine1(" ");
@@ -270,7 +272,7 @@ void LocationPickerDataManagerPrivate::populateLandmarksL()
             }
 
             // set icons based on contact address type
-            QVariantList icons;;
+            QVariantList icons;
             if( contactAddressType == KContactHome )
             {
                 icons << HbIcon(KDummyImage) << HbIcon(KContactHomeIcon);
@@ -283,15 +285,30 @@ void LocationPickerDataManagerPrivate::populateLandmarksL()
             {
                 icons << HbIcon(KDummyImage) << HbIcon(KContactPrefIcon);
             }
-
-
+            
             // create a list item and set to model
             QStringList addressData;
-            addressData << lmAddressLine1 << lmAddressLine2;
-            QStandardItem *modelItem = new QStandardItem();
-            modelItem->setData(QVariant(addressData), Qt::DisplayRole);
-            modelItem->setData( icons, Qt::DecorationRole );
-            mModel->appendRow( modelItem );
+            //create model for grid view in landscape mode
+            if(mOrientation == Qt::Horizontal && ( mViewType == ELocationPickerCollectionContent || mViewType == ELocationPickerContent) )
+            {   
+                addressData.clear();
+                QStandardItem *modelItem = new QStandardItem();
+                addressData << lmAddressLine1;
+                modelItem->setData(QVariant(addressData), Qt::DisplayRole);
+                modelItem->setData( icons[0], Qt::DecorationRole );
+                modelItem->setData(QString("contact"),Qt::UserRole);
+                mModel->appendRow( modelItem );
+            }
+            else
+            {   
+                //create model for list view in potrai mode
+                addressData.clear();
+                QStandardItem *modelItem = new QStandardItem();
+                addressData << lmAddressLine1 << lmAddressLine2;
+                modelItem->setData(QVariant(addressData), Qt::DisplayRole);
+                modelItem->setData( icons, Qt::DecorationRole );
+                mModel->appendRow( modelItem );
+            }
 
             CleanupStack::PopAndDestroy( readLandmark );
         }
@@ -323,7 +340,7 @@ void LocationPickerDataManagerPrivate::populateCollectionsL()
                 categoryName = QString( (QChar*)tempStr.Ptr(), tempStr.Length());
                 if(categoryName == KContactsString)
                 {
-                    categoryName = KContactsCollection;
+                    categoryName = hbTrId("txt_lint_list_contact_addresses");
                 }
             }
 
@@ -332,7 +349,7 @@ void LocationPickerDataManagerPrivate::populateCollectionsL()
             QString iconPath;
             QStandardItem *modelItem = new QStandardItem();
             modelItem->setData(QVariant(categoryName), Qt::DisplayRole);
-            modelItem->setData( QIcon (KCollectionsContacts), Qt::DecorationRole );
+            modelItem->setData( HbIcon (KCollectionsContacts), Qt::DecorationRole );
             mModel->appendRow( modelItem );
 
             CleanupStack::PopAndDestroy( readCategory );

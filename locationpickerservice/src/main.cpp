@@ -15,14 +15,22 @@
 *
 */
 
-#include <hbapplication.h>
+#include <HbApplication>
+#include <QTranslator>
+#include <QLocale>
 #include "locationpickerappwindow.h"
 #include "locationpickertypes.h"
 
 int main(int argc, char *argv[])
 {
     HbApplication app(argc, argv);
-    app.setApplicationName( KApplicationTitle );
+    
+    QTranslator translator;
+    QString lang = QLocale::system().name();
+    translator.load("lilpicker_" + lang);
+    app.installTranslator(&translator);
+    
+    app.setApplicationName( hbTrId("txt_lint_title_select_location") );
     LocationPickerAppWindow mainWindow;
     mainWindow.show();
     return app.exec();

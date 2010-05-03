@@ -16,6 +16,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS  = location_plat \
-	   locationpickerservice 
+	   locationpickerservice \
+	   locationdataharvester
 
 CONFIG += ordered

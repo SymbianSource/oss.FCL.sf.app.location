@@ -50,10 +50,10 @@ LocationPickerDataManager::~LocationPickerDataManager()
 // ----------------------------------------------------------------------------
 // LocationPickerDataManager::populateModel()
 // ----------------------------------------------------------------------------
-bool LocationPickerDataManager::populateModel( quint32 aCollectionId )
-{
+bool LocationPickerDataManager::populateModel(Qt::Orientations aOrientation, quint32 aCollectionId)
+{   
     Q_D( LocationPickerDataManager);
-    return( d->populateModel( aCollectionId ) );
+    return( d->populateModel(aOrientation, aCollectionId) );
 }
 
 

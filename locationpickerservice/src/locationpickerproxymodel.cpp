@@ -22,8 +22,9 @@
 // LocationPickerProxyModel::LocationPickerProxyModel()
 // ----------------------------------------------------
 
-LocationPickerProxyModel::LocationPickerProxyModel(QObject *parent)
-     : QSortFilterProxyModel(parent)
+LocationPickerProxyModel::LocationPickerProxyModel(Qt::Orientations aOrientation , QObject *parent)
+     :QSortFilterProxyModel(parent),
+     mOrientation( aOrientation )
 {
 }
 
@@ -33,18 +34,28 @@ LocationPickerProxyModel::LocationPickerProxyModel(QObject *parent)
  bool LocationPickerProxyModel::lessThan(const QModelIndex &left,
                                       const QModelIndex &right) const
 {
-    // get left and right items data and implement sort logic
+     // get left and right items data and implement sort logic
      // return true if left is less than right
-    QVariant leftData = sourceModel()->data(left);
-    QVariant rightData = sourceModel()->data(right);
+	 QVariant leftData = sourceModel()->data(left);
+     QVariant rightData = sourceModel()->data(right);
 
-    QStringList leftStringList = leftData.toStringList();
+    if( mOrientation == Qt::Vertical )
+    {
+        QStringList leftStringList = leftData.toStringList();
 
-    QStringList rightStringList = rightData.toStringList();
+        QStringList rightStringList = rightData.toStringList();
 
-    return QString::compare( QString( leftStringList[0] + " " + leftStringList[1] ),
+        return QString::compare( QString( leftStringList[0] + " " + leftStringList[1] ),
                                             QString( rightStringList[0] + " " + rightStringList[1] ), Qt::CaseInsensitive ) < 0;
+    }
+    else
+    {
+        QString leftString = leftData.toString();
 
+        QString rightString = rightData.toString();
+
+        return QString::compare( leftString, rightString, Qt::CaseInsensitive ) < 0;
+    }
 }
 
  // ----------------------------------------------------
@@ -54,13 +65,18 @@ LocationPickerProxyModel::LocationPickerProxyModel(QObject *parent)
 bool LocationPickerProxyModel::filterAcceptsRow(int sourceRow,
         const QModelIndex &sourceParent) const
 {
-     // implement logic for search.
+    if( mOrientation == Qt::Vertical)
+    {
+    // implement logic for search.
     QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
 
     QStringList stringList = sourceModel()->data(index0).toStringList();
     QString fullString = " " + stringList[0] + " " + stringList[1];
 
     return (fullString.contains(mSearchText, Qt::CaseInsensitive));
+    }
+    else
+    return true;
 }
 
  // ----------------------------------------------------

@@ -18,8 +18,7 @@
 #ifndef LOCATIONPICKERTYPES_H
 #define LOCATIONPICKERTYPES_H
 
-// Defines total number of main views ( all, collectionlist, search )
-const int KNumberOfMainViews = 3;
+#include <hbglobal.h>
 
 // separator
 const QString KSeparator(",");
@@ -27,64 +26,44 @@ const QString KSeparator(",");
 // space
 const QString KSpace(" ");
 
-// Application Title
-const QString KApplicationTitle("Select Location");
-
-// Application Title
-const QString KNoLocations("No Location entries present");
-
-// space
-const QString KContactCollection("Contact addresses");
-
-// strings used to differentiate the contact address type
-const QString KContactPrefered("Contact Prefered");
-const QString KContactHome("Contact Home");
-const QString KContactWork("Contact Work");
-const QString KContactsString("Others");
-const QString KContactsCollection("Contact addresses");
-const QString KSortBy("Sort by");
-const QString KAscend("Ascending");
-const QString KDescend("Descending");
-
 //Icon Paths
 
 // dummy image for a location
-const QString KDummyImage(":/qtg_large_maps.png");
-
-//All tab icon
-const QString KAllTab(":/qtg_mono_location.png.png");
-
-//COllection tab icon
-const QString KCollectionTab(":/qtg_mono_location_collection.png");
-
-//Search tab icon
-const QString KSearchTab(":/qtg_mono_search.png");
+const QString KDummyImage("qtg_large_maps");
 
 //Contacts collection icon
-const QString KCollectionsContacts(":/qtg_small_contacts.png");
+const QString KCollectionsContacts("qtg_small_contacts");
 
 //Contacts collection icon
-const QString KCollectionsCalendar(":/qtg_small_calendar.png");
+const QString KCollectionsCalendar("qtg_small_calendar");
 
 //Contacts type prefered icon
-const QString KContactPrefIcon(":/qtg_mono_favourites.png");
+const QString KContactPrefIcon("qtg_mono_favourites");
 //Contacts type home icon
-const QString KContactHomeIcon(":/qtg_mono_home.png");
+const QString KContactHomeIcon("qtg_mono_home");
 //Contacts type work icon
-const QString KContactWorkIcon(":/qtg_mono_work.png");
+const QString KContactWorkIcon("qtg_mono_work");
 
-/** Defines view type in location picker
+
+// strings used to differentiate the contact address type
+const QString KContactHome("Contact Home");
+const QString KContactWork("Contact Work");
+const QString KContactsString("Others");
+
+
+/** 
+ * Defines view type in location picker
 */
 enum TViewType
 {
-    /** All View */
-    ELocationPickerAllView,
-    /** Collection list view */
-    ELocationPickerCollectionListView,
+    /** LocationPicker Content */
+    ELocationPickerContent,
+    /** Collection list Content*/
+    ELocationPickerCollectionListContent,
     /** Search View */
     ELocationPickerSearchView,
-    /** Collection content view */
-    ELocationPickerCollectionContentView
+    /** Collection content */
+    ELocationPickerCollectionContent
 };
 
 

@@ -41,7 +41,7 @@ public:
     ~LocationPickerDataManagerPrivate();
     
     // populates the model with data
-    bool populateModel( quint32 aCollectionId = 0 );
+    bool populateModel( const Qt::Orientations aOrientation, quint32 aCollectionId = 0 );
     
     // gets the data pointed to by index and copies to the aValue
     void getData(int index, quint32& aValue );
@@ -60,7 +60,7 @@ private:
     void getLocationItemL( quint32 aLmId, QLocationPickerItem &aItem );
 
 private:
-	
+    Qt::Orientations mOrientation;
     QStandardItemModel *mModel;
     TViewType mViewType;
     CPosLmItemIterator* mIterator;

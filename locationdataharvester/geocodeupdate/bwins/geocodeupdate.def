@@ -1,0 +1,4 @@
+EXPORTS
+	?UpDate@GeocodeUpdate@@SAXJJNN@Z @ 1 NONAME ; void GeocodeUpdate::UpDate(long, long, double, double)
+	?CreateContactdb@GeocodeUpdate@@SAXXZ @ 2 NONAME ; void GeocodeUpdate::CreateContactdb(void)
+

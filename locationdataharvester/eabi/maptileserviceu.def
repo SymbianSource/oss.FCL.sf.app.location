@@ -1,0 +1,4 @@
+EXPORTS
+	_ZN14MapTileService15getMapTileImageEiNS_11AddressTypeE @ 1 NONAME
+	_ZN14MapTileService24isLocationFeatureEnabledENS_7AppTypeE @ 2 NONAME
+

@@ -16,47 +16,83 @@
 */
 
 #include <HbListViewItem>
-#include <QGraphicsLinearLayout>
 #include <QStandardItemModel>
 #include <HbSearchPanel>
 #include <HbListView>
+#include <HbTextItem>
+#include <HbDocumentLoader>
+#include <QGraphicsLinearLayout>
 
 #include "locationpickerproxymodel.h"
 #include "locationpickersearchview.h"
 #include "locationpickerdatamanager.h"
-#include "locationpickerappwindow.h"
 
 // ======== MEMBER FUNCTIONS ========
 
 // ----------------------------------------------------
 // LocationPickerSearchView::LocationPickerSearchView()
 // ----------------------------------------------------
-LocationPickerSearchView::LocationPickerSearchView( LocationPickerAppWindow *aWindow, QGraphicsItem* aParent ):
-        HbView( aParent ),
-        mSearchPanel(new HbSearchPanel(this))
-
+LocationPickerSearchView::LocationPickerSearchView(HbDocumentLoader &aLoader)
+    :mProxyModel(NULL),
+    mModel(NULL),
+    mListView(NULL),
+    mSearchPanel(NULL),
+    mDataManager(NULL),
+    mEmptyLabel(NULL),
+    mVerticalLayout(NULL),
+    mDocumentLoader(aLoader)
 {
+
+}
+// ----------------------------------------------------
+// LocationPickerSearchView::~LocationPickerSearchView()
+// ----------------------------------------------------
+LocationPickerSearchView::~LocationPickerSearchView()
+{
+    if( mDataManager )
+        delete mDataManager;
+    delete mProxyModel;
+    delete mModel;
+    delete mEmptyLabel;
+}
+
+// ----------------------------------------------------
+// LocationPickerSearchView::init()
+// ----------------------------------------------------
+void LocationPickerSearchView::init()
+{   
+    //get listview from docml
+    mListView = qobject_cast<HbListView*>(
+            mDocumentLoader.findObject(QString("SearchListView")));
+    if(mListView == NULL)
+    {
+        qFatal("Error Reading Docml");   
+    }
+    //get search panel from docml
+    mSearchPanel = qobject_cast<HbSearchPanel*>(
+            mDocumentLoader.findObject(QString("searchPanel")));
+    if(mListView == NULL)
+    {
+        qFatal("Error Reading Docml");
+    }
+    //conect to respective slots
+    connect(mListView, SIGNAL(activated(const QModelIndex &)), this, SLOT(handleActivated
+    (const QModelIndex &)));
+    connect(mSearchPanel, SIGNAL(exitClicked()),this, SLOT(handleExit()));
+    connect(mSearchPanel,SIGNAL(criteriaChanged(QString)),this,SLOT(doSearch(QString)));
     
-    mWindow = aWindow;
-    //Create a linear layout
-    mLayout = new QGraphicsLinearLayout(Qt::Vertical);
-
-    // create the list view
-    mListView=new HbListView();
-    connect(mListView, SIGNAL(activated(const QModelIndex &)), this, SLOT(handleActivated(const QModelIndex &)));
-
     //Set graphics size for the list items.
     HbListViewItem *hbListItem = new HbListViewItem();
     hbListItem->setGraphicsSize(HbListViewItem::Thumbnail);
     mListView->setItemPrototype( hbListItem );
 
     // Create a standard model for the view list
-    mModel = new QStandardItemModel();
+    mModel = new QStandardItemModel(this);
     // create a data manager to populate the model
     mDataManager = new LocationPickerDataManager( *mModel, ELocationPickerSearchView );
 
     // Create the proxy model.
-    mProxyModel = new LocationPickerProxyModel();
+    mProxyModel = new LocationPickerProxyModel( Qt ::Vertical );
     mProxyModel->setSourceModel(mModel);
     mListView->setModel(mProxyModel);
 
@@ -66,43 +102,26 @@ LocationPickerSearchView::LocationPickerSearchView( LocationPickerAppWindow *aWi
     mProxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
 
     // populate data
-    mDataManager->populateModel();
+    bool populated = mDataManager->populateModel(Qt::Vertical);
+    if(!populated)
+    {
+        // no entries to display.
+        QStandardItem *modelItem = new QStandardItem();
+        modelItem->setData(QVariant(hbTrId("txt_lint_list_no_location_entries_present")), Qt::DisplayRole);
+        mModel->appendRow( modelItem );
+    }
 
-    // sort
+    // sort 
     mProxyModel->sort(0, Qt::AscendingOrder);
-
-    // add the list view to layout
-    mLayout->addItem(mListView);
-
-    // create search panel
-    mSearchPanel->setProgressive(true);
-    mSearchPanel->setSearchOptionsEnabled(false);
-    connect(mSearchPanel,SIGNAL(criteriaChanged(QString)),this,SLOT(doSearch(QString)));
-
-    // add search panel to the layout
-    mLayout->addItem(mSearchPanel);
-
-    // setlayout for the view
-    setLayout(mLayout);
-    
-    
-    // create back action
-    mSecondaryBackAction = new HbAction( Hb::BackAction, this );
-    // add back key action
-    setNavigationAction( mSecondaryBackAction );
-    connect(mSecondaryBackAction, SIGNAL(triggered()), mWindow,
-                                SLOT(backButtonTriggered()));
-
-
 }
+
 // ----------------------------------------------------
-// LocationPickerSearchView::~LocationPickerSearchView()
+// LocationPickerSearchView::handleExit()
 // ----------------------------------------------------
-LocationPickerSearchView::~LocationPickerSearchView()
-{
-    // delete mDataManager
-    if( mDataManager )
-        delete mDataManager;
+void LocationPickerSearchView::handleExit()
+{   
+    //emit signal to switch the current view
+    emit switchView();
 }
 
 // ----------------------------------------------------
@@ -113,6 +132,42 @@ void LocationPickerSearchView::doSearch(QString aCriteria)
     // use the string to search
     mProxyModel->filterParameterChanged(aCriteria);
     mProxyModel->setFilterFixedString(aCriteria);
+    //if no entries presentdisplay empty text item
+    if (!mProxyModel->rowCount() )
+    {
+        if(!mEmptyLabel)
+        {    
+            QGraphicsWidget *widget = NULL;
+            widget = mDocumentLoader.findWidget(QString("container"));
+            if(widget == NULL)
+            {
+                qFatal("Error Reading Docml"); 
+            }
+            mVerticalLayout = static_cast<QGraphicsLinearLayout*>(widget->layout());
+            if(mVerticalLayout == NULL)
+            {
+                qFatal("Error Reading Docml"); 
+            }
+            mVerticalLayout->removeItem(mListView);
+            mListView->setVisible(false);
+            mEmptyLabel = new HbTextItem(hbTrId("txt_lint_list_no_results"));
+            mEmptyLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+            mEmptyLabel->setFontSpec(HbFontSpec(HbFontSpec::Primary));
+            mEmptyLabel->setAlignment(Qt::AlignCenter);
+            mVerticalLayout->insertItem(0, mEmptyLabel);
+            mEmptyLabel->setVisible(true);
+        }
+    }
+    //else display the result
+    else if (mEmptyLabel)
+    {   
+        mVerticalLayout->removeItem(mEmptyLabel);
+        mEmptyLabel->setVisible(false);
+        delete mEmptyLabel;
+        mEmptyLabel=NULL;
+        mVerticalLayout->insertItem(0, mListView);
+        mListView->setVisible(true);
+    }
 }
 
 // ----------------------------------------------------
@@ -123,6 +178,7 @@ void LocationPickerSearchView::handleActivated(const QModelIndex &aIndex)
     QModelIndex index = mProxyModel->mapToSource(aIndex);
     quint32 lm = 0;
     mDataManager->getData( index.row(), lm );
-    mWindow->itemSelected( lm );
+    //emit item is selectedsignal
+    emit selectItem( lm );
 }
 

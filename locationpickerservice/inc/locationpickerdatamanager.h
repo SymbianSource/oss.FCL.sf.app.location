@@ -38,7 +38,7 @@ public:
     ~LocationPickerDataManager();
 
     // populates the model with data
-    bool populateModel( quint32 aCollectionId = 0 );
+    bool populateModel(Qt::Orientations aOrientation,quint32 aCollectionId = 0);
 
     // gets the data pointed to by index and copies to the aValue
     void getData(int index, quint32& aValue );

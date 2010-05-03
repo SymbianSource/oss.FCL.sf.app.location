@@ -21,51 +21,57 @@
 
 #include <HbView>
 
-//forward declarations
 class HbListView;
-class HbAction;
-class QGraphicsLinearLayout;
 class QStandardItemModel;
 class HbSearchPanel;
-class LocationPickerAppWindow;
 class LocationPickerDataManager;
 class LocationPickerProxyModel;
+class HbDocumentLoader;
+class HbTextItem;
+class QGraphicsLinearLayout;
 
-/**  Class defines the search view of location picker
- *
+/**  
+ * Class defines the search view of location picker
  */
 class LocationPickerSearchView : public HbView
 {
     Q_OBJECT
 public:
     // constructor
-    LocationPickerSearchView( LocationPickerAppWindow *aWindow, QGraphicsItem* aParent = 0 );
+    LocationPickerSearchView(HbDocumentLoader &aLoader);
     // destructor
     ~LocationPickerSearchView();
-
+    //initialize the action items and connect to slots
+    void init();
 private slots:
     // slot to perform search
     void doSearch(QString aCriteria);
     // slot to handle select event on a list item
     void handleActivated(const QModelIndex &aIndex);
-
+    // slot to handle backbutton on search panel
+    void handleExit();
+signals:
+    //signals to switch current view
+    void switchView();
+    //signals when any item is selected
+    void selectItem( quint32 aLm );
 private:
-
     //proxymodel used for sort and filter
     LocationPickerProxyModel *mProxyModel;
     // model for the view
     QStandardItemModel *mModel;
-    // graphics linear layout for list items and search panel
-    QGraphicsLinearLayout* mLayout;
     // list view
     HbListView  *mListView;
     // search panel
     HbSearchPanel *mSearchPanel;
-    // handle to main window
-    LocationPickerAppWindow *mWindow;
     // handle to data manager to populate model
     LocationPickerDataManager *mDataManager;
-    HbAction *mSecondaryBackAction;
+    //TextItem
+    HbTextItem* mEmptyLabel;
+    //Graphicslayout
+    QGraphicsLinearLayout* mVerticalLayout;
+    //Documentloader
+    HbDocumentLoader &mDocumentLoader;
 };
 
 

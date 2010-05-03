@@ -18,48 +18,67 @@
 #ifndef LOCATIONPICKERAPPWINDOW_H
 #define LOCATIONPICKERAPPWINDOW_H
 #include <HbMainWindow>
-#include <HbAction>
 
-#include "qlocationpickeritem.h"
+#include "locationpickertypes.h"
 
 // Forward declarations
-class LocationPickerAllView;
 class LocationPickerSearchView;
-class LocationPickerCollectionListView;
+class LocationPickerDocumentLoader;
+class LocationPickerPotraitView;
 class LocationPickerService;
+class LocationPickerProxyModel;
+class LocationPickerLandscapeView;
 
 class LocationPickerAppWindow: public HbMainWindow
 {
     Q_OBJECT
 public:
-
     // constructor
-    LocationPickerAppWindow( QWidget* aParent = 0 );
+    LocationPickerAppWindow(QWidget *parent=0, Hb::WindowFlags 
+            windowFlags=Hb::WindowFlagNone);
     
     // destructor
     ~LocationPickerAppWindow();
-	
-	// deletes the collection content view
-    void deleteCollectionContentView();
-
-public slots:
-    // a list item is selected
-    void itemSelected( quint32 aLm);
-
-public slots:
-	// slot used for back action on the top right corner
-    void backButtonTriggered();
 
 private:
-    // all view
-    LocationPickerAllView* mLocationPickerAllView;
+    //Loads the Potrait View
+    void loadPotrait();
+    //Loads landscape View
+    void loadLandscape();
+    //Connect the slots for Potrait view
+    void connectPotraitSlots();
+    //Connect the slots for Landscape view
+    void connectLandscapeSlots();
+public slots:
+    // a list item is selected
+    void itemSelected( quint32 aLm );
+private slots:
+    //activate search view
+    void activateSearchView();
+    //activate locationpicker view
+    void activateLocationPickerView();
+    //changes the orientation
+    void changeOrientation(Qt::Orientation);
+    //complete the service
+    void serviceComplete();
+    //sets the category ID during orientation change in collection content
+    void setCategoryID( quint32 acategoryId );
+    //handles orientation change in collection list
+    void handleCollectionList();
+    //handle all List
+    void allListHandle();
+private:
     // search view
     LocationPickerSearchView* mLocationPickerSearchView;
-    // collection list view
-    LocationPickerCollectionListView* mLocationPickerCollectionListView;
-
-    // location picker service;
+    //document loader
+    LocationPickerDocumentLoader* mLocationPickerDocumentLoader;
+    //location picker potrait view
+    LocationPickerPotraitView* mLocationPickerPotraitView;
+    //location picker landscape view
+    LocationPickerLandscapeView* mLocationPickerLandscapeView;
+    //location picker service;
     LocationPickerService *mService;
-
+    //View Type
+    TViewType mviewType;
 };
 #endif // LOCATIONPICKERAPPWINDOW_H

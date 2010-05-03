@@ -1,0 +1,4 @@
+EXPORTS
+	?getMapTileImage@MapTileService@@SA?AVQString@@HW4AddressType@1@@Z @ 1 NONAME ; class QString MapTileService::getMapTileImage(int, enum MapTileService::AddressType)
+	?isLocationFeatureEnabled@MapTileService@@SA_NW4AppType@1@@Z @ 2 NONAME ; bool MapTileService::isLocationFeatureEnabled(enum MapTileService::AppType)
+
