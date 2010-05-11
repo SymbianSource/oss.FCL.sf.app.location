@@ -117,6 +117,8 @@ void CLandmarksModel::GetItemIdsL(
     const CArrayFix<TInt>& aSelectionIndexes,
     RArray<TPosLmItemId>& aItemIds )
     {
+	CleanupClosePushL(aItemIds);
+	
     aItemIds.Reset();
     if ( iItemIds )
         {
@@ -132,6 +134,8 @@ void CLandmarksModel::GetItemIdsL(
                 }
             }
         }
+		
+	CleanupStack::Pop(&aItemIds);
     }
 
 // -----------------------------------------------------------------------------
