@@ -25,16 +25,16 @@
 // ----------------------------------------------------------------------
 // LocationPickerCollectionListContent::LocationPickerCollectionListContent()
 // ----------------------------------------------------------------------
-LocationPickerCollectionListContent::LocationPickerCollectionListContent(Qt::Orientation aOrientation )
+LocationPickerCollectionListContent::LocationPickerCollectionListContent( Qt::Orientation aOrientation )
     :mOrientation(aOrientation),
     mModel(NULL),
     mDataManager(NULL)
 {
     // Create a standard model for the view list
     mModel = new QStandardItemModel( this );
-    
-    mDataManager = new LocationPickerDataManager( *mModel, ELocationPickerCollectionListContent );
-    mDataManager->populateModel( mOrientation );
+    // create data manager to manage data in the model
+    mDataManager = LocationPickerDataManager::getInstance();
+    mDataManager->populateModel( *mModel, ELocationPickerCollectionListContent, mOrientation );
 }
 
 // ----------------------------------------------------------------------
@@ -42,8 +42,6 @@ LocationPickerCollectionListContent::LocationPickerCollectionListContent(Qt::Ori
 // ----------------------------------------------------------------------
 LocationPickerCollectionListContent::~LocationPickerCollectionListContent()
 {
-    if( mDataManager )
-        delete mDataManager;
     delete mModel;
 }
 
@@ -55,11 +53,13 @@ QStandardItemModel* LocationPickerCollectionListContent::getStandardModel()
     return mModel;
     }
 
-// ----------------------------------------------------------------
-// LocationPickerCollectionListContent::getDataManager
-// -----------------------------------------------------------------
-LocationPickerDataManager* LocationPickerCollectionListContent::getDataManager()
-    {
-    return mDataManager;
-    }
+// ----------------------------------------------------------------------------
+// LocationPickerCollectionListContent::getData()
+// ----------------------------------------------------------------------------
 
+void LocationPickerCollectionListContent::getData( QModelIndex aIndex, quint32& aValue )
+{
+    QStandardItem* item = mModel->item( aIndex.row(), aIndex.column() );
+    QVariant var = item->data( Qt::UserRole );
+    aValue = var.toUInt();
+}

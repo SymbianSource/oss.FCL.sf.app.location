@@ -22,10 +22,8 @@
 #include "locationpickertypes.h"
 #include "qlocationpickeritem.h"
 
-class CPosLmItemIterator;
-class CPosLandmarkDatabase;
-class CPosLmCategoryManager;
-class CPosLandmarkSearch;
+class LocationDataLookupDb;
+class QLookupItem;
 
 /**  Class used for managing the data of model
  *
@@ -33,40 +31,30 @@ class CPosLandmarkSearch;
 class LocationPickerDataManagerPrivate
 {
 public:
-    // constructors
+    // constructor
     LocationPickerDataManagerPrivate();
-    LocationPickerDataManagerPrivate( QStandardItemModel &aModel, TViewType aViewType );
     
     // destructor
     ~LocationPickerDataManagerPrivate();
     
     // populates the model with data
-    bool populateModel( const Qt::Orientations aOrientation, quint32 aCollectionId = 0 );
-    
-    // gets the data pointed to by index and copies to the aValue
-    void getData(int index, quint32& aValue );
+    bool populateModel( QStandardItemModel &aModel, TViewType aViewType, 
+            const Qt::Orientations aOrientation, quint32 aCollectionId = 0 );
     
     // gets the location item
     void getLocationItem( quint32 aLmId, QLocationPickerItem &aItem );
 
 private:
-    // populates model
-    bool populateModelL( quint32 aCollectionId );
     // populates landmarks
-    void populateLandmarksL();
+    bool populateLandmarks( QList<QLookupItem> &aItemArray );
     // populates collections
-    void populateCollectionsL();
-    // gets the location item
-    void getLocationItemL( quint32 aLmId, QLocationPickerItem &aItem );
+    void populateCollections();
 
 private:
     Qt::Orientations mOrientation;
     QStandardItemModel *mModel;
     TViewType mViewType;
-    CPosLmItemIterator* mIterator;
-    CPosLandmarkDatabase* mLandmarkDb;
-    CPosLmCategoryManager *mLmCategoryManager;
-    CPosLandmarkSearch *mLandmarkSearch;
+    LocationDataLookupDb *mDb; 
     quint32 mCategoryId;
 };
 

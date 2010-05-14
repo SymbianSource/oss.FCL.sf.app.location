@@ -31,16 +31,16 @@ class LocationPickerProxyModel : public QSortFilterProxyModel
 
 public:
     // constructor
-    LocationPickerProxyModel(Qt::Orientations aOrientation , QObject *parent = 0);
+    LocationPickerProxyModel( Qt::Orientations aOrientation , QObject *parent = 0 );
 
     // used to
-    void filterParameterChanged(QString aSearchText);
+    void filterParameterChanged( QString aSearchText );
 
 protected:
     // override QSortFilterProxyModel function  to define logic for filter
-    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
+    bool filterAcceptsRow( int sourceRow, const QModelIndex &sourceParent ) const;
     // override QSortFilterProxyModel function  to define logic for sort
-    bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
+    bool lessThan( const QModelIndex &left, const QModelIndex &right ) const;
 
 private:
     // search string

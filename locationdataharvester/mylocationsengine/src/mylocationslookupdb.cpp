@@ -15,7 +15,7 @@
 *
 */
 
-#include <BAUTILS.H>
+#include <bautils.h>
 #include <EPos_CPosLmCategoryManager.h>
 #include "mylocationslookupdb.h"
 #include "mylocationlogger.h"

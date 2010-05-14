@@ -26,7 +26,6 @@
 
 #include "locationpickerproxymodel.h"
 #include "locationpickerdatamanager.h"
-#include "locationpickercontent.h" 
 #include "locationpickercollectionlistcontent.h"
 #include "locationpickercollectioncontent.h"
 
@@ -36,8 +35,6 @@
 // ----------------------------------------------------
 LocationPickerLandscapeView::LocationPickerLandscapeView(HbDocumentLoader* aLoader)
     :mDocumentLoader(aLoader),
-    mLocationPickerContent(NULL),
-    mLocationPickerCollectionListContent(NULL),
     mAllAction(NULL),
     mCollectionAction(NULL),
     mSearchAction(NULL),
@@ -55,7 +52,7 @@ LocationPickerLandscapeView::LocationPickerLandscapeView(HbDocumentLoader* aLoad
     mGridViewItem->setObjectName("locationgrid");
     
     // create back action
-    mLandscapeBackAction = new HbAction(Hb::BackAction);
+    mLandscapeBackAction = new HbAction(Hb::BackNaviAction);
     setNavigationAction(mLandscapeBackAction);
     connect(mLandscapeBackAction, SIGNAL(triggered()), this,
             SLOT(backButtonTriggered()));
@@ -66,8 +63,6 @@ LocationPickerLandscapeView::LocationPickerLandscapeView(HbDocumentLoader* aLoad
 LocationPickerLandscapeView::~LocationPickerLandscapeView()
 {
     delete mCollectionContent;
-    delete mLocationPickerContent;
-    delete mLocationPickerCollectionListContent;
     delete mAllAction;
     delete mCollectionAction;
     delete mAscendingAction;
@@ -83,8 +78,7 @@ void LocationPickerLandscapeView::backButtonTriggered()
     if(mViewType == ELocationPickerCollectionContent)
     {
         colectionTabTriggered();
-        delete mCollectionContent;
-        mCollectionContent=NULL; 
+        emit collectionContentExited(); 
     }
     else
     {
@@ -97,12 +91,18 @@ void LocationPickerLandscapeView::backButtonTriggered()
 // ----------------------------------------------------
 // LocationPickerPotraitView::~init()
 // ----------------------------------------------------
-void LocationPickerLandscapeView::init(Qt::Orientation aOrientation )
+void LocationPickerLandscapeView::init(Qt::Orientation aOrientation, QStandardItemModel *aModel )
 {   
-      // Create Collection List Content
-      mLocationPickerCollectionListContent = new LocationPickerCollectionListContent(aOrientation);
-      
-      mLocationPickerContent = new LocationPickerContent(aOrientation);
+      mModel = aModel;      
+      //create proxy model
+      mProxyModel = new LocationPickerProxyModel( aOrientation , this  );
+      mProxyModel->setSourceModel(aModel);
+      // set sort properties
+      mProxyModel->setDynamicSortFilter(TRUE);
+      mProxyModel->setSortRole(Qt::DisplayRole);
+      mProxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
+      // sort in ascending order
+      mProxyModel->sort(0, Qt::AscendingOrder);    
       
      //Get HbAction items
 	 mGridView = qobject_cast<HbGridView*> (mDocumentLoader->findObject(QString(
@@ -122,7 +122,14 @@ void LocationPickerLandscapeView::init(Qt::Orientation aOrientation )
       {
           qFatal("Error Reading Docml");
       }
-
+      
+      if(this->mainWindow()->orientation() == Qt::Horizontal)
+      { 
+          int rowCount = mGridView->rowCount();
+          int columnCount = mGridView->columnCount();
+          mGridView->setRowCount(columnCount);
+          mGridView->setColumnCount(rowCount);
+      }
       //connect to slots
       connect(mAscendingAction, SIGNAL(triggered()), this, SLOT(sortAscending()));
       connect(mDescendingAction, SIGNAL(triggered()), this,
@@ -138,47 +145,26 @@ void LocationPickerLandscapeView::init(Qt::Orientation aOrientation )
 
 
 void LocationPickerLandscapeView::manageGridView()
-{   
-    // Create Locationpicker Content
-    if (!mLocationPickerContent->locationsFound())
-    {
-        //if no location entries present
-        mGridView->setModel(mLocationPickerContent->getStandardModel(),mGridViewItem); 
-        disableTabs();
-        mViewType = ELocationPickerContent;
-    }
-    else
-    {
-        //set the appropriate model
-        switch(mViewType)
-            {
-                case ELocationPickerContent:
-                {
-                    mGridView->setModel(mLocationPickerContent->getGridProxyModel(),mGridViewItem);
-                    mAllAction->setChecked(true);
-                    mCollectionAction->setChecked(false);
-                }
-                break;
-                case ELocationPickerCollectionContent:
-                {
-                    setCollectionData(mCategoryId);
-                    mCollectionAction->setChecked(true);
-                    mAllAction->setChecked(false);
-                }
-                break;
-            }
-    }
-}
-
-void LocationPickerLandscapeView::disableTabs()
 {
-    mAllAction->setDisabled(true);
-    mCollectionAction->setDisabled(true);
-    mSearchAction->setDisabled(true);
-    mAscendingAction->setDisabled(true);
-    mDescendingAction->setDisabled(true);
+    //set the appropriate model
+    switch(mViewType)
+    {
+        case ELocationPickerContent:
+        {
+            mGridView->setModel(mProxyModel,mGridViewItem);
+            mAllAction->setChecked(true);
+            mCollectionAction->setChecked(false);
+        }
+        break;
+        case ELocationPickerCollectionContent:
+        {
+            setCollectionData(mCategoryId);
+            mCollectionAction->setChecked(true);
+            mAllAction->setChecked(false);
+        }
+        break;
+    }
 }
-
 
 // -----------------------------------------------------------------------------
 // LocationPickerLandscapeView::handleActivated()
@@ -188,31 +174,29 @@ void LocationPickerLandscapeView::handleActivated(const QModelIndex &aIndex)
     //handle the activated signal according to model set
     
        switch(mViewType)
-           {
+       {
            case ELocationPickerContent:
                {
-                   QModelIndex  index = mLocationPickerContent->getGridProxyModel()->mapToSource(
+                QModelIndex  index = mProxyModel->mapToSource(
                                   aIndex);
                 quint32 lm = 0;
-                mLocationPickerContent->getDataManager()->getData(index.row(), lm);
+                QStandardItem* item = mModel->item( index.row(), index.column() );
+                QVariant var = item->data( Qt::UserRole );
+                lm = var.toUInt();
+                //item selected, complete request
                 emit selectItem( lm );
                }
            break;
-           case ELocationPickerCollectionListContent:
-               {
-               mLocationPickerCollectionListContent->getDataManager()->getData(
-                       aIndex.row(), mCategoryId);
-               setCollectionData(mCategoryId);
-               emit sendCategoryID(mCategoryId);
-               }
-               break;
-              //default
            case ELocationPickerCollectionContent:
                {
+               if(!mCollectionContent->getProxyModel())
+               {
+               break;
+               }
                QModelIndex   index = mCollectionContent->getProxyModel()->mapToSource(
                                       aIndex);
                quint32 lm = 0;
-               mCollectionContent->getDataManager()->getData(index.row(), lm);
+               mCollectionContent->getData(index, lm);
                emit selectItem(lm);
                }
                break;
@@ -231,7 +215,7 @@ void LocationPickerLandscapeView::sortAscending()
     //check the model set and do sorting accordingly
         if (mViewType == ELocationPickerContent)
         {
-            mLocationPickerContent->getGridProxyModel()->sort(0, Qt::AscendingOrder);
+            mProxyModel->sort(0, Qt::AscendingOrder);
         }
         else
         {
@@ -247,7 +231,7 @@ void LocationPickerLandscapeView::sortDescending()
     //check the model set and do sorting accordingly
         if (mViewType == ELocationPickerContent)
         {
-            mLocationPickerContent->getGridProxyModel()->sort(0, Qt::DescendingOrder);
+            mProxyModel->sort(0, Qt::DescendingOrder);
         }
         else
         {
@@ -263,7 +247,7 @@ void LocationPickerLandscapeView::allTabTriggered()
     //execute only if tab is not pressed
        if (mAllAction->isChecked())
        {    
-           mGridView->setModel(mLocationPickerContent->getGridProxyModel(),mGridViewItem);
+           mGridView->setModel(mProxyModel,mGridViewItem);
            mAscendingAction->setEnabled(true);
            mDescendingAction->setEnabled(true);
            mCollectionAction->setChecked(false);
@@ -311,9 +295,18 @@ void LocationPickerLandscapeView::searchTabTriggered()
 
 void LocationPickerLandscapeView::setCollectionData( quint32 aCategoryId )
 {   
-    mCollectionContent
-    = new LocationPickerCollectionContent(this->mainWindow()->orientation() , aCategoryId);
-    mGridView->setModel(mCollectionContent->getProxyModel(),mGridViewItem);
+    if(!mCollectionContent)
+    {
+        mCollectionContent = new LocationPickerCollectionContent(Qt::Horizontal , aCategoryId);
+    }
+    if(mCollectionContent->locationFound())
+    {
+        mGridView->setModel(mCollectionContent->getProxyModel(),mGridViewItem);
+    }
+    else
+    {
+        mGridView->setModel(mCollectionContent->getStandardModel(),mGridViewItem);
+    }
     mViewType = ELocationPickerCollectionContent;
     //Enable the options
     mAscendingAction->setEnabled(true);
@@ -344,3 +337,16 @@ void LocationPickerLandscapeView::setViewType(TViewType aViewType)
 {
     mViewType = aViewType;
 }
+
+// -----------------------------------------------------------------------------
+// LocationPickerLandscapeView::clearContentModel()
+// -----------------------------------------------------------------------------
+void LocationPickerLandscapeView::clearContentModel()
+{
+   if(mCollectionContent)
+   {
+   delete mCollectionContent;
+   mCollectionContent = NULL;
+   }
+}
+

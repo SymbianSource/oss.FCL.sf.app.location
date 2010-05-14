@@ -20,21 +20,20 @@
 
 
 // ----------------------------------------------------------------------------
-// LocationPickerDataManager::LocationPickerDataManager()
+// LocationPickerDataManager::getInstance()
 // ----------------------------------------------------------------------------
-
-LocationPickerDataManager::LocationPickerDataManager() :
-    d_ptr( new LocationPickerDataManagerPrivate() )
+LocationPickerDataManager* LocationPickerDataManager::getInstance()
 {
+    static LocationPickerDataManager singletonInstance;
+    return &singletonInstance;
 }
 
 // ----------------------------------------------------------------------------
 // LocationPickerDataManager::LocationPickerDataManager()
 // ----------------------------------------------------------------------------
 
-LocationPickerDataManager::LocationPickerDataManager(
-        QStandardItemModel &aModel, TViewType aViewType ) :
-        d_ptr( new LocationPickerDataManagerPrivate( aModel, aViewType) )
+LocationPickerDataManager::LocationPickerDataManager() :
+    d_ptr( new LocationPickerDataManagerPrivate() )
 {
 }
 
@@ -50,21 +49,11 @@ LocationPickerDataManager::~LocationPickerDataManager()
 // ----------------------------------------------------------------------------
 // LocationPickerDataManager::populateModel()
 // ----------------------------------------------------------------------------
-bool LocationPickerDataManager::populateModel(Qt::Orientations aOrientation, quint32 aCollectionId)
+bool LocationPickerDataManager::populateModel( QStandardItemModel &aModel, TViewType aViewType, 
+        Qt::Orientations aOrientation, quint32 aCollectionId )
 {   
     Q_D( LocationPickerDataManager);
-    return( d->populateModel(aOrientation, aCollectionId) );
-}
-
-
-// ----------------------------------------------------------------------------
-// LocationPickerDataManager::getData()
-// ----------------------------------------------------------------------------
-
-void LocationPickerDataManager::getData( int aIndex, quint32& aValue )
-{
-    Q_D( LocationPickerDataManager);
-    return( d->getData( aIndex, aValue ) );
+    return( d->populateModel( aModel, aViewType, aOrientation, aCollectionId) );
 }
 
 // ----------------------------------------------------------------------------

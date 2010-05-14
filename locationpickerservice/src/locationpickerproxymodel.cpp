@@ -22,7 +22,7 @@
 // LocationPickerProxyModel::LocationPickerProxyModel()
 // ----------------------------------------------------
 
-LocationPickerProxyModel::LocationPickerProxyModel(Qt::Orientations aOrientation , QObject *parent)
+LocationPickerProxyModel::LocationPickerProxyModel( Qt::Orientations aOrientation , QObject *parent )
      :QSortFilterProxyModel(parent),
      mOrientation( aOrientation )
 {
@@ -31,8 +31,8 @@ LocationPickerProxyModel::LocationPickerProxyModel(Qt::Orientations aOrientation
 // ----------------------------------------------------
 // LocationPickerProxyModel::lessThan()
 // ----------------------------------------------------
- bool LocationPickerProxyModel::lessThan(const QModelIndex &left,
-                                      const QModelIndex &right) const
+ bool LocationPickerProxyModel::lessThan( const QModelIndex &left,
+                                      const QModelIndex &right ) const
 {
      // get left and right items data and implement sort logic
      // return true if left is less than right
@@ -62,8 +62,8 @@ LocationPickerProxyModel::LocationPickerProxyModel(Qt::Orientations aOrientation
 // LocationPickerProxyModel::filterAcceptsRow()
 // ----------------------------------------------------
 
-bool LocationPickerProxyModel::filterAcceptsRow(int sourceRow,
-        const QModelIndex &sourceParent) const
+bool LocationPickerProxyModel::filterAcceptsRow( int sourceRow,
+        const QModelIndex &sourceParent ) const
 {
     if( mOrientation == Qt::Vertical)
     {
@@ -82,7 +82,7 @@ bool LocationPickerProxyModel::filterAcceptsRow(int sourceRow,
  // ----------------------------------------------------
 // LocationPickerProxyModel::filterParameterChanged()
 // ----------------------------------------------------
-void LocationPickerProxyModel::filterParameterChanged(QString aSearchText)
+void LocationPickerProxyModel::filterParameterChanged( QString aSearchText )
 {
     mSearchText = " " + aSearchText;
 }

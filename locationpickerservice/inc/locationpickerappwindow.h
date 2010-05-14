@@ -28,6 +28,7 @@ class LocationPickerPotraitView;
 class LocationPickerService;
 class LocationPickerProxyModel;
 class LocationPickerLandscapeView;
+class LocationPickerContent;
 
 class LocationPickerAppWindow: public HbMainWindow
 {
@@ -58,15 +59,17 @@ private slots:
     //activate locationpicker view
     void activateLocationPickerView();
     //changes the orientation
-    void changeOrientation(Qt::Orientation);
+    void changeOrientation( Qt::Orientation );
     //complete the service
     void serviceComplete();
     //sets the category ID during orientation change in collection content
-    void setCategoryID( quint32 acategoryId );
+    void setCategoryId( quint32 acategoryId );
     //handles orientation change in collection list
     void handleCollectionList();
     //handle all List
     void allListHandle();
+    //clear content models
+    void clearContentModels();
 private:
     // search view
     LocationPickerSearchView* mLocationPickerSearchView;
@@ -76,6 +79,8 @@ private:
     LocationPickerPotraitView* mLocationPickerPotraitView;
     //location picker landscape view
     LocationPickerLandscapeView* mLocationPickerLandscapeView;
+	//locationpicker content
+    LocationPickerContent* mLocationPickerContent;
     //location picker service;
     LocationPickerService *mService;
     //View Type

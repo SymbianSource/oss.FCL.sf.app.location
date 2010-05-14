@@ -27,9 +27,6 @@
 const TUid KUidMapTileInterface = { 0x2002E6E8 };
 // Central Repository Key IDs
 const TInt KEnableLocationFeature  = 0x1;
-const TInt KLocationFeatureAppContacts      = 0x1;
-const TInt KLocationFeatureAppCalendar      = 0x2;
-
 
 // -----------------------------------------------------------------------------
 // MapTileService::isLocationFeatureEnabled()

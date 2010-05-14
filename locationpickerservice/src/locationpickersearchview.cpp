@@ -32,12 +32,11 @@
 // ----------------------------------------------------
 // LocationPickerSearchView::LocationPickerSearchView()
 // ----------------------------------------------------
-LocationPickerSearchView::LocationPickerSearchView(HbDocumentLoader &aLoader)
+LocationPickerSearchView::LocationPickerSearchView( HbDocumentLoader &aLoader )
     :mProxyModel(NULL),
     mModel(NULL),
     mListView(NULL),
     mSearchPanel(NULL),
-    mDataManager(NULL),
     mEmptyLabel(NULL),
     mVerticalLayout(NULL),
     mDocumentLoader(aLoader)
@@ -49,18 +48,16 @@ LocationPickerSearchView::LocationPickerSearchView(HbDocumentLoader &aLoader)
 // ----------------------------------------------------
 LocationPickerSearchView::~LocationPickerSearchView()
 {
-    if( mDataManager )
-        delete mDataManager;
     delete mProxyModel;
-    delete mModel;
     delete mEmptyLabel;
 }
 
 // ----------------------------------------------------
 // LocationPickerSearchView::init()
 // ----------------------------------------------------
-void LocationPickerSearchView::init()
+void LocationPickerSearchView::init( QStandardItemModel *aModel )
 {   
+    mModel = aModel;
     //get listview from docml
     mListView = qobject_cast<HbListView*>(
             mDocumentLoader.findObject(QString("SearchListView")));
@@ -86,11 +83,6 @@ void LocationPickerSearchView::init()
     hbListItem->setGraphicsSize(HbListViewItem::Thumbnail);
     mListView->setItemPrototype( hbListItem );
 
-    // Create a standard model for the view list
-    mModel = new QStandardItemModel(this);
-    // create a data manager to populate the model
-    mDataManager = new LocationPickerDataManager( *mModel, ELocationPickerSearchView );
-
     // Create the proxy model.
     mProxyModel = new LocationPickerProxyModel( Qt ::Vertical );
     mProxyModel->setSourceModel(mModel);
@@ -100,17 +92,6 @@ void LocationPickerSearchView::init()
     mProxyModel->setDynamicSortFilter(TRUE);
     mProxyModel->setSortRole(Qt::DisplayRole);
     mProxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
-
-    // populate data
-    bool populated = mDataManager->populateModel(Qt::Vertical);
-    if(!populated)
-    {
-        // no entries to display.
-        QStandardItem *modelItem = new QStandardItem();
-        modelItem->setData(QVariant(hbTrId("txt_lint_list_no_location_entries_present")), Qt::DisplayRole);
-        mModel->appendRow( modelItem );
-    }
-
     // sort 
     mProxyModel->sort(0, Qt::AscendingOrder);
 }
@@ -127,7 +108,7 @@ void LocationPickerSearchView::handleExit()
 // ----------------------------------------------------
 // LocationPickerSearchView::doSearch()
 // ----------------------------------------------------
-void LocationPickerSearchView::doSearch(QString aCriteria)
+void LocationPickerSearchView::doSearch( QString aCriteria )
 {
     // use the string to search
     mProxyModel->filterParameterChanged(aCriteria);
@@ -173,12 +154,22 @@ void LocationPickerSearchView::doSearch(QString aCriteria)
 // ----------------------------------------------------
 // LocationPickerSearchView::handleActivated()
 // ----------------------------------------------------
-void LocationPickerSearchView::handleActivated(const QModelIndex &aIndex)
+void LocationPickerSearchView::handleActivated( const QModelIndex &aIndex )
 {
     QModelIndex index = mProxyModel->mapToSource(aIndex);
     quint32 lm = 0;
-    mDataManager->getData( index.row(), lm );
+    getData( index, lm );
     //emit item is selectedsignal
     emit selectItem( lm );
 }
 
+// ----------------------------------------------------------------------------
+// LocationPickerSearchView::getData()
+// ----------------------------------------------------------------------------
+
+void LocationPickerSearchView::getData( QModelIndex aIndex, quint32& aValue )
+{
+    QStandardItem* item = mModel->item( aIndex.row(), aIndex.column() );
+    QVariant var = item->data( Qt::UserRole );
+    aValue = var.toUInt();
+}

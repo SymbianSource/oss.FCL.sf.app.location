@@ -42,7 +42,7 @@ CCalenderNotification* CCalenderNotification::NewLC(
     CCalenderNotification* self = new (ELeave) CCalenderNotification(
             aNotifyChange);
     CleanupStack::PushL(self);
-    self->ConstructL(aNotifyChange);
+    self->ConstructL();
     return self;
 }
 
@@ -51,7 +51,7 @@ CCalenderNotification* CCalenderNotification::NewLC(
 // Symbian 2nd phase constructor can leave.
 // -----------------------------------------------------------------------------
 //
-void CCalenderNotification::ConstructL(MNotifyChange* aNotifyChange)
+void CCalenderNotification::ConstructL()
 {
     CActiveScheduler::Add(this);
     User::LeaveIfError(iFsession.Connect());
@@ -117,4 +117,6 @@ void CCalenderNotification::RunL()
 void CCalenderNotification::DoCancel()
 {
 }
+
+//End of file
 

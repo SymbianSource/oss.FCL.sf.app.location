@@ -17,7 +17,7 @@
 
 #ifndef ADDRESSCOMPARISION_H_
 #define ADDRESSCOMPARISION_H_
-#include <epos_cposlandmarkdatabase.h>
+#include <EPos_CPosLandmarkDatabase.h>
 #include "mylocationslookupdb.h"
 class CAddressComparision : public CBase
     {

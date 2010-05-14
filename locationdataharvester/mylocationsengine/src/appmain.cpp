@@ -40,14 +40,8 @@ static void DoExecuteL()
     // create Mylocations engine object
     CMyLocationsEngine *myLocationsEngine = CMyLocationsEngine::NewL();
     CleanupStack::PushL( myLocationsEngine );
-    // Start listening to calendar db changes
-    //myLocationsEngine->StartCalenderChangeNotifierL();
 
-   
-    // Start listening to landmarks db changes
-    //myLocationsEngine->StartLandmarksChangeNotifier();
-
-    //MYLOCLOGSTRING("Start listening to landmarks db changes.");
+    MYLOCLOGSTRING("myLocationsEngine created.");
     
     RProcess::Rendezvous(KErrNone);
     // Start handling requests
@@ -65,8 +59,7 @@ static void DoExecuteL()
 // -----------------------------------------------------------------------------
 //
 static TInt Execute()
-{
-   // __UHEAP_MARK;
+{  
     TInt error = KErrNoMemory;
     // Create the cleanup stack
     CTrapCleanup* cleanup = CTrapCleanup::New();
@@ -76,7 +69,6 @@ static TInt Execute()
         TRAP( error, DoExecuteL() );
         delete cleanup;
     }
-   // __UHEAP_MARKEND;
     return error;
 }
 

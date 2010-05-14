@@ -20,7 +20,7 @@
 
 
 
-#include <hbview>
+#include <HbView>
 #include <hbdocumentloader.h>
 #include "locationpickertypes.h"
 
@@ -28,9 +28,8 @@
 class HbListView;
 class QStandardItemModel;
 class LocationPickerProxyModel;
-class LocationPickerContent;
-class LocationPickerCollectionListContent;
 class LocationPickerCollectionContent;
+class LocatipnPickerProxyModel;
 class HbGridViewItem;
 class HbGridView;
 class HbAction;
@@ -44,15 +43,12 @@ class LocationPickerLandscapeView : public HbView
     Q_OBJECT
 public:
     // constructor
-    LocationPickerLandscapeView(HbDocumentLoader* aLoader);
+    LocationPickerLandscapeView( HbDocumentLoader* aLoader );
     // destructor
     ~LocationPickerLandscapeView();
-private:
-    //disable the tabs
-    void disableTabs();
 public:
     //get the items from docml and connect to respective slots
-    void init(Qt::Orientation aOrientation );
+    void init( Qt::Orientation aOrientation, QStandardItemModel *aModel );
     //Set the appropriate model on grid view
     void manageGridView();
     //Create collection list and sets to list view
@@ -62,10 +58,12 @@ public:
     //Get the view type
     TViewType getViewType();
     //set the view type
-    void setViewType(TViewType aViewType);
+    void setViewType( TViewType aViewType );
+    //clear collection content
+    void clearContentModel();
 private slots:
     //slot to handle list item actions     
-    void handleActivated(const QModelIndex &aIndex);
+    void handleActivated( const QModelIndex &aIndex );
     //slots to handle menu action items     
     void sortDescending();
     void sortAscending();
@@ -82,14 +80,14 @@ signals:
     void handleCollectionList();
     void selectItem( quint32 aLm );
     void completeService();
-    void sendCategoryID(  quint32 acategoryId  );
+    void sendCategoryID( quint32 acategoryId );
+    void collectionContentExited();
 private:
     //document loader
     HbDocumentLoader* mDocumentLoader;
-    // all view
-    LocationPickerContent* mLocationPickerContent;
-    // collection list content
-    LocationPickerCollectionListContent* mLocationPickerCollectionListContent;
+    //locationPickerProxyModel
+    LocationPickerProxyModel *mProxyModel;
+    QStandardItemModel *mModel;
     //actions
     HbAction *mAllAction;
     HbAction *mCollectionAction;

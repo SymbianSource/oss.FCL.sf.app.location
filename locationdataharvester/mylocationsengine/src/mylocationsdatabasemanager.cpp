@@ -21,19 +21,29 @@
 #include <EPos_CPosLmTextCriteria.h>
 #include <EPos_CPosLandmarkSearch.h>
 #include <EPos_CPosLmDatabaseManager.h>
+#include <EPos_CPosLmNearestCriteria.h>
+
 #include <lbsposition.h>
-#include <mylocations.rsg>
+//#include <mylocations.rsg>
 #include <barsread.h>
 #include <barsc.h>
+#include <locationservicedefines.h>
 #include "mylocationsdatabasemanager.h"
 #include "mylocationlogger.h"
 #include "mylocationsdefines.h"
-//Custom landmark database for storing the my locations details
-_LIT( KMyLocationsDatabaseUri, "file://c:MyLocationsLandmarks.ldb" );
+
 // separator
 _LIT( KSeparator, ",");
 // space
 _LIT( KSpace, " ");
+
+// QString separator
+const QString KQStringSeparator = ",";
+// QString space
+const QString KQStringSpace = " ";
+
+// Used to set nearest landmarks search distance criteria
+const TUint32 KSearchCriteriaDistance = 100; 
 
 // -----------------------------------------------------------------------------
 // CMyLocationsDatabaseManager::ConstructL()
@@ -49,50 +59,22 @@ void CMyLocationsDatabaseManager::ConstructL()
     // create landmarks lookup database.
     iLandmarksLookupDb = CLookupDatabase::NewL(KLandmarksLookupDatabaseName);
     User::LeaveIfError( iLandmarksLookupDb->Open() );
+ 
+    iLocationAppLookupDb = new LocationDataLookupDb();
+    if( !iLocationAppLookupDb->open() )
+    {
+        User::Leave( KErrUnknown );
+    }
     
-    CPosLmDatabaseManager* dbManager = CPosLmDatabaseManager::NewL();
-    CleanupStack::PushL(dbManager);
-
-    //Create custom landmark database for storing my locations data
-    if (!dbManager->DatabaseExistsL(KMyLocationsDatabaseUri))
-    {
-        HPosLmDatabaseInfo* dbInfo = HPosLmDatabaseInfo::NewLC(
-                KMyLocationsDatabaseUri);
-        dbManager->CreateDatabaseL(*dbInfo);
-        CleanupStack::PopAndDestroy(dbInfo);
-    }
-
-    CleanupStack::PopAndDestroy(dbManager);
-
-    //Open and initialize the custom landmark database
-    iMyLocationsLandmarksDb = CPosLandmarkDatabase::OpenL(
-                                        KMyLocationsDatabaseUri);
-    if (iMyLocationsLandmarksDb->IsInitializingNeeded())
-    {
-        ExecuteAndDeleteLD(iMyLocationsLandmarksDb->InitializeL());
-    }
-
-    // create mylocations lookup database.
-    iMylocationsLookupDb
-            = CLookupDatabase::NewL(KMylocationsLookupDatabaseName);
-
-    // Create category manager for mylocations
-    iMyLocationsCatManager = CPosLmCategoryManager::NewL(
-            *iMyLocationsLandmarksDb);
-
     // Create category manager for landmarks
     iLandmarksCatManager = CPosLmCategoryManager::NewL(*iLandmarkDb);
-
-    //open the lookup database
-    User::LeaveIfError( iMylocationsLookupDb->Open() );
 
     // open file session
     User::LeaveIfError(iFsSession.Connect());
 
-    // Add contacts, calendar and history categories
-    AddMylocationsCategoryL(ESourceLandmarksContactsCat);
-    //close the lookup database
-    iMylocationsLookupDb->Close();
+    // Add contacts and calendar  categories
+    iLmContactsCatId = AddMylocationsCategoryL(KContactsCategory);
+    iLmCalendarCatId = AddMylocationsCategoryL( KCalendarCategory );
 
 }
 
@@ -102,9 +84,8 @@ void CMyLocationsDatabaseManager::ConstructL()
 // -----------------------------------------------------------------------------
 //
 CMyLocationsDatabaseManager::CMyLocationsDatabaseManager() : iLandmarkDb( NULL ),
-                iMyLocationsLandmarksDb( NULL ), 
                 iLmContactsCatId( 0 ), iLandmarksLookupDb( NULL ), 
-                iMylocationsLookupDb( NULL ), iMyLocationsCatManager( NULL ), 
+                iLocationAppLookupDb( NULL ),
                 iLandmarksCatManager( NULL )
 {
 }
@@ -122,20 +103,16 @@ CMyLocationsDatabaseManager::~CMyLocationsDatabaseManager()
         iLandmarksLookupDb->Close();
         delete iLandmarksLookupDb;
     }
-    if (iMylocationsLookupDb)
+    if (iLocationAppLookupDb)
     {
-        iMylocationsLookupDb->Close();
-        delete iMylocationsLookupDb;
+        iLocationAppLookupDb->close();
+        delete iLocationAppLookupDb;
     }
 
     delete iLandmarksCatManager;
 
     delete iLandmarkDb;
 
-    delete iMyLocationsCatManager;
-
-    delete iMyLocationsLandmarksDb;
-  
     // close the file session
     iFsSession.Close();
 
@@ -146,107 +123,27 @@ CMyLocationsDatabaseManager::~CMyLocationsDatabaseManager()
 // Adds the category to the mylocations and landmarks database..
 // -----------------------------------------------------------------------------
 //
-void CMyLocationsDatabaseManager::AddMylocationsCategoryL( const TUint32 aCategoryType )
+TUint32 CMyLocationsDatabaseManager::AddMylocationsCategoryL( const TDesC&  aCategoryName )
 {
     __TRACE_CALLSTACK;//Open the resource file
-    RResourceFile resourceFile;
-    resourceFile.OpenL( iFsSession, KMyLocationsResourceFile );
-    CleanupClosePushL( resourceFile );
     
-    // Get the category name
-    HBufC8* dataBuffer = NULL;
-    if (aCategoryType == ESourceLandmarksContactsCat)
-    {
-        dataBuffer = resourceFile.AllocReadLC(R_LOCINT_LIST_CATEGORY_CONTACTS);
-    }
+    TPosLmItemId catId = 0;
     
-    TResourceReader resReader;
-    resReader.SetBuffer(dataBuffer);
-    TPtrC resData = resReader.ReadTPtrC();
-
-    TLookupItem lookupItem;
-    lookupItem.iLmId = 0;
-    lookupItem.iSource = aCategoryType;
-    lookupItem.iUid = 0;
-
-    RArray<TLookupItem> itemArray;
-    CleanupClosePushL(itemArray);
-    iMylocationsLookupDb->FindEntriesBySourceTypeL(lookupItem.iSource,
-            itemArray);
-
-    // Get the category from mylocations lookup table
-    if (itemArray.Count() == 0)
+    //create category
+    CPosLandmarkCategory *category = CPosLandmarkCategory::NewL();
+    CleanupStack::PushL(category);
+    category->SetCategoryNameL( aCategoryName );
+    
+    // Add category to landmarks database
+    TRAPD ( error, ( catId = iLandmarksCatManager->AddCategoryL( *category ) ) );
+    if (error == KErrNone || error == KErrAlreadyExists)
     {
-        // category not found, so create one.
-        CPosLandmarkCategory *category = CPosLandmarkCategory::NewL();
-        CleanupStack::PushL(category);
-        category->SetCategoryNameL(resData);
-
-        if ( aCategoryType == ESourceLandmarksContactsCat)
-        {
-            TPosLmItemId landmarksCatId = 0;
-            // Add category to landmarks database
-            TRAPD ( error, ( landmarksCatId = iLandmarksCatManager->AddCategoryL( *category ) ) );
-            if (error == KErrNone || error == KErrAlreadyExists)
-            {
-                landmarksCatId = iLandmarksCatManager->GetCategoryL(resData);
-            }
-            lookupItem.iUid = landmarksCatId;
-        }
-
-        // Add the catefory to mylocations database
-        TPosLmItemId myLocationsCatId = 0;
-        // Add category to mylocations database
-        TRAPD ( error, ( myLocationsCatId = iMyLocationsCatManager->AddCategoryL( *category ) ) );
-        if (error == KErrNone || error == KErrAlreadyExists)
-        {
-            myLocationsCatId = iMyLocationsCatManager->GetCategoryL(resData);
-        }
-        // create this entry in mylocations lookup table
-        lookupItem.iSource = aCategoryType;
-        lookupItem.iLmId = myLocationsCatId;
-        iMylocationsLookupDb->CreateEntryL(lookupItem);
-
-        CleanupStack::PopAndDestroy(category);
-    }
-    else
-    {
-        // category found in lookup table,
-        // update the corresponding category in Mylocations and landmarks database with 
-        // current localized string  
-
-
-        lookupItem.iLmId = itemArray[0].iLmId;
-        lookupItem.iUid = itemArray[0].iUid;
-        if ( aCategoryType == ESourceLandmarksContactsCat)
-        {
-            CPosLandmarkCategory *category =
-                    iLandmarksCatManager->ReadCategoryLC(lookupItem.iUid);
-            category->SetCategoryNameL(resData);
-            TRAP_IGNORE ( ( iLandmarksCatManager->UpdateCategoryL( *category ) ) );
-            CleanupStack::PopAndDestroy(category);
-        }
-        // update category in mylocations db
-        CPosLandmarkCategory *category2 =
-                iMyLocationsCatManager->ReadCategoryLC(lookupItem.iLmId);
-        category2->SetCategoryNameL(resData);
-        TRAP_IGNORE ( ( iMyLocationsCatManager->UpdateCategoryL( *category2 ) ) );
-        CleanupStack::PopAndDestroy(category2);
+        catId = iLandmarksCatManager->GetCategoryL( aCategoryName );
     }
 
-    CleanupStack::PopAndDestroy(&itemArray);
+    CleanupStack::PopAndDestroy(category);
 
-    if ( dataBuffer )
-    {
-        CleanupStack::PopAndDestroy(dataBuffer);
-    }
-    
-    if (aCategoryType == ESourceLandmarksContactsCat)
-        iLmContactsCatId = lookupItem.iUid;
-    
-    // Close the resource file
-    CleanupStack::PopAndDestroy( &resourceFile );
-
+    return catId;
 }
 
 // -----------------------------------------------------------------------------
@@ -260,7 +157,6 @@ void CMyLocationsDatabaseManager::UpdateDatabaseL(CPosLandmark* aLandmark,
         const TUint32 aUid, const TUint32 aSourceType, const TEntryChangeType aChangeType)
 {
     __TRACE_CALLSTACK;//open the lookup database
-    User::LeaveIfError(iMylocationsLookupDb->Open());
     switch (aChangeType)
     {
     // if the entry is added
@@ -285,8 +181,6 @@ void CMyLocationsDatabaseManager::UpdateDatabaseL(CPosLandmark* aLandmark,
         break;
     }
     }
-    //close the lookup database
-    iMylocationsLookupDb->Close();
 
 }
 
@@ -306,20 +200,24 @@ TPosLmItemId CMyLocationsDatabaseManager::CheckIfDuplicateExistsL(
 
     // create a search object.
     CPosLandmarkSearch* search = CPosLandmarkSearch::NewL(
-            *iMyLocationsLandmarksDb);
+            *iLandmarkDb);
     CleanupStack::PushL(search);
 
-    TBuf<KMaxAddressLength> lmAddress;
-    GetLandmarkFullAddress(lmAddress, aLandmark);
+    TBuf<KMaxAddressLength> lmAddress1;
+    GetLandmarkFullAddress( lmAddress1, aLandmark );
+    QString str1 = QString( (QChar*)lmAddress1.Ptr(), lmAddress1.Length());
 
-    // Create the search criterion
-    CPosLmTextCriteria* crit = CPosLmTextCriteria::NewLC();
-    crit->SetTextL(lmAddress);
-    crit->SetAttributesToSearch(CPosLandmark::ELandmarkName);
-
+    // create nearest search criteria object
+    TLocality position( TCoordinate( 0, 0), 0 );
+    aLandmark->GetPosition( position );
+    CPosLmNearestCriteria* nearestCriteria = 
+                CPosLmNearestCriteria::NewLC( 
+                        TCoordinate( position.Latitude(), position.Longitude() ) );
+    nearestCriteria->SetMaxDistance( KSearchCriteriaDistance );
+    
     // Start the search and execute it at once.
-    ExecuteAndDeleteLD(search->StartLandmarkSearchL(*crit));
-    CleanupStack::PopAndDestroy(crit);
+    ExecuteAndDeleteLD( search->StartLandmarkSearchL( *nearestCriteria ) );
+    CleanupStack::PopAndDestroy( nearestCriteria );
 
     // Retrieve an iterator to access the matching landmarks.
     CPosLmItemIterator* iter = search->MatchIteratorL();
@@ -328,24 +226,19 @@ TPosLmItemId CMyLocationsDatabaseManager::CheckIfDuplicateExistsL(
     // Iterate the search matches.
     TPosLmItemId lmId;
 
-    while ((lmId = iter->NextL()) != KPosLmNullItemId)
+    while( ( lmId = iter->NextL() ) != KPosLmNullItemId )
     {
-        //Found duplicate entries.
-        // Get the corresponding id in landmarks db
-        RArray<TLookupItem> itemArray;
-        CleanupClosePushL(itemArray);
-        iMylocationsLookupDb->FindEntriesByLandmarkIdL(lmId, itemArray);
-        if (itemArray.Count())
+        CPosLandmark* lm = iLandmarkDb->ReadLandmarkLC( lmId );
+        TBuf<KMaxAddressLength> lmAddress2;
+        GetLandmarkFullAddress( lmAddress2, lm );
+        QString str2 = QString( (QChar*)lmAddress2.Ptr(), lmAddress2.Length());
+        CleanupStack::PopAndDestroy( lm );
+        
+        if( str1 == str2 )
         {
-            if (itemArray[0].iSource == ESourceLandmarks)
-            {
-                // return id only if the source is from landmarks database.
-                retId = itemArray[0].iUid;
-                CleanupStack::PopAndDestroy(&itemArray);
-                break;
-            }
+            retId = lmId;
+            break;
         }
-        CleanupStack::PopAndDestroy(&itemArray);
     }
 
     CleanupStack::PopAndDestroy(iter);
@@ -361,63 +254,24 @@ TPosLmItemId CMyLocationsDatabaseManager::CheckIfDuplicateExistsL(
 // -----------------------------------------------------------------------------
 //
 TBool CMyLocationsDatabaseManager::CompareLandmarks(
-        const CPosLandmark* aLandmark1, const CPosLandmark* aLandmark2)
+        const CPosLandmark* aLandmark1, const CPosLandmark* aLandmark2 )
 {
-    __TRACE_CALLSTACK;// Compare landmark names
-    TPtrC name1, name2;
-    aLandmark1->GetLandmarkName(name1);
-    aLandmark2->GetLandmarkName(name2);
-    if (name1 != name2)
-    {
-        return EFalse;
-    }
+    __TRACE_CALLSTACK;
 
-    // Compare street info
-    TPtrC street1, street2;
-    aLandmark1->GetPositionField(EPositionFieldStreet, street1);
-    aLandmark2->GetPositionField(EPositionFieldStreet, street2);
-    if (street1 != street2)
-    {
-        return EFalse;
-    }
+    TBuf<KMaxAddressLength> lmAddress1;
+    GetLandmarkFullAddress( lmAddress1, aLandmark1 );
+    QString str1 = QString( (QChar*)lmAddress1.Ptr(), lmAddress1.Length());
 
-    // Compare City info
-    TPtrC city1, city2;
-    aLandmark1->GetPositionField(EPositionFieldCity, city1);
-    aLandmark2->GetPositionField(EPositionFieldCity, city2);
-    if (city1 != city2)
-    {
-        return EFalse;
-    }
+    TBuf<KMaxAddressLength> lmAddress2;
+    GetLandmarkFullAddress( lmAddress2, aLandmark2 );
+    QString str2 = QString( (QChar*)lmAddress2.Ptr(), lmAddress2.Length());
 
-    // compare state info
-    TPtrC state1, state2;
-    aLandmark1->GetPositionField(EPositionFieldState, state1);
-    aLandmark2->GetPositionField(EPositionFieldState, state2);
-    if (state1 != state2)
-    {
+    if( str1 == str2 )
+        return ETrue;
+    else
         return EFalse;
-    }
-
-    // compare postal code
-    TPtrC postalCode1, postalCode2;
-    aLandmark1->GetPositionField(EPositionFieldPostalCode, postalCode1);
-    aLandmark2->GetPositionField(EPositionFieldPostalCode, postalCode2);
-    if (postalCode1 != postalCode2)
-    {
-        return EFalse;
-    }
-
-    // compare country name
-    TPtrC country1, country2;
-    aLandmark1->GetPositionField(EPositionFieldCountry, country1);
-    aLandmark2->GetPositionField(EPositionFieldCountry, country2);
-    if (country1 != country2)
-    {
-        return EFalse;
-    }
-
-    return ETrue;
+    
+    
 }
 
 // -----------------------------------------------------------------------------
@@ -429,58 +283,94 @@ void CMyLocationsDatabaseManager::HandleEntryAdditionL(CPosLandmark* aLandmark,
         const TUint32 aUid, const TUint32 aSourceType)
 {
     __TRACE_CALLSTACK;
+    // Create a lookup item
+    QLookupItem lookupItem;
+    lookupItem.mSourceUid = aUid;
+    lookupItem.mSourceType = aSourceType;
+    lookupItem.mDestId = 0;
+    lookupItem.mIconType = QLookupItem::EIconTypeDefault;
+    lookupItem.mIsDuplicate = 0;
+    lookupItem.mIconPath = "";
+    lookupItem.mMapTilePath = "";
+    
+    //fill address into lookup item.
+    FillLookupItemAddressDetails( aLandmark, lookupItem );
+
     if ( aSourceType == ESourceLandmarks )
     {
-        AddToMylocationsDbL(aLandmark, aUid, aSourceType);
-        return;
+        // Logic: check if the entry is already present in lookupdb. 
+        // If present, it means the landmark corresponds to a contact/calendar. So ignore it.
+        // If not present, it means the landmark is created directly into the landmarks db. So add
+        // it in lookupdb as well.
+        
+        // check if the entry is already present in lookup db.
+        QList<QLookupItem> itemArray;
+        iLocationAppLookupDb->findEntriesByLandmarkId( aUid, itemArray );
+        if( itemArray.count() )
+        {
+            return;
+        }
+        else
+        {
+            lookupItem.mDestId = aUid;
+            iLocationAppLookupDb->createEntry( lookupItem );
+            return;
+        }
     }
-    if ( aSourceType == ESourceLandmarksCategory )
-    {
-        CreateCategoryL(aUid);
-        return;
-    }
-    // Create a lookup item
-    TLookupItem lookupItem;
-    lookupItem.iUid = aUid;
-    lookupItem.iSource = aSourceType;
 
+    TPosLmItemId catId;
+    if( aSourceType == ESourceCalendar )
+    {
+        // category id to calendar
+        catId = iLmCalendarCatId;
+    }
+    else 
+    {
+        // remove landmark name, which is basically contact's name.
+        aLandmark->SetLandmarkNameL( KNullDesC );
+        // category id to contacts
+        catId = iLmContactsCatId;
+    }
     // check if this landmark is already present in database
-    TPosLmItemId dupLmId = CheckIfDuplicateExistsL(aLandmark);
-    if (dupLmId)
+    TPosLmItemId dupLmId = CheckIfDuplicateExistsL( aLandmark );
+    if ( dupLmId )
     {
         // landmark already present in db. get the details
         CPosLandmark* dupLandmark = iLandmarkDb->ReadLandmarkLC(dupLmId);
-        if (dupLandmark)
+        if( dupLandmark )
         {
-            if (aSourceType == ESourceContactsPref || aSourceType
-                    == ESourceContactsWork || aSourceType
-                    == ESourceContactsHome)
-            {
-                dupLandmark->AddCategoryL(iLmContactsCatId);
-            }
+            // add category.
+            dupLandmark->AddCategoryL( catId );
             // update the landmark object in the db
-            iLandmarkDb->UpdateLandmarkL(*dupLandmark);
-            CleanupStack::PopAndDestroy(dupLandmark);
+            iLandmarkDb->UpdateLandmarkL( *dupLandmark );
+            CleanupStack::PopAndDestroy( dupLandmark );
         }
 
         // point the lookup item's landmark uid to the existing landmark.
-        lookupItem.iLmId = dupLmId;
+        lookupItem.mDestId = dupLmId;
+        if( aSourceType == ESourceCalendar )
+        {
+            // set duplicate flag to true. only if it is calendar entry.
+            // for contacts duplicate doesnot hold good as the location name is the contact name.
+        
+            // set duplicate only if there are calendar entries already pointing to this landmark. 
+            if( IsDuplicateEntry( dupLmId ) )
+            {
+                lookupItem.mIsDuplicate = 1;
+            }
+        }
     }
     else // it is a new entry, so add into the database
     {
-        if (aSourceType == ESourceContactsPref || aSourceType
-                == ESourceContactsWork || aSourceType == ESourceContactsHome)
-        {
-            aLandmark->AddCategoryL(iLmContactsCatId);
-        }
+        // add category.
+        aLandmark->AddCategoryL( catId );
         // add the landmark into the db. 
         // point the lookup item's landmark uid to the newly created landmark in the db.
-        lookupItem.iLmId = iLandmarkDb->AddLandmarkL(*aLandmark);
+        lookupItem.mDestId = iLandmarkDb->AddLandmarkL( *aLandmark );
     }
 
     // create the entry in the lookup table.
-    iLandmarksLookupDb->CreateEntryL(lookupItem);
-
+    iLocationAppLookupDb->createEntry( lookupItem );
 }
 
 // -----------------------------------------------------------------------------
@@ -489,164 +379,210 @@ void CMyLocationsDatabaseManager::HandleEntryAdditionL(CPosLandmark* aLandmark,
 // -----------------------------------------------------------------------------
 //
 void CMyLocationsDatabaseManager::HandleEntryModificationL(
-        CPosLandmark* aLandmark, const TUint32 aUid, const TUint32 aSourceType)
+        CPosLandmark* aLandmark, const TUint32 aUid, const TUint32 aSourceType )
 {
     __TRACE_CALLSTACK;
     if ( aSourceType == ESourceLandmarks )
     {
-        ModifyMylocationsDbL( aLandmark, aUid, aSourceType );
+        HandleLandmarkModificationL( aLandmark, aUid );
         return;
     }
 
-    TLookupItem lookupItem;
-    lookupItem.iUid = aUid;
-    lookupItem.iSource = aSourceType;
+    QLookupItem lookupItem;
+    lookupItem.mSourceUid = aUid;
+    lookupItem.mSourceType = aSourceType;
+    lookupItem.mIconType = QLookupItem::EIconTypeDefault;
 
+    // Behavior: If an entry is modified, 
+    // If this entry is not present in lookup table. add the entry and update the landmarks db.
+    // If this entry is already present in lookup table, check if the location info is modified or not.
+    // If the location info is modified, delete the landmark from db and add the new landmark
+    // into the db. 
+    // Before deletion make sure that the landmark is not being refered by other lookup entries.
 
-    if (aSourceType == ESourceContactsPref || aSourceType
-            == ESourceContactsWork || aSourceType == ESourceContactsHome)
+    // find the entry in the lookup table.
+    if ( iLocationAppLookupDb->findEntryBySourceIdAndType( lookupItem ) )
     {
-        // Behavior: If a contact is modified, 
-        // If this entry is not present in lookup table. add the entry and update the landmarks db.
-        // If this entry is already present in lookup table, check if the location info is modified or not.
-        // If the location info is modified, delete the landmark from db and add the new landmark
-        // into the db. 
-        // Before deletion make sure that the landmark is not being refered by other lookup entries.
-
-        // find the entry in the lookup table.
-        if (iLandmarksLookupDb->FindEntryL(lookupItem))
+        //fill address into lookup item.
+        FillLookupItemAddressDetails( aLandmark, lookupItem );
+        
+        QString locationName = lookupItem.mName;
+    
+        TPosLmItemId catId;
+        
+        if( aSourceType == ESourceCalendar )
         {
-            // check if the location info is modified by comparing the new landmark with the existing landmark
-            CPosLandmark* existingLandmark = NULL;
-            TRAPD( error, ( existingLandmark = 
-                   CheckAndReadLandmarkL( iLandmarkDb, lookupItem.iLmId ) ) );
-            CleanupStack::PushL(existingLandmark);
-            if (error == KErrNotFound)
-            {
-                // Landmarks item deleted. So delete corresponding lookup entries.
-                RArray<TLookupItem> itemArray;
-                CleanupClosePushL(itemArray);
-                iLandmarksLookupDb->FindEntriesByLandmarkIdL(lookupItem.iLmId,
-                        itemArray);
-                for (TInt i = 0; i < itemArray.Count(); i++)
-                {
-                    iLandmarksLookupDb->DeleteEntryL(itemArray[i]);
-                }
-                CleanupStack::PopAndDestroy(&itemArray);
+            catId = iLmCalendarCatId;
+        }
+        else
+        {
+            // remove landmark name, which is basically contact's name.
+            aLandmark->SetLandmarkNameL( KNullDesC );
+            
+            // category id to contacts
+            catId = iLmContactsCatId;
+        }
 
-                // Add the entry into the lookup table and update landmarks db.
-                HandleEntryAdditionL(aLandmark, aUid, aSourceType);
-                
-                CleanupStack::PopAndDestroy(existingLandmark);
-                return;
+        
+        // check if the location info is modified by comparing the new landmark with the existing landmark
+        CPosLandmark* existingLandmark = NULL;
+        TRAPD( error, ( existingLandmark = 
+               CheckAndReadLandmarkL( iLandmarkDb, lookupItem.mDestId ) ) );
+        CleanupStack::PushL( existingLandmark );
+        if ( error == KErrNotFound )
+        {
+            // Landmarks item deleted. So delete corresponding lookup entries.
+            QList<QLookupItem> itemArray;
+            iLocationAppLookupDb->findEntriesByLandmarkId( lookupItem.mDestId, itemArray );
+            for ( int i = 0; i < itemArray.count(); i++)
+            {
+                iLocationAppLookupDb->deleteEntryBySourceIdAndType( itemArray[i] );
             }
 
-            if (!CompareLandmarks(existingLandmark, aLandmark))
+            // Add the entry into the lookup table and update landmarks db.
+            HandleEntryAdditionL( aLandmark, aUid, aSourceType );
+            
+            CleanupStack::PopAndDestroy( existingLandmark );
+            return;
+        }
+
+        if ( !CompareLandmarks( existingLandmark, aLandmark ) )
+        {
+            // landmarks are not same, means location information is modified.
+
+            // Check if the new landmark is already in db.
+            TPosLmItemId dupLmId = CheckIfDuplicateExistsL( aLandmark );
+            if ( dupLmId )
             {
-                // landmarks are not same, means location information is modified.
-
-                // Check if the new landmark is already in db.
-                TPosLmItemId dupLmId = CheckIfDuplicateExistsL(aLandmark);
-                if (dupLmId)
+                // landmark already present in db. get the details
+                CPosLandmark* dupLandmark = iLandmarkDb->ReadLandmarkLC( dupLmId );
+                if ( dupLandmark )
                 {
-                    // landmark already present in db. get the details
-                    CPosLandmark* dupLandmark = iLandmarkDb->ReadLandmarkLC(
-                            dupLmId);
-                    if (dupLandmark)
+                    // add category.
+                    dupLandmark->AddCategoryL( catId );
+
+                    // update the landmark object in the db
+                    iLandmarkDb->UpdateLandmarkL( *dupLandmark );
+                }
+                CleanupStack::PopAndDestroy( dupLandmark );
+
+                // update the lookup item to refer to the newly created landmark.
+                lookupItem.mDestId = dupLmId;
+                if( aSourceType == ESourceCalendar )
+                {
+                    // for contacts duplicate doesnot hold good as the location name is the contact name.
+                    if( !lookupItem.mIsDuplicate )
                     {
-                        // add category.
-                        dupLandmark->AddCategoryL(iLmContactsCatId);
+                        // if current lookup item duplicate property is 0, then remove next corresponding
+                        // calendar lookup entry duplicate property.
+                        // this is required because the current entry will be pointing to a new landmark.
+                        UnsetDuplicateNextCalEntry( existingLandmark->LandmarkId() );
+                    } 
 
-                        // update the landmark object in the db
-                        iLandmarkDb->UpdateLandmarkL(*dupLandmark);
+                    // set duplicate only if there are calendar entries already pointing to this landmark. 
+                    if( IsDuplicateEntry( dupLmId ) )
+                    {
+                        lookupItem.mIsDuplicate = 1;
                     }
-                    CleanupStack::PopAndDestroy(dupLandmark);
 
-                    // update the lookup item to refer to the newly created landmark.
-                    lookupItem.iLmId = dupLmId;
-                    iLandmarksLookupDb->UpdateEntryL(lookupItem);
                 }
-                else
-                {
-                    // landmark not already present in db.
-                    // Create a new entry in the db
-                    aLandmark->AddCategoryL(iLmContactsCatId);
-                    lookupItem.iLmId = iLandmarkDb->AddLandmarkL(*aLandmark);
-                    // update the lookup table
-                    iLandmarksLookupDb->UpdateEntryL(lookupItem);
-                }
+                
+                iLocationAppLookupDb->updateEntryBySourceIdAndType( lookupItem );
             }
             else
             {
-                // landmarks are same, means location not modified. So return.
-                CleanupStack::PopAndDestroy(existingLandmark);
-                return;
+                // landmark not already present in db.
+                // Create a new entry in the db
+                aLandmark->AddCategoryL( catId );
+                lookupItem.mDestId = iLandmarkDb->AddLandmarkL( *aLandmark );
+                if( aSourceType == ESourceCalendar )
+                {
+                    // for contacts duplicate doesnot hold good as the location name is the contact name.
+                    if( !lookupItem.mIsDuplicate )
+                    {
+                        // if current lookup item duplicate property is 0, then remove next corresponding
+                        // calendar lookup entry duplicate property.
+                        // this is required because the current entry will be pointing to a new landmark.
+                        UnsetDuplicateNextCalEntry( existingLandmark->LandmarkId() );
+                    } 
+                }
+                
+                lookupItem.mIsDuplicate = 0;
+                // update the lookup table
+                iLocationAppLookupDb->updateEntryBySourceIdAndType( lookupItem );
+            }
+        }
+        else
+        {
+            // landmarks are same, means location not modified. So return.
+            if( aSourceType == ESourceContactsPref
+                                    || aSourceType == ESourceContactsWork
+                                    || aSourceType == ESourceContactsHome
+                                    )
+            {
+                // in case of contacts, there is a chance that contact name is modified. 
+                // so update the lookup database entry with that name.
+                lookupItem.mName = locationName;
+                iLocationAppLookupDb->updateEntryBySourceIdAndType( lookupItem );
             }
 
-            // delete the existing landmark only if it not being refered by other lookup entries.
+            CleanupStack::PopAndDestroy( existingLandmark );
+            return;
+        }
 
-            // Check if any other entries are refering this landmark.
-            RArray<TLookupItem> itemArray;
-            CleanupClosePushL(itemArray);
-            iLandmarksLookupDb->FindEntriesByLandmarkIdL(
-                    existingLandmark->LandmarkId(), itemArray);
+        // delete the existing landmark only if it not being refered by other lookup entries.
 
-            if (itemArray.Count())
+        // Check if any other entries are refering this landmark.
+        QList<QLookupItem> itemArray;
+        iLocationAppLookupDb->findEntriesByLandmarkId(
+                existingLandmark->LandmarkId(), itemArray );
+
+        if ( itemArray.count() )
+        {
+            // There are other lookup entries refering this landmark. So do not delete the landmark
+
+            // If none of these lookup item's source type is current source type, disassociate 'catId' category
+            // from this landmark.
+            TInt i = 0;
+            while ( i < itemArray.count() )
             {
-                // There are other lookup entries refering this landmark. So do not delete the landmark
-
-                // If none of these lookup item's source type is contacts, disassociate 'iLmContactsCatId' category
-                // from this landmark.
-                TInt i = 0;
-                while (i < itemArray.Count())
+                if( aSourceType == ESourceCalendar )
                 {
-                    if (itemArray[i].iSource == ESourceContactsPref
-                            || itemArray[i].iSource == ESourceContactsWork
-                            || itemArray[i].iSource == ESourceContactsHome
-                            )
+                    if ( itemArray[i].mSourceType == aSourceType )
                     {
-                        // a lookup item exists which is from contacts, so 'iLmContactsCatId' is still valid.
+                        // a lookup item exists which is from calendar, so 'catId' is still valid.
                         break;
                     }
-                    i++;
-                }
-                if (i == itemArray.Count())
+                 }
+                else 
                 {
-                    // no lookup items from contacts exists refering this landmark.
-                    // so disassociate 'iLmContactsCatId' from this landmark
-
-                    existingLandmark->RemoveCategory(iLmContactsCatId);
-                    iLandmarkDb->UpdateLandmarkL(*existingLandmark);
+                    // a lookup item exists which is from contacts, so 'catId' is still valid.
+                    break;
                 }
+                i++;
             }
-            else
+            if ( i == itemArray.count() )
             {
-                // no other lookup entry is refering this landmark. 
+                // no lookup items from current source type exists refering this landmark.
+                // so disassociate 'catId' from this landmark
 
-                // check if any other categories is associated with this landmark.
-                // Assume this landmark is associated with a history entry or a user created landmark entry.
-                // there is a chance that this landmark is still valid.
-                // Do not delete the landmark in this case.
-                RArray<TPosLmItemId> categoryIdArray;
-                CleanupClosePushL(categoryIdArray);
-                existingLandmark->GetCategoriesL(categoryIdArray);
-                if (categoryIdArray.Count() == 1)
-                {
-                    // only one category i.e, 'iLmContactsCatId' is associated.
-                    // delete the landmark.
-                    iLandmarkDb->RemoveLandmarkL(existingLandmark->LandmarkId());
-                }
-                CleanupStack::PopAndDestroy(&categoryIdArray);
+                existingLandmark->RemoveCategory( catId );
+                iLandmarkDb->UpdateLandmarkL( *existingLandmark );
             }
-            CleanupStack::PopAndDestroy(&itemArray);
-            CleanupStack::PopAndDestroy(existingLandmark);
-
         }
-        else // entry not present in lookup table
+        else
         {
-            // Add the entry into the lookup table and update landmarks db.
-            HandleEntryAdditionL(aLandmark, aUid, aSourceType);
+            // no other lookup entry is refering this landmark. 
+            // delete the landmark.
+            iLandmarkDb->RemoveLandmarkL( existingLandmark->LandmarkId() );
         }
+        CleanupStack::PopAndDestroy( existingLandmark );
+
+    }
+    else // entry not present in lookup table
+    {
+        // Add the entry into the lookup table and update landmarks db.
+        HandleEntryAdditionL( aLandmark, aUid, aSourceType );
     }
 }
 
@@ -659,107 +595,252 @@ void CMyLocationsDatabaseManager::HandleEntryDeletionL(const TUint32 aUid,
                                                 const TUint32 aSourceType)
 {
     __TRACE_CALLSTACK;
-    TLookupItem lookupItem;
-    lookupItem.iUid = aUid;
-    lookupItem.iSource = aSourceType;
+    QLookupItem lookupItem;
+    lookupItem.mSourceUid = aUid;
+    lookupItem.mSourceType = aSourceType;
 
-    if (aSourceType == ESourceContactsPref || aSourceType
-            == ESourceContactsWork || aSourceType == ESourceContactsHome)
+    // Behavior: if an entry is deleted, delete the corresponding entries from 
+    // both lookup table and iLandmarkDb.  
+    // Before deleting the entry from iLandmarkDb, make sure that this entry is not being refered by
+    // other entries of the lookup table. If it is being refered by other entries in lookup table, then
+    // do not delete the landmark.
+ 
+    if ( !iLocationAppLookupDb->findEntryBySourceIdAndType( lookupItem ) )
     {
-        // Behavior: In the context of contacts, if a contact is deleted, the user is not interested in
-        // that contact's data, hence its address as well. So, delete the corresponding entries from 
-        // both lookup table and iLandmarkDb.  
-        // Before deleting the entry from iLandmarkDb, make sure that this entry is not being refered by
-        // other entries of the lookup table. If it is being refered by other entries in lookup table, then
-        // do not delete the landmark.
-
-        // Find the corresponding landmark uid
-        if (iLandmarksLookupDb->FindEntryL(lookupItem))
+        if( aSourceType == ESourceLandmarks )
         {
-            // delete the lookup entry.
-            iLandmarksLookupDb->DeleteEntryL(lookupItem);
+            lookupItem.mDestId = aUid;
+        }
+        else
+        {
+            return;
+        }
+    }
+    
+    // Find the corresponding landmark uid
+    
 
-            // Check if any other entries are refering this landmark.
-            RArray<TLookupItem> itemArray;
-            CleanupClosePushL(itemArray);
-            iLandmarksLookupDb->FindEntriesByLandmarkIdL(lookupItem.iLmId,
-                    itemArray);
+    // delete the lookup entry.
+    iLocationAppLookupDb->deleteEntryBySourceIdAndType( lookupItem );
 
-            if (itemArray.Count())
+    // Check if any other entries are refering this landmark.
+    QList<QLookupItem> itemArray;
+    iLocationAppLookupDb->findEntriesByLandmarkId( lookupItem.mDestId, itemArray );
+
+    if ( itemArray.count() )
+    {
+    
+        if( aSourceType == ESourceLandmarks )
+        {
+            CPosLandmark* lm = NULL;
+        
+            for( int i = 0; i < itemArray.count(); i++ )
             {
-                // There are other lookup entries refering this landmark. So do not delete the landmark
-
-                // If none of these lookup item's source type is contacts, disassociate 'iLmContactsCatId' category
-                // from this landmark.
-                TInt i = 0;
-                while (i < itemArray.Count())
+                if( itemArray[i].mSourceType == ESourceCalendar )
                 {
-                    if (itemArray[i].iSource == ESourceContactsPref
-                            || itemArray[i].iSource == ESourceContactsWork
-                            || itemArray[i].iSource == ESourceContactsHome)
+                    // add landmark entry since a calendar item is present with this location.
+                   if( !lm )
+                   {
+                       lm = CreateLandmarkItemLC( itemArray[i] );
+                   }
+                   lm->AddCategoryL( iLmCalendarCatId );
+                }
+                else
+                {
+                   // add landmark entry since a contact item is present with this location.
+                   if( !lm )
+                   {
+                       QString tempStr = itemArray[i].mName;
+                       itemArray[i].mName = "";
+                       lm = CreateLandmarkItemLC( itemArray[i] );
+                       itemArray[i].mName = tempStr;
+                   }
+                   lm->AddCategoryL( iLmCalendarCatId );
+                }    
+            }
+
+            lookupItem.mDestId = iLandmarkDb->AddLandmarkL( *lm );
+            CleanupStack::PopAndDestroy( lm );
+
+            bool dupUnset = false;
+            for( int i=0; i<itemArray.count(); i++ )
+            {
+                itemArray[i].mDestId = lookupItem.mDestId;
+                if( itemArray[i].mSourceType == ESourceCalendar && dupUnset == false )
+                {
+                    dupUnset = true;
+                    itemArray[i].mIsDuplicate = 0;
+                }
+                iLocationAppLookupDb->updateEntryById( itemArray[i] );
+            }   
+            
+            return;
+        }
+
+        // There are other lookup entries refering this landmark. So do not delete the landmark
+
+        // If none of these lookup item's source type is current source type, disassociate current source category
+        // from this landmark.
+        TInt i = 0;
+        while ( i < itemArray.count() )
+        {
+            if( aSourceType == ESourceCalendar )
+            {
+                if( itemArray[i].mSourceType == aSourceType )
+                {
+                    if( lookupItem.mIsDuplicate == 0 )
                     {
-                        // a lookup item exists which is from contacts/calendar, so 'iLmContactsCatId' is still valid.
-                        break;
+                        itemArray[i].mIsDuplicate = 0;
+                        iLocationAppLookupDb->updateEntryById( itemArray[i] );
                     }
-                    i++;
+                    // a lookup item exists which is from calendar, so 'iLmCalendarCatId' is still valid.
+                    break;
                 }
-                if ( i == itemArray.Count() )
-                {
-                    // no lookup items from contacts exists refering this landmark.
-                    // so disassociate 'iLmContactsCatId' from this landmark
+        
+            }
+            else if ( itemArray[i].mSourceType == ESourceContactsPref
+                    || itemArray[i].mSourceType == ESourceContactsWork
+                    || itemArray[i].mSourceType == ESourceContactsHome)
+            {
+                // a lookup item exists which is from contacts, so 'iLmContactsCatId' is still valid.
+                break;
+            }
+            i++;
+        }
+        if ( i == itemArray.count() )
+        {
+            // no lookup items from current source type exists refering this landmark.
+            // so disassociate current source category from this landmark
 
-                    CPosLandmark* landmark = iLandmarkDb->ReadLandmarkLC(
-                            lookupItem.iLmId);
-                    landmark->RemoveCategory(iLmContactsCatId);
-                    iLandmarkDb->UpdateLandmarkL(*landmark);
-                    CleanupStack::PopAndDestroy(landmark);
-                }
+            CPosLandmark* landmark = iLandmarkDb->ReadLandmarkLC( lookupItem.mDestId );
+            if( aSourceType == ESourceCalendar )
+            {
+                landmark->RemoveCategory( iLmCalendarCatId );
             }
             else
             {
-                // no other lookup entry is refering this landmark. 
-
-                // check if any other categories is associated with this landmark.
-                // Assume this landmark is associated with a history entry or a user created landmark entry.
-                // there is a chance that this landmark is still valid.
-                // Do not delete the landmark in this case.
-                CPosLandmark* landmark = iLandmarkDb->ReadLandmarkLC(
-                        lookupItem.iLmId);
-                RArray<TPosLmItemId> categoryIdArray;
-                CleanupClosePushL(categoryIdArray);
-                landmark->GetCategoriesL(categoryIdArray);
-                if (categoryIdArray.Count() == 1)
-                {
-                    // only one category i.e, 'iLmCalendarCatId' is associated.
-                    // delete the landmark.
-                    iLandmarkDb->RemoveLandmarkL(lookupItem.iLmId);
-                }
-
-                CleanupStack::PopAndDestroy(&categoryIdArray);
-                CleanupStack::PopAndDestroy(landmark);
+                landmark->RemoveCategory( iLmContactsCatId );
             }
-            CleanupStack::PopAndDestroy(&itemArray);
+            
+            iLandmarkDb->UpdateLandmarkL( *landmark );
+            CleanupStack::PopAndDestroy( landmark );
         }
     }
-
-    else if (aSourceType == ESourceLandmarks)
+    else
     {
-        // Landmarks item deleted. So delete corresponding lookup entries.
-        RArray<TLookupItem> itemArray;
-        CleanupClosePushL(itemArray);
-        iLandmarksLookupDb->FindEntriesByLandmarkIdL(aUid, itemArray);
-        for (TInt i = 0; i < itemArray.Count(); i++)
+        // no other lookup entry is refering this landmark. 
+        // delete the landmark.
+        if ( aSourceType != ESourceLandmarks )
         {
-            iLandmarksLookupDb->DeleteEntryL(itemArray[i]);
+            iLandmarkDb->RemoveLandmarkL( lookupItem.mDestId );
         }
-
-        CleanupStack::PopAndDestroy(&itemArray);
-
-        DeleteFromMylocationsDbL(aUid, aSourceType);
     }
 }
 
+// -----------------------------------------------------------------------------
+// CMyLocationsDatabaseManager::HandleLandmarkModificationL()
+// -----------------------------------------------------------------------------
+//
+void CMyLocationsDatabaseManager::HandleLandmarkModificationL(
+        CPosLandmark* aLandmark, const TUint32 aUid )
+{
+    // logic: if a landmark is modified, 
+    // first update the corresponding landmark lookup entry if present, else create a new entry.
+    // Check for any contact/calendar entries refering this landmark entry,
+    // if exists, create a new landmark entry with that location details and update all those 
+    // lookup entry's destid with the newly created landmark id.
+    
+    QLookupItem lookupItem;
+    lookupItem.mSourceUid = aUid;
+    lookupItem.mSourceType = ESourceLandmarks;
+    lookupItem.mIconType = QLookupItem::EIconTypeDefault;
 
+    bool found = iLocationAppLookupDb->findEntryBySourceIdAndType( lookupItem );
+    //fill address into lookup item.
+    FillLookupItemAddressDetails( aLandmark, lookupItem );
+    lookupItem.mDestId = aUid;
+    lookupItem.mIsDuplicate = 0;
+    lookupItem.mIconType = QLookupItem::EIconTypeDefault;
+    lookupItem.mIconPath = "";
+    lookupItem.mMapTilePath = "";
+
+    // update entry in lookup table.
+    if ( found )
+    {
+        iLocationAppLookupDb->updateEntryById( lookupItem );
+    }
+    else
+    {
+        iLocationAppLookupDb->createEntry( lookupItem );
+    }
+    
+    QList<QLookupItem> itemArray;
+    iLocationAppLookupDb->findEntriesByLandmarkId( lookupItem.mDestId, itemArray );
+    
+    if( itemArray.count() == 1 )
+    {
+        //only one entry ie the entry corresponding to landmark db is present.
+        return;
+    }
+    
+    CPosLandmark* lm = NULL;
+    
+    for( int i = 0; i < itemArray.count(); i++ )
+    {
+        if( itemArray[i].mSourceType != ESourceLandmarks )
+        {
+            if( itemArray[i].mSourceType == ESourceCalendar )
+            {
+                // add landmark entry since a calendar item is present with this location.
+               if( !lm )
+               {
+                   lm = CreateLandmarkItemLC( itemArray[i] );
+               }
+               lm->AddCategoryL( iLmCalendarCatId );
+            }
+            else
+            {
+               // add landmark entry since a calendar item is present with this location.
+               if( !lm )
+               {
+                   QString tempStr = itemArray[i].mName;
+                   itemArray[i].mName = "";
+                   lm = CreateLandmarkItemLC( itemArray[i] );
+                   itemArray[i].mName = tempStr;
+               }
+               lm->AddCategoryL( iLmCalendarCatId );
+            }    
+        }
+    }
+    
+    // add the entry to landmarks db
+    quint32 newDestId = iLandmarkDb->AddLandmarkL( *lm );
+    CleanupStack::PopAndDestroy( lm );
+
+    bool calDuplicateUnset = false;
+    // update all the lookup entries with new landmark id
+    for( int i = 0; i < itemArray.count(); i++ )
+    {
+        if( itemArray[i].mSourceType != ESourceLandmarks )
+        {
+            itemArray[i].mDestId = newDestId;
+            
+            if( itemArray[i].mSourceType == ESourceCalendar )
+            {
+                if( !calDuplicateUnset )
+                {
+                    itemArray[i].mIsDuplicate = 0;
+                    calDuplicateUnset = true;
+                }
+                else
+                {
+                    itemArray[i].mIsDuplicate = 1;
+                }
+            }
+            iLocationAppLookupDb->updateEntryById( itemArray[i] );
+        }
+    }
+}
 // -----------------------------------------------------------------------------
 // CMyLocationsDatabaseManager::GetLandmarkFullAddress()
 // Gets the comma separated full address of the given landmark.
@@ -772,23 +853,9 @@ void CMyLocationsDatabaseManager::GetLandmarkFullAddress(
     TPtrC tempStr;
     TInt retStatus;
     TBool addressEmtpy = ETrue;
-    retStatus = aLandmark->GetLandmarkName(tempStr);
-    if (retStatus == KErrNone && tempStr.Length())
-    {
-        aLandmarkAddress.Copy(tempStr);
-        addressEmtpy = EFalse;
-    }
-
     retStatus = aLandmark->GetPositionField(EPositionFieldStreet, tempStr);
     if (retStatus == KErrNone && tempStr.Length())
     {
-        if (!addressEmtpy)
-        {
-            aLandmarkAddress.Append(KSeparator);
-            aLandmarkAddress.Append(KSpace);
-            aLandmarkAddress.Append(tempStr);
-        }
-        else
         {
             aLandmarkAddress.Copy(tempStr);
             addressEmtpy = EFalse;
@@ -845,19 +912,6 @@ void CMyLocationsDatabaseManager::GetLandmarkFullAddress(
 }
 
 // -----------------------------------------------------------------------------
-// CMyLocationsDatabaseManager::CheckCategoryAvailabilityL()
-// Checks if given category id is found in the database pointed by category manager.
-// -----------------------------------------------------------------------------
-//
-void CMyLocationsDatabaseManager::CheckCategoryAvailabilityL(
-        CPosLmCategoryManager* aCategoryManager, const TUint32 aCategoryId)
-{
-    __TRACE_CALLSTACK;
-    CPosLandmarkCategory *category = aCategoryManager->ReadCategoryLC(
-            aCategoryId);
-    CleanupStack::PopAndDestroy(category);
-}
-// -----------------------------------------------------------------------------
 // CMyLocationsDatabaseManager::CheckAndReadLandmarkL()
 // Checks if given landmark id is found in the database and returns the read landmark.
 // -----------------------------------------------------------------------------
@@ -870,111 +924,167 @@ CPosLandmark* CMyLocationsDatabaseManager::CheckAndReadLandmarkL(
     CleanupStack::Pop(lm);    
     return lm;
 }
-// -----------------------------------------------------------------------------
-// CMyLocationsDatabaseManager::AddToMylocationsDbL()
-// Adds the entry into the mylocations database and updates the lookup table.
-// -----------------------------------------------------------------------------
-//
-void CMyLocationsDatabaseManager::AddToMylocationsDbL(CPosLandmark* aLandmark,
-        const TUint32 aUid, const TUint32 aSourceType)
-{
-    __TRACE_CALLSTACK;
-    if (aSourceType == ESourceLandmarks)
-    {
-        CPosLandmark* landmark = iLandmarkDb->ReadLandmarkLC(aUid);
-        RArray<TPosLmItemId> catArray;
-        CleanupClosePushL( catArray );
-        landmark->GetCategoriesL(catArray);
-       
-
-        // add the categories in the mylocations database for this landmark
-        for (TInt i = 0; i < catArray.Count(); i++)
-        {
-            TLookupItem lItem;
-            lItem.iUid = catArray[i];
-            lItem.iSource = ESourceLandmarksUserCat;
-            lItem.iLmId = 0;
-            if (!iMylocationsLookupDb->FindEntryL(lItem))
-            {
-                lItem.iSource = ESourceLandmarksContactsCat;
-                if (!iMylocationsLookupDb->FindEntryL(lItem))
-                {
-                    // means this is global category, so just add it
-                    lItem.iLmId = lItem.iUid;
-                }
-            }
-            TRAP_IGNORE( aLandmark->AddCategoryL( lItem.iLmId ) );
-        }
-
-        CleanupStack::PopAndDestroy( &catArray );       
-        TLookupItem lookupItem;
-        lookupItem.iUid = aUid;
-        lookupItem.iSource = aSourceType;
-        TRAP_IGNORE( lookupItem.iLmId = iMyLocationsLandmarksDb->AddLandmarkL( *aLandmark ) );
-        CleanupStack::PopAndDestroy(landmark);
-        iMylocationsLookupDb->CreateEntryL(lookupItem);
-    }
-}
 
 // -----------------------------------------------------------------------------
-// CMyLocationsDatabaseManager::ModifyMylocationsDbL()
-// Adds the entry into the mylocations database and updates the lookup table.
-// -----------------------------------------------------------------------------
-//
-void CMyLocationsDatabaseManager::ModifyMylocationsDbL(CPosLandmark* aLandmark,
-        const TUint32 aUid, const TUint32 aSourceType)
-{
-    __TRACE_CALLSTACK;
-    TLookupItem lookupItem;
-    lookupItem.iUid = aUid;
-    lookupItem.iSource = aSourceType;
-    iMylocationsLookupDb->FindEntryL(lookupItem);
-    iMylocationsLookupDb->DeleteEntryL(lookupItem);
-    iMyLocationsLandmarksDb->RemoveLandmarkL(lookupItem.iLmId);
-    AddToMylocationsDbL(aLandmark, lookupItem.iUid, lookupItem.iSource);
-}
-
-// -----------------------------------------------------------------------------
-// CMyLocationsDatabaseManager::DeleteFromMylocationsDbL()
-// Deletes the entry from the mylocations database and updates the lookup table.
-// -----------------------------------------------------------------------------
-//
-void CMyLocationsDatabaseManager::DeleteFromMylocationsDbL(const TUint32 aUid,
-                                                           const TUint32 aSourceType)
-{
-    __TRACE_CALLSTACK;
-    TLookupItem lookupItem;
-    lookupItem.iUid = aUid;
-    lookupItem.iSource = aSourceType;
-    iMylocationsLookupDb->FindEntryL(lookupItem);
-
-    iMyLocationsLandmarksDb->RemoveLandmarkL(lookupItem.iLmId);
-    iMylocationsLookupDb->DeleteEntryL(lookupItem);
-}
-// -----------------------------------------------------------------------------
-// CMyLocationsDatabaseManager::CreateCategoryL()
+// CMyLocationsDatabaseManager::FillLookupItemAddressDetails()
 // Creates a new category in Mylocations Db and adds a corresponding entry in 
 // mylocations lookup table.
 // -----------------------------------------------------------------------------
 //
-void CMyLocationsDatabaseManager::CreateCategoryL(const TUint32 aUid)
+void CMyLocationsDatabaseManager::FillLookupItemAddressDetails( CPosLandmark* aLandmark, QLookupItem& aLookupItem )
 {
     __TRACE_CALLSTACK;// Read the category.
-    CPosLandmarkCategory *category = iLandmarksCatManager->ReadCategoryLC(aUid);
 
-    TLookupItem lookupItem;
-    lookupItem.iUid = aUid;
-    lookupItem.iSource = ESourceLandmarksUserCat;
-    // Add category to landmarks database
-    TRAPD ( err, (lookupItem.iLmId = iMyLocationsCatManager->AddCategoryL( *category ) ) );
+    // fill geo-coordinates
+    TLocality position;
+    aLandmark->GetPosition( position );
+    aLookupItem.mLatitude = position.Latitude();
+    aLookupItem.mLongitude = position.Longitude();
 
-    if (err == KErrNone)
+    TPtrC tempStr;
+    TInt retStatus;
+
+    // Copy landmark name in address 1
+    retStatus = aLandmark->GetLandmarkName( tempStr );
+    aLookupItem.mName = "";
+    if( retStatus == KErrNone && tempStr.Length() > 0 )
     {
-        iMylocationsLookupDb->CreateEntryL(lookupItem);
+        aLookupItem.mName = QString( (QChar*)tempStr.Ptr(), tempStr.Length() );
     }
-    CleanupStack::PopAndDestroy(category);
 
+    // get street
+    aLookupItem.mStreet = "";
+    retStatus = aLandmark->GetPositionField( EPositionFieldStreet, tempStr );
+    if( retStatus == KErrNone && tempStr.Length() )
+    {
+        aLookupItem.mStreet = QString( (QChar*)tempStr.Ptr(), tempStr.Length());
+    }
+
+    // get postal code
+    aLookupItem.mPostalCode = "";
+    retStatus = aLandmark->GetPositionField( EPositionFieldPostalCode, tempStr );
+    if( retStatus == KErrNone && tempStr.Length() )
+    {
+        aLookupItem.mPostalCode = QString( (QChar*)tempStr.Ptr(), tempStr.Length());
+    }
+
+    // get city
+    aLookupItem.mCity = "";
+    retStatus = aLandmark->GetPositionField( EPositionFieldCity, tempStr );
+    if( retStatus == KErrNone && tempStr.Length() )
+    {
+        aLookupItem.mCity = QString( (QChar*)tempStr.Ptr(), tempStr.Length());
+    }
+
+    // get State
+    aLookupItem.mState = "";
+    retStatus = aLandmark->GetPositionField( EPositionFieldState, tempStr );
+    if( retStatus == KErrNone && tempStr.Length() )
+    {
+        aLookupItem.mState = QString( (QChar*)tempStr.Ptr(), tempStr.Length());
+    }
+
+    // get country
+    aLookupItem.mCountry = "";
+    retStatus = aLandmark->GetPositionField( EPositionFieldCountry, tempStr );
+    if( retStatus == KErrNone && tempStr.Length() )
+    {
+        aLookupItem.mCountry = QString( (QChar*)tempStr.Ptr(), tempStr.Length());
+    }
 }
 
+// -----------------------------------------------------------------------------
+// CMyLocationsDatabaseManager::UnsetDuplicateNextCalEntry()
+// -----------------------------------------------------------------------------
+//
+void CMyLocationsDatabaseManager::UnsetDuplicateNextCalEntry( quint32 aLandmarkId )
+{
+    // get next duplicate item
+    QList<QLookupItem> itemArray;
+    iLocationAppLookupDb->findEntriesByLandmarkId( aLandmarkId, itemArray );
+    for ( int i = 0; i < itemArray.count(); i++)
+    {
+        if( itemArray[i].mSourceType == ESourceCalendar )
+        {
+            itemArray[i].mIsDuplicate = 0;
+            iLocationAppLookupDb->updateEntryById( itemArray[i] );
+            break;
+        }
+    }
+
+}
+// -----------------------------------------------------------------------------
+// CMyLocationsDatabaseManager::IsDuplicateEntry()
+// -----------------------------------------------------------------------------
+//
+bool CMyLocationsDatabaseManager::IsDuplicateEntry( quint32 aLandmarkId )
+{
+    // get next duplicate item
+    QList<QLookupItem> itemArray;
+    iLocationAppLookupDb->findEntriesByLandmarkId( aLandmarkId, itemArray );
+    for ( int i = 0; i < itemArray.count(); i++)
+    {
+        if( itemArray[i].mSourceType == ESourceCalendar ||
+            itemArray[i].mSourceType == ESourceLandmarks )
+        {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+// CMyLocationsDatabaseManager::CreateLandmarkItemLC()
+// -----------------------------------------------------------------------------
+//
+CPosLandmark* CMyLocationsDatabaseManager::CreateLandmarkItemLC( const QLookupItem &aLookupItem )
+{
+    __TRACE_CALLSTACK;//return value
+    CPosLandmark *landmark = NULL;
+    TLocality loc( TCoordinate( aLookupItem.mLatitude, aLookupItem.mLongitude ), 0 );
+
+    landmark = CPosLandmark::NewL();
+    CleanupStack::PushL( landmark );
+
+    // Fill the location details into the landmark object
+    landmark->SetPositionL( loc );
+
+    // Set the landmark name as contact name
+    TBuf<KBufSize> text( aLookupItem.mName.utf16() );
+    TRAP_IGNORE( landmark->SetLandmarkNameL( text ) );
+
+    text.Copy( aLookupItem.mStreet.utf16() );
+    landmark->SetPositionFieldL( EPositionFieldStreet, text );
+    
+    // Set the City
+    text.Copy( aLookupItem.mCity.utf16() );
+    landmark->SetPositionFieldL( EPositionFieldCity, text );
+
+    // Set the state/region
+    text.Copy( aLookupItem.mState.utf16() );
+    landmark->SetPositionFieldL( EPositionFieldState, text );
+
+    // Set the Postal code
+    text.Copy( aLookupItem.mPostalCode.utf16() );
+    landmark->SetPositionFieldL( EPositionFieldPostalCode, text );
+
+    // Set the country
+    text.Copy( aLookupItem.mCountry.utf16() );
+    landmark->SetPositionFieldL( EPositionFieldCountry, text );
+
+    return landmark;
+}
+
+// -----------------------------------------------------------------------------
+// CMyLocationsDatabaseManager::UpdateMapTilePath()
+// -----------------------------------------------------------------------------
+//
+void CMyLocationsDatabaseManager::UpdateMapTilePath( TUint32 aSourceId, TUint32 aSourceType, 
+                                            TFileName aFilePath )
+{
+    QString filePath = QString( (QChar*)aFilePath.Ptr(), aFilePath.Length() );
+    iLocationAppLookupDb->updateMaptileBySourceIdAndType( aSourceId, aSourceType, filePath );
+}
 
 // End of file

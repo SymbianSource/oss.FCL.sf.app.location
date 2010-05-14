@@ -27,69 +27,52 @@
 // -----------------------------------------------------------------------------
 // LocationPickerContent::LocationPickerContent()
 // -----------------------------------------------------------------------------
-LocationPickerContent::LocationPickerContent( Qt::Orientation aOrientation )
-	:mOrientation(aOrientation),
-	mListProxyModel(NULL),
-	mProxyGridModel(NULL),
-    mDataManager(NULL),
-	mModel(NULL),
-	mLocationsFound(true)
+LocationPickerContent::LocationPickerContent()
+	:mDataManager(NULL),
+	mListModel(NULL),
+	mGridModel(NULL)
 {
-    // Create a standard model for the list view
-    mModel = new QStandardItemModel( this );
     // create data manager to manage data in the model
-    mDataManager = new LocationPickerDataManager( *mModel, ELocationPickerContent );
-    if(mOrientation == Qt::Vertical)
-    {
-        if( mDataManager->populateModel(mOrientation) )
-        {
-            // Create the proxy model and set source model
-            mListProxyModel = new LocationPickerProxyModel( mOrientation, this );
-            mListProxyModel->setSourceModel(mModel);
-            // set sort properties
-            mListProxyModel->setDynamicSortFilter(TRUE);
-            mListProxyModel->setSortRole(Qt::DisplayRole);
-            mListProxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
+    mDataManager = LocationPickerDataManager::getInstance();
 
-            // sort in ascending order
-            mListProxyModel->sort(0, Qt::AscendingOrder);    
-            mLocationsFound = true;
+}
+
+// -----------------------------------------------------------------------------
+// LocationPickerContent::populateModel()
+// -----------------------------------------------------------------------------
+bool LocationPickerContent::populateModel( Qt::Orientation aOrientation )
+{
+    bool locationsFound;
+    if(aOrientation == Qt::Vertical)
+    {
+        // Create a standard model for the list view
+        mListModel = new QStandardItemModel( this );
+        if( mDataManager->populateModel( *mListModel, ELocationPickerContent, aOrientation) )
+        {
+            locationsFound = true;
         }
         else
         {
-            // no locations to display.
-            QStandardItem *modelItem = new QStandardItem();
-            modelItem->setData(QVariant(hbTrId("txt_lint_list_no_location_entries_present")), Qt::DisplayRole);
-            mModel->appendRow( modelItem );
-            mLocationsFound = false;
+            createNoEntryDisplay(mListModel);
+            locationsFound = false;
         }
     }
     //for landscape view
     else
     {
-        if( mDataManager->populateModel(mOrientation) )
+        // Create a standard model for the grid view
+        mGridModel = new QStandardItemModel( this );
+        if( mDataManager->populateModel(*mGridModel, ELocationPickerContent, aOrientation) )
         {
-            // Create the proxy model and set source model
-            mProxyGridModel = new LocationPickerProxyModel( mOrientation , this );
-            mProxyGridModel->setSourceModel(mModel);
-            // set sort properties
-            mProxyGridModel->setDynamicSortFilter(TRUE);
-            mProxyGridModel->setSortRole(Qt::DisplayRole);
-            mProxyGridModel->setSortCaseSensitivity(Qt::CaseInsensitive);
-
-            // sort in ascending order
-            mProxyGridModel->sort(0, Qt::AscendingOrder);    
-            mLocationsFound = true;
+            locationsFound = true;
         }
         else
         {
-             // no locations to display.
-             QStandardItem *modelItem = new QStandardItem();
-             modelItem->setData(QVariant(hbTrId("txt_lint_list_no_location_entries_present")), Qt::DisplayRole);
-             mModel->appendRow( modelItem );
-             mLocationsFound = false;
+            createNoEntryDisplay(mGridModel);
+            locationsFound = false;
         }
     }
+    return locationsFound;
 }
 
 // -----------------------------------------------------------------------------
@@ -97,50 +80,34 @@ LocationPickerContent::LocationPickerContent( Qt::Orientation aOrientation )
 // -----------------------------------------------------------------------------
 LocationPickerContent::~LocationPickerContent()
 {
-    // delete data manager
-    if( mDataManager )
-        delete mDataManager;
-    delete mProxyGridModel;
-    delete mListProxyModel;
-    delete mModel;
+    delete mListModel;
+    delete mGridModel;
 }
 
 // -----------------------------------------------------------------------------
-// LocationPickerContent::locationsFound()
+// LocationPickerContent::getStandardListModel()
 // -----------------------------------------------------------------------------
-bool LocationPickerContent::locationsFound()
+QStandardItemModel* LocationPickerContent::getStandardListModel()
 {
-    return mLocationsFound;
+    return mListModel;
 }
 
 // -----------------------------------------------------------------------------
-// LocationPickerContent::getListProxyModel()
+// LocationPickerContent::getStandardGridModel()
 // -----------------------------------------------------------------------------
-LocationPickerProxyModel* LocationPickerContent::getListProxyModel()
-{   
-    return mListProxyModel;
-}
-
-// -----------------------------------------------------------------------------
-// LocationPickerContent::getStandardModel()
-// -----------------------------------------------------------------------------
-QStandardItemModel* LocationPickerContent::getStandardModel()
+QStandardItemModel* LocationPickerContent::getStandardGridModel()
 {
-    return mModel;
+    return mGridModel;
 }
 
-// -----------------------------------------------------------------------------
-// LocationPickerContent::getDataManager()
-// -----------------------------------------------------------------------------
-LocationPickerDataManager* LocationPickerContent::getDataManager()
-{
-    return mDataManager;
-}
+// ----------------------------------------------------------------------------
+// LocationPickerContent::createNoEntryDisplay()
+// ----------------------------------------------------------------------------
 
-// -----------------------------------------------------------------------------
-// LocationPickerContent::getGridProxyModel()
-// -----------------------------------------------------------------------------
-LocationPickerProxyModel* LocationPickerContent::getGridProxyModel()
+void LocationPickerContent::createNoEntryDisplay( QStandardItemModel *aModel )
 {
-    return mProxyGridModel;
+    // no locations to display.
+    QStandardItem *modelItem = new QStandardItem();
+    modelItem->setData(QVariant(hbTrId("txt_lint_list_no_location_entries_present")), Qt::DisplayRole);
+    aModel->appendRow( modelItem );
 }

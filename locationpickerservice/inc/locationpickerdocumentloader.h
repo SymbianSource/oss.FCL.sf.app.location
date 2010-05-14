@@ -18,7 +18,7 @@
 #ifndef LOCATIONPICKERDOCUMENTLOADER_H_
 #define LOCATIONPICKERDOCUMENTLOADER_H_
 
-#include <hbDocumentLoader>
+#include <HbDocumentLoader>
 
 class LocationPickerDocumentLoader : public HbDocumentLoader
 {
@@ -40,7 +40,7 @@ public:
     /**
      * from base class
      */
-    QObject *createObject(const QString& type, const QString &name);
+    QObject *createObject( const QString& type, const QString &name );
 };
 
 #endif /* LOCATIONPICKERDOCUMENTLOADER_H_ */

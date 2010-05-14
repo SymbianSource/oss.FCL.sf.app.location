@@ -11,8 +11,10 @@
 #
 # Contributors:
 #
-# Description: Location picker service api project file
+# Description: Location data harvester api project file
 #
 
 PLATFORM_HEADERS += location_data_harvester_api\inc\maptilegeocoderplugin.h \
-                    location_data_harvester_api\inc\maptilegeocoderplugin.inl 
+                    location_data_harvester_api\inc\maptilegeocoderplugin.inl \
+                    location_data_harvester_api\inc\locationdatalookupdb.h \
+                    location_data_harvester_api\inc\locationservicedefines.h

@@ -15,18 +15,17 @@
 *
 */
 
-#include <e32base.h>
-#include <e32std.h>
-#include <lbsposition.h>
-#include <EPos_CPosLandmark.h>
-#include <EPos_CPosLandmarkDatabase.h>
-#include <EPos_CPosLmCategoryManager.h>
-#include <EPos_CPosLandmarkCategory.h>
-#include <EPos_CPosLandmarkSearch.h>
-#include <EPos_CPosLmCategoryCriteria.h>
 #include <HbIcon>
-
+#include <QPixmap>  
+#include <QPainter>
+#include <QIcon>
+#include <locationdatalookupdb.h>
+#include <QFile>
 #include "locationpickerdatamanager_p.h"
+
+//constant value used
+const int ASPECTRATIOHEIGHT(3);
+const int ASPECTRATIOWIDTH (4);
 
 
 // ----------------------------------------------------------------------------
@@ -36,25 +35,10 @@
 LocationPickerDataManagerPrivate::LocationPickerDataManagerPrivate() :
         mModel( NULL ),
         mViewType( ELocationPickerContent ),
-        mIterator(NULL),
-        mLandmarkDb(NULL),
-        mLmCategoryManager(NULL),
-        mLandmarkSearch(NULL)
+        mDb( NULL )
 {
-}
-
-// ----------------------------------------------------------------------------
-// LocationPickerDataManagerPrivate::LocationPickerDataManagerPrivate()
-// ----------------------------------------------------------------------------
-
-LocationPickerDataManagerPrivate::LocationPickerDataManagerPrivate( QStandardItemModel &aModel, TViewType aViewType ) :
-        mModel( &aModel ),
-        mViewType( aViewType ),
-        mIterator(NULL),
-        mLandmarkDb(NULL),
-        mLmCategoryManager(NULL),
-        mLandmarkSearch(NULL)
-{
+    mDb = new LocationDataLookupDb();
+    mDb->open();
 }
 
 
@@ -64,384 +48,277 @@ LocationPickerDataManagerPrivate::LocationPickerDataManagerPrivate( QStandardIte
 LocationPickerDataManagerPrivate::~LocationPickerDataManagerPrivate()
 {
     // delete the member variables;
-
-    if( mIterator )
-        delete mIterator;
-    if ( mLandmarkDb )
-        delete mLandmarkDb;
-    if( mLmCategoryManager )
-        delete mLmCategoryManager;
-    if( mLandmarkSearch )
-        delete mLandmarkSearch;
+    if( mDb )
+    {
+        mDb->close();
+        delete mDb;
+        mDb = NULL;
+    }
 }
 
 // ----------------------------------------------------------------------------
 // LocationPickerDataManagerPrivate::populateModel()
 // ----------------------------------------------------------------------------
-bool LocationPickerDataManagerPrivate::populateModel( const Qt::Orientations aOrientation, quint32 aCollectionId )
+bool LocationPickerDataManagerPrivate::populateModel(  QStandardItemModel &aModel, 
+        TViewType aViewType, const Qt::Orientations aOrientation, quint32 aCollectionId )
 {
-    bool retValue = false;
+    mModel = &aModel;
+    mViewType = aViewType;
     mOrientation = aOrientation;
-    TRAP_IGNORE( retValue = populateModelL( aCollectionId ) );
-    return retValue;
-}
 
-// ----------------------------------------------------------------------------
-// LocationPickerDataManagerPrivate::populateModel()
-// ----------------------------------------------------------------------------
-bool LocationPickerDataManagerPrivate::populateModelL( quint32 aCollectionId )
-{
-    // Handle to the landmark database
-    mLandmarkDb = NULL;
-    
-    //Open and intialize Landmark DB
-    mLandmarkDb = CPosLandmarkDatabase::OpenL();
-    ExecuteAndDeleteLD( mLandmarkDb->InitializeL() );
+    if( !mDb )
+    {
+        // no items in the landmark database, so return false.
+        return false;
+    }
 
     switch( mViewType )
     {
         case ELocationPickerContent:
         case ELocationPickerSearchView:
              {
-                 // Create an iterator for iterating the landmarks in the database
-                 mIterator = mLandmarkDb->LandmarkIteratorL();
-
-                 if( ( !mIterator ) || (mIterator->NumOfItemsL() == 0) )
-                 {
-                     // no items in the landmark database, so return false.
-                     return false;
-                 }
-                 CleanupStack::PushL(mIterator);
-                 populateLandmarksL();
-                 CleanupStack::Pop( mIterator );
+                 QList<QLookupItem> itemArray;
+                 mDb->getEntries( itemArray );
+                 return populateLandmarks( itemArray );
              }
-             break;
+             
         case ELocationPickerCollectionListContent:
              {
-
-                 // Create category manager for landmarks
-                 mLmCategoryManager = CPosLmCategoryManager::NewL( *mLandmarkDb );
-
-                 if( !mLmCategoryManager )
-                 {
-                     return false;
-                 }
-                 // Create an iterator for iterating the referenced categories in the database
-                 mIterator = mLmCategoryManager->ReferencedCategoryIteratorL();
-
-                 if( ( !mIterator ) || (mIterator->NumOfItemsL() == 0) )
-                 {
-                     // no items in the landmark database, so return false.
-                     return false;
-                 }
-                 CleanupStack::PushL(mIterator);
-                 populateCollectionsL();
-                 CleanupStack::Pop( mIterator );
-
+                 populateCollections();
              }
              break;
 
         case ELocationPickerCollectionContent:
              {
-
-                 // create a search object.
-                 mLandmarkSearch = CPosLandmarkSearch::NewL( *mLandmarkDb );
-                 CleanupStack::PushL( mLandmarkSearch );
-
-                 // Create the search criterion
-                 CPosLmCategoryCriteria* criteria = CPosLmCategoryCriteria::NewLC();
-                 criteria->SetCategoryItemId( aCollectionId );
-
-                 // Start the search and execute it at once.
-                 ExecuteAndDeleteLD( mLandmarkSearch->StartLandmarkSearchL( *criteria ) );
-                 CleanupStack::PopAndDestroy( criteria );
-
-                 // Retrieve an iterator to access the matching landmarks.
-                 mIterator = mLandmarkSearch->MatchIteratorL();
-                 if( ( !mIterator ) || (mIterator->NumOfItemsL() == 0) )
-                 {
-                     // no landmarks in this collection
-                     CleanupStack::Pop(mLandmarkSearch);
+                 QList<QLookupItem> itemArray;
+                 mDb->getEntries( itemArray, aCollectionId );             
+                 if( itemArray.count() == 0 )
                      return false;
-                 }
-                 CleanupStack::PushL( mIterator );
-                 populateLandmarksL();
-                 CleanupStack::Pop( mIterator );
-                 CleanupStack::Pop(mLandmarkSearch);
+                 
+                 return populateLandmarks( itemArray );
              }
-             break;
     }
     return true;
 }
 
 // ----------------------------------------------------------------------------
-// LocationPickerDataManagerPrivate::populateLandmarksL()
+// LocationPickerDataManagerPrivate::populateLandmarks()
 // ----------------------------------------------------------------------------
 
-void LocationPickerDataManagerPrivate::populateLandmarksL()
-{
-    // Read each landmark in the database and copy to the model.
-    TPosLmItemId lmId;
+bool LocationPickerDataManagerPrivate::populateLandmarks( QList<QLookupItem> &aItemArray )
+{    
     mModel->clear();
-    while ( ( lmId = mIterator->NextL() ) != KPosLmNullItemId )
+
+    if( !aItemArray.count() )
     {
-        CPosLandmark* readLandmark = mLandmarkDb->ReadLandmarkLC(lmId );
-        
-        if( readLandmark )
+        return false;
+    }
+    QString lmAddressLine1;
+    QString lmAddressLine2;
+    
+    for( int i = 0; i < aItemArray.count(); i++ )
+    {
+    
+        if( !aItemArray[i].mIsDuplicate )
         {
-            QString lmAddressLine1(" ");
-            QString lmAddressLine2("");
-
-            TPtrC tempStr;
-            TInt retStatus;
-
-            // Copy landmark name in string 1
-            retStatus = readLandmark->GetLandmarkName( tempStr );
-            if( retStatus == KErrNone && tempStr.Length() > 0)
-            {
-                lmAddressLine1 = QString( (QChar*)tempStr.Ptr(), tempStr.Length());
-            }
-
-            // create address line 2
+            lmAddressLine1 = aItemArray[i].mName;
+            if( lmAddressLine1.isEmpty() )
+                lmAddressLine1 = KSpace;
+            
             bool addressEmtpy = true; // used to check if address line 2 is empty
-
-            // get street
-            retStatus = readLandmark->GetPositionField( EPositionFieldStreet, tempStr );
-            if( retStatus == KErrNone && tempStr.Length() )
+            if( !aItemArray[i].mStreet.isEmpty() )
             {
-                lmAddressLine2 = QString( (QChar*)tempStr.Ptr(), tempStr.Length());
+                lmAddressLine2 = aItemArray[i].mStreet;
                 addressEmtpy = EFalse;
             }
-
-            // Get city
-            retStatus =readLandmark->GetPositionField( EPositionFieldCity, tempStr );
-            if( retStatus == KErrNone && tempStr.Length() )
+            if( !aItemArray[i].mCity.isEmpty() )
             {
                 if( !addressEmtpy )
                 {
                     lmAddressLine2 = lmAddressLine2 + KSeparator;
                     lmAddressLine2 = lmAddressLine2 + KSpace;
-                    lmAddressLine2 = lmAddressLine2 + QString( (QChar*)tempStr.Ptr(), tempStr.Length());
+                    lmAddressLine2 = lmAddressLine2 + aItemArray[i].mCity;
                 }
                 else
                 {
-                    lmAddressLine2 = QString( (QChar*)tempStr.Ptr(), tempStr.Length());
+                    lmAddressLine2 = aItemArray[i].mCity;
                     addressEmtpy = EFalse;
                 }
             }
-            // Get State
-            retStatus =readLandmark->GetPositionField( EPositionFieldState, tempStr );
-            if( retStatus == KErrNone && tempStr.Length() )
+            if( !aItemArray[i].mState.isEmpty() )
             {
                 if( !addressEmtpy )
                 {
                     lmAddressLine2 = lmAddressLine2 + KSeparator;
                     lmAddressLine2 = lmAddressLine2 + KSpace;
-                    lmAddressLine2 = lmAddressLine2 + QString( (QChar*)tempStr.Ptr(), tempStr.Length());
+                    lmAddressLine2 = lmAddressLine2 + aItemArray[i].mState;
                 }
                 else
                 {
-                    lmAddressLine2 = QString( (QChar*)tempStr.Ptr(), tempStr.Length());
+                    lmAddressLine2 = aItemArray[i].mState;
                     addressEmtpy = EFalse;
                 }
             }
-
-            // get country
-            retStatus =readLandmark->GetPositionField( EPositionFieldCountry, tempStr );
-            if( retStatus == KErrNone && tempStr.Length() )
+            if( !aItemArray[i].mCountry.isEmpty() )
             {
                 if( !addressEmtpy )
                 {
                     lmAddressLine2 = lmAddressLine2 + KSeparator;
                     lmAddressLine2 = lmAddressLine2 + KSpace;
-                    lmAddressLine2 = lmAddressLine2 + QString( (QChar*)tempStr.Ptr(), tempStr.Length());
+                    lmAddressLine2 = lmAddressLine2 + aItemArray[i].mCountry;
                 }
                 else
                 {
-                    lmAddressLine2 = QString( (QChar*)tempStr.Ptr(), tempStr.Length());
+                    lmAddressLine2 = aItemArray[i].mCountry;
                     addressEmtpy = EFalse;
                 }
             }
-
-            // get contact address type
-            QString contactAddressType;
-            retStatus = readLandmark->GetLandmarkDescription( tempStr );
-            if( retStatus == KErrNone && tempStr.Length() > 0)
-            {
-                contactAddressType = QString( (QChar*)tempStr.Ptr(), tempStr.Length());
-            }
-
             // set icons based on contact address type
             QVariantList icons;
-            if( contactAddressType == KContactHome )
+            
+            HbIcon adressTypeIcon;
+        bool adressIconPresent = false;
+        if( aItemArray[i].mSourceType == ESourceContactsHome )
+        {
+            adressTypeIcon = HbIcon(KContactHomeIcon);
+            adressIconPresent = true;
+        }
+        else if( aItemArray[i].mSourceType == ESourceContactsWork )
+        {
+            adressTypeIcon =HbIcon(KContactWorkIcon);
+            adressIconPresent = true;
+        }
+        else if( aItemArray[i].mSourceType == ESourceContactsPref )
+        {
+            adressTypeIcon =HbIcon(KContactPrefIcon);
+            adressIconPresent = true;
+        }
+        
+        // create a list item and set to model
+        QStringList addressData;
+        //create model for grid view in landscape mode
+        if( mOrientation == Qt::Horizontal && ( mViewType == ELocationPickerCollectionContent || 
+                mViewType == ELocationPickerContent ) )
+        {   
+            addressData.clear();
+            
+            HbIcon landscapeIcon;
+            
+            if( QFile::exists( aItemArray[i].mMapTilePath ) )
             {
-                icons << HbIcon(KDummyImage) << HbIcon(KContactHomeIcon);
-            }
-            else if( contactAddressType == KContactWork )
-            {
-                icons << HbIcon(KDummyImage) << HbIcon(KContactWorkIcon);
+                //draw maptile Icon
+                QPainter painter;
+                QPixmap sourcePixmap;
+                sourcePixmap = QPixmap( QString(aItemArray[i].mMapTilePath) );
+                int mapHeight = (sourcePixmap.height()/ASPECTRATIOHEIGHT)*ASPECTRATIOHEIGHT;
+                int mapWidth = mapHeight*ASPECTRATIOWIDTH/ASPECTRATIOHEIGHT;
+                QPixmap mapPixmap(mapWidth, mapHeight);
+                painter.begin( &mapPixmap );
+                painter.drawPixmap( 0,0,sourcePixmap,(((sourcePixmap.width()-mapWidth))/2),
+                        ((sourcePixmap.height()-mapHeight)/2),mapWidth,mapHeight );
+                painter.end();
+                if(adressIconPresent)
+                {
+                //draw the adressType Icon over mapTile Icon
+                QPixmap adressTypePixmap = adressTypeIcon.pixmap();
+                painter.begin( &mapPixmap );
+                painter.drawPixmap( (mapPixmap.width()-adressTypePixmap.width()),0,adressTypePixmap );
+                painter.end();
+                }
+                QIcon landscape( mapPixmap );
+                landscapeIcon = HbIcon( landscape );
             }
             else
             {
-                icons << HbIcon(KDummyImage) << HbIcon(KContactPrefIcon);
+                //draw dummy icon
+                landscapeIcon = HbIcon( KDummyImage );
             }
-            
-            // create a list item and set to model
-            QStringList addressData;
-            //create model for grid view in landscape mode
-            if(mOrientation == Qt::Horizontal && ( mViewType == ELocationPickerCollectionContent || mViewType == ELocationPickerContent) )
-            {   
-                addressData.clear();
+
+                icons<<landscapeIcon;
                 QStandardItem *modelItem = new QStandardItem();
                 addressData << lmAddressLine1;
                 modelItem->setData(QVariant(addressData), Qt::DisplayRole);
                 modelItem->setData( icons[0], Qt::DecorationRole );
-                modelItem->setData(QString("contact"),Qt::UserRole);
+                modelItem->setData( aItemArray[i].mId, Qt::UserRole );
                 mModel->appendRow( modelItem );
             }
             else
             {   
-                //create model for list view in potrai mode
+                //create model for list view in potrait mode
                 addressData.clear();
+                HbIcon potraitIcon( KDummyImage );
+            icons<<potraitIcon;
+            if(adressIconPresent)
+            {
+                icons<<adressTypeIcon;
+            }
                 QStandardItem *modelItem = new QStandardItem();
                 addressData << lmAddressLine1 << lmAddressLine2;
                 modelItem->setData(QVariant(addressData), Qt::DisplayRole);
                 modelItem->setData( icons, Qt::DecorationRole );
+                modelItem->setData( aItemArray[i].mId, Qt::UserRole );
                 mModel->appendRow( modelItem );
             }
-
-            CleanupStack::PopAndDestroy( readLandmark );
-        }
-   }
-}
-
-// ----------------------------------------------------------------------------
-// LocationPickerDataManagerPrivate::populateCollectionsL()
-// ----------------------------------------------------------------------------
-
-void LocationPickerDataManagerPrivate::populateCollectionsL()
-{
-    // Read each categpry in the database and copy to the model.
-    TPosLmItemId lmId;
-    while ((lmId = mIterator->NextL()) != KPosLmNullItemId )
-    {
-        CPosLandmarkCategory* readCategory = mLmCategoryManager->ReadCategoryLC(lmId );
-
-        if( readCategory )
-        {
-            QString categoryName("");
-
-            TPtrC tempStr;
-            TInt retStatus;
-
-            retStatus = readCategory->GetCategoryName( tempStr );
-            if( retStatus == KErrNone && tempStr.Length() > 0)
-            {
-                categoryName = QString( (QChar*)tempStr.Ptr(), tempStr.Length());
-                if(categoryName == KContactsString)
-                {
-                    categoryName = hbTrId("txt_lint_list_contact_addresses");
-                }
-            }
-
-            // create a list item and copy to model
-
-            QString iconPath;
-            QStandardItem *modelItem = new QStandardItem();
-            modelItem->setData(QVariant(categoryName), Qt::DisplayRole);
-            modelItem->setData( HbIcon (KCollectionsContacts), Qt::DecorationRole );
-            mModel->appendRow( modelItem );
-
-            CleanupStack::PopAndDestroy( readCategory );
         }
     }
+    
+    return true;
 }
 
 // ----------------------------------------------------------------------------
-// LocationPickerDataManagerPrivate::getData()
+// LocationPickerDataManagerPrivate::populateCollections()
 // ----------------------------------------------------------------------------
 
-void LocationPickerDataManagerPrivate::getData( int aIndex, quint32& aValue )
+void LocationPickerDataManagerPrivate::populateCollections()
 {
-    aValue = 0;
-    RArray<TPosLmItemId> idArray;
-    TRAPD( err, mIterator->GetItemIdsL( idArray, aIndex, 1 ) );
-    if( err == KErrNone)
-        aValue = (quint32) idArray[0];
+    // add contact collection
+    QStandardItem *modelItemContact = new QStandardItem();
+    QString contactCollectionName( hbTrId("txt_lint_list_contact_addresses") );
+    modelItemContact->setData( QVariant( contactCollectionName ), Qt::DisplayRole );
+    modelItemContact->setData( HbIcon ( KCollectionsContacts ), Qt::DecorationRole );
+    modelItemContact->setData( ESourceLandmarksContactsCat, Qt::UserRole );
+    mModel->appendRow( modelItemContact );
+
+    QStandardItem *modelItemCalendar = new QStandardItem();
+    QString calendarCollectionName( hbTrId("txt_lint_list_calendar_event_locations") );
+    modelItemCalendar->setData( QVariant( calendarCollectionName ), Qt::DisplayRole );
+    modelItemCalendar->setData( HbIcon ( KCollectionsCalendar ), Qt::DecorationRole );
+    modelItemCalendar->setData( ESourceLandmarksCalendarCat, Qt::UserRole );
+    mModel->appendRow( modelItemCalendar );
+    
+    QStandardItem *modelItemPlaces = new QStandardItem();
+    QString placesCollectionName( hbTrId("txt_lint_list_places") );
+    modelItemPlaces->setData( QVariant( placesCollectionName ), Qt::DisplayRole );
+    modelItemPlaces->setData( HbIcon (KCollectionsPlaces), Qt::DecorationRole );
+    modelItemPlaces->setData( ESourceLandmarks, Qt::UserRole );
+    mModel->appendRow( modelItemPlaces );
 }
+
 
 // ----------------------------------------------------------------------------
 // LocationPickerDataManagerPrivate::getLocationItem()
 // ----------------------------------------------------------------------------
 
-void LocationPickerDataManagerPrivate::getLocationItem( quint32 aLmId, QLocationPickerItem& aItem )
+void LocationPickerDataManagerPrivate::getLocationItem( quint32 aId, QLocationPickerItem& aItem )
 {
-    TRAPD( err, getLocationItemL( aLmId, aItem ) );
-    if( err != KErrNone )
+    QLookupItem item;
+    item.mId = aId;
+    if( mDb->findEntryById( item ) )
+    {
+        aItem.mName = item.mName;
+        aItem.mStreet = item.mStreet;
+        aItem.mPostalCode = item.mPostalCode;
+        aItem.mCity = item.mCity;
+        aItem.mState = item.mState;
+        aItem.mCountry = item.mCountry;
+        aItem.mLatitude = item.mLatitude;
+        aItem.mLongitude = item.mLongitude;
+        aItem.mIsValid = true;
+    }
+    else
+    {
         aItem.mIsValid = false;
-}
-
-// ----------------------------------------------------------------------------
-// LocationPickerDataManagerPrivate::getLocationItem()
-// ----------------------------------------------------------------------------
-
-void LocationPickerDataManagerPrivate::getLocationItemL( quint32 aLmId, QLocationPickerItem& aItem )
-{
-    //Open and intialize Landmark DB
-    CPosLandmarkDatabase* landmarkDb = NULL;
-    landmarkDb = CPosLandmarkDatabase::OpenL();
-
-    ExecuteAndDeleteLD( landmarkDb->InitializeL() );
-
-    CPosLandmark* readLandmark = landmarkDb->ReadLandmarkLC(aLmId );
-
-    if( readLandmark )
-    {
-        // get position and store
-        TLocality position;
-        readLandmark->GetPosition( position );
-        aItem.mLatitude = position.Latitude();
-        aItem.mLongitude = position.Longitude();
-
-        // get address fields
-        TPtrC tempStr;
-        TInt retStatus;
-
-        // Copy landmark name in string 1
-        retStatus = readLandmark->GetLandmarkName( tempStr );
-        if( retStatus == KErrNone && tempStr.Length() > 0)
-        {
-            aItem.mName = QString( (QChar*)tempStr.Ptr(), tempStr.Length());
-        }
-
-        // get street
-        retStatus = readLandmark->GetPositionField( EPositionFieldStreet, tempStr );
-        if( retStatus == KErrNone && tempStr.Length() )
-        {
-            aItem.mStreet = QString( (QChar*)tempStr.Ptr(), tempStr.Length());
-        }
-
-        // Get city
-        retStatus =readLandmark->GetPositionField( EPositionFieldCity, tempStr );
-        if( retStatus == KErrNone && tempStr.Length() )
-        {
-            aItem.mCity = QString( (QChar*)tempStr.Ptr(), tempStr.Length());
-        }
-        // Get State
-        retStatus =readLandmark->GetPositionField( EPositionFieldState, tempStr );
-        if( retStatus == KErrNone && tempStr.Length() )
-        {
-            aItem.mState = QString( (QChar*)tempStr.Ptr(), tempStr.Length());
-        }
-
-        // get country
-        retStatus =readLandmark->GetPositionField( EPositionFieldCountry, tempStr );
-        if( retStatus == KErrNone && tempStr.Length() )
-        {
-              aItem.mCountry = QString( (QChar*)tempStr.Ptr(), tempStr.Length());
-        }
     }
-    aItem.mIsValid = true;
-    CleanupStack::PopAndDestroy(readLandmark);
-    delete landmarkDb;
+    
 }
+

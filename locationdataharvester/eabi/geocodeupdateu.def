@@ -1,0 +1,5 @@
+EXPORTS
+	_ZN13GeocodeUpdate15createContactdbEv @ 1 NONAME
+	_ZN13GeocodeUpdate24updateGeocodeToContactDBEjidd @ 2 NONAME
+	_ZN13GeocodeUpdate25updateGeocodeToCalenderDBEmdd @ 3 NONAME
+

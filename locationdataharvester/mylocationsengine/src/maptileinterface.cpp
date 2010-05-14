@@ -57,6 +57,8 @@ CMapTileInterface::~CMapTileInterface()
     delete iFilePath;
     
     delete iMaptileGeocoder;
+    
+    delete iLandmark;
 }    
 
 
@@ -66,7 +68,10 @@ CMapTileInterface::~CMapTileInterface()
 // -----------------------------------------------------------------------------
 //
 CMapTileInterface::CMapTileInterface() :
-           iMaptileGeocoder( NULL ), iFilePath( NULL ),iObserver(NULL)
+           iMaptileGeocoder( NULL ), 
+           iFilePath( NULL ),
+           iObserver(NULL),
+           iLandmark(NULL)
 {
 }
 
@@ -97,7 +102,8 @@ void CMapTileInterface::GetMapTileImageL(const TDesC& aAddressDetails,
     iFilePath = NULL;    
     iFilePath = HBufC::NewL(aFilePath.Length());
     iFilePath->Des().Copy(aFilePath);
-    TConnectionOption conn = EInteractive;
+    iStreetAvailable = EFalse;
+    TConnectionOption conn = ESilent;
     iMaptileGeocoder->GetCoordinateByAddressL(aAddressDetails, conn);
 }
 // -----------------------------------------------------------------------------
@@ -116,17 +122,13 @@ void CMapTileInterface::GetMapTileImageL(CPosLandmark* aLandmark,
     iFilePath->Des().Copy(aFilePath);
 
     TPtrC getStreet;
-
     aLandmark->GetPositionField(EPositionFieldStreet, getStreet);
 
     if (getStreet.Length() > 0)
     {
         iStreetAvailable = ETrue;
     }
-
-    TConnectionOption conn = EInteractive;
-
-
+    TConnectionOption conn = ESilent;
     iMaptileGeocoder->GetCoordinateByAddressL(*aLandmark, conn);
 }
 
@@ -139,18 +141,14 @@ void CMapTileInterface::GetMapTileL(TReal aLatitude, TReal aLongitude)
 {
     __TRACE_CALLSTACK;//Notification to observer , to update contact db,
     iObserver->RestGeoCodeCompleted(aLatitude, aLongitude);
-
     TInt zoom = KCityLevelZoom;
     TInt size = KMapTileSize;
     if (iStreetAvailable)
     {
         zoom = KStreetLvelZoom;
     }
-
     iStreetAvailable = EFalse;
-
     TMapTileParam mapTileparam(aLatitude, aLongitude, zoom, size);
-
     iMaptileGeocoder->GetMapTileByGeoCodeL( mapTileparam, *iFilePath );
 }
 
@@ -177,8 +175,8 @@ void CMapTileInterface::GeocodingCompleted(TInt aErrorcode,
 {
     __TRACE_CALLSTACK;
     TReal latitude, longitude;
-    aAddressInfo.GetLatitude( latitude );
-    aAddressInfo.GetLongitude( longitude );
+    latitude=aAddressInfo.GetLatitude();
+    longitude=aAddressInfo.GetLongitude();
     
     MYLOCLOGSTRING1("GeocodeCompleted() status-%d",aErrorcode);
     MYLOCLOGSTRING1("GeocodeCompleted() latitude-%f",latitude );
@@ -188,7 +186,8 @@ void CMapTileInterface::GeocodingCompleted(TInt aErrorcode,
     {
         if ( latitude != KInvalidLatitudeLongitude
                 && longitude != KInvalidLatitudeLongitude)
-        {
+        {           
+            TRAP_IGNORE( SetLandMarkDetailsL(aAddressInfo) );            
             TRAPD( error, GetMapTileL(latitude, longitude) );
             if ( error != KErrNone )
             {
@@ -209,3 +208,55 @@ void CMapTileInterface::GeocodingCompleted(TInt aErrorcode,
     }
 }
 
+// -----------------------------------------------------------------------------
+// CMapTileInterface::GetLandMarkDetails()
+// return pointer to CPosLandmark 
+// -----------------------------------------------------------------------------
+//
+CPosLandmark* CMapTileInterface::GetLandMarkDetails()
+{
+    return iLandmark;  
+               
+}
+// -----------------------------------------------------------------------------
+// CMapTileInterface::SetLandMarkDetails()
+// create CPosLandmark details from MAddressInfo 
+// -----------------------------------------------------------------------------
+//
+void CMapTileInterface::SetLandMarkDetailsL(MAddressInfo& aAddressInfo)
+{
+    if(iLandmark)
+    {
+        delete iLandmark;
+        iLandmark=NULL;
+    }
+    TReal latitude,longitude;
+    latitude=aAddressInfo.GetLatitude();
+    longitude=aAddressInfo.GetLongitude();    
+    TLocality position(TCoordinate(latitude,longitude),0);
+    iLandmark=CPosLandmark::NewL();
+    //latitude and longitude
+    iLandmark->SetPositionL(position);
+    
+    //street
+    TPtrC tempText=aAddressInfo.GetThoroughfareName();
+    if(tempText.Length()>0)
+    {
+        iStreetAvailable=ETrue;
+    }
+    iLandmark->SetPositionFieldL(EPositionFieldStreet, tempText);
+    //postal code
+    tempText.Set(aAddressInfo.GetPincode());
+    iLandmark->SetPositionFieldL(EPositionFieldPostalCode, tempText);
+    //city
+    tempText.Set(aAddressInfo.GetCity());
+    iLandmark->SetPositionFieldL(EPositionFieldCity, tempText);
+    //state
+    tempText.Set(aAddressInfo.GetState());
+    iLandmark->SetPositionFieldL(EPositionFieldState, tempText);
+    //country
+    tempText.Set(aAddressInfo.GetCountryName());
+    iLandmark->SetPositionFieldL(EPositionFieldCountry, tempText); 
+    
+}
+//end of line

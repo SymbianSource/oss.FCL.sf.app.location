@@ -22,7 +22,7 @@
 
 // INCLUDES
 #include <e32base.h>
-#include <LbsPosition.h> 
+#include <lbsposition.h> 
 #include <EPos_CPosLandmark.h>
 
 //Maptile geocoder plugin uid
@@ -42,18 +42,74 @@ public:
     /**
      * Gets the latitude information.
      * 
-     * @param aLatitude latitude value. 
+     * @return aLatitude latitude value. 
      */
-    virtual void GetLatitude( TReal& aLatitude ) = 0;
+    virtual const TReal& GetLatitude( ) = 0;
     
     
     /**
 	 * Gets the longitude information.
 	 * 
-	 * @param aLongitude longitude value. 
+	 * @return aLongitude longitude value. 
 	 */
-    virtual void GetLongitude( TReal& aLongitude ) = 0;
-      
+    virtual const TReal& GetLongitude( ) = 0;
+    
+    /*
+     * Gets the reference to the country name. Scope of this returned reference is limited to
+     * this perticular call. User has to store it for their further processing.
+     * 
+     *  @return reference to the String which holds the Country Name. 
+     */
+    virtual const TDesC& GetCountryName()= 0;
+    
+    /*
+     * Gets the reference to the State. Scope of this returned reference is limited to
+     * this perticular call. User has to store it for their further processing.
+     * 
+     *  @return reference to the String which holds the State name. 
+     */
+    virtual const TDesC& GetState()= 0;
+    
+    /*
+     * Gets the reference to the City. Scope of this returned reference is limited to
+     * this perticular call. User has to store it for their further processing.
+     * 
+     *  @return reference to the String which holds the City Name. 
+     */
+    virtual const TDesC& GetCity()= 0;
+    
+    /*
+     * Gets the reference to the District name. Scope of this returned reference is limited to
+     * this perticular call. User has to store it for their further processing.
+     * 
+     *  @return reference to the String which holds the District Name. 
+     */
+    virtual const TDesC& GetDistrict()= 0;
+    
+    /*
+     * Gets the reference to the postal code. Scope of this returned reference is limited to
+     * this perticular call. User has to store it for their further processing.
+     * 
+     *  @return reference to the String which holds the postal code. 
+     */
+    virtual  const TDesC& GetPincode()= 0;
+    
+    /*
+     * Gets the reference to the thoroughfare name. Scope of this returned reference is limited to
+     * this perticular call. User has to store it for their further processing.
+     * 
+     *  @return reference to the String which holds the thoroughfare name. 
+     */
+    virtual const TDesC& GetThoroughfareName()= 0;
+    
+    /*
+     * Gets the reference to the thoroughfare number. Scope of this returned reference is limited to
+     * this perticular call. User has to store it for their further processing.
+     * 
+     *  @return reference to the String which holds the thoroughfare number. 
+     */
+    virtual const TDesC& GetThoroughfareNumber() = 0;
+         
 };
 
 

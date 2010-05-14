@@ -26,10 +26,10 @@
 #include <calentryview.h>
 
 // Header for contact DB
-#include <CNTDB.H>
+#include <cntdb.h>
 
 // Header for landmarks db
-#include<epos_cposlandmarkdatabase.h>
+#include<EPos_CPosLandmarkDatabase.h>
 
 // mylocations database manager
 #include "maptileinterface.h"
@@ -120,6 +120,8 @@ public:
      *
      */      
     void StartLandmarksChangeNotifier();
+
+
     
     /** Maps the source type change type to Mylocations entry change type
     * @param[in] aSrcType Source type of the change
@@ -128,10 +130,6 @@ public:
      */      
     TEntryChangeType MapChangeType( TUidSourceType aSrcType, TUint32 aChangeType );    
  
-    /** Gets the handle to mylocations database manager
-     *
-     */      
-    CMyLocationsDatabaseManager& MyLocationsDbManager();
 
 private:
     
@@ -202,6 +200,7 @@ private:
     */  
 	void HandleMaptileDatabaseL(TInt aEventType ,
 	                             TLookupItem& aLookupItem );
+
     /**
      *  Handles active object's request completion event. 
      */
@@ -212,11 +211,6 @@ private:
      */
     void DoCancel();
  
-    /** 
-     * Implements RunError of active object. 
-     */
-    TInt RunError( TInt aError );
-    
     /** 
      * Requests for map tile image , structure serch.
      * @param aLandmark  Provides information about the address.
@@ -249,7 +243,14 @@ private:
     /**
     * Calender entry added.
     */
-    void CalenderEntryAddedL(TCalChangeEntry aCalChangeEntry);
+    void CalenderEntryAddedL(TCalChangeEntry aCalChangeEntry);    
+
+    /**
+    * Update the mylocations database.
+    */
+    void UpdateDatabaseL( CPosLandmark* aLandmark, const TUint32 aUid, 
+            const TUint32 aSourceType, const TEntryChangeType aChangeType );
+
 
 public:  //From MMapTileObserver
     

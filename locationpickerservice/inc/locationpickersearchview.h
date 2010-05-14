@@ -38,14 +38,16 @@ class LocationPickerSearchView : public HbView
     Q_OBJECT
 public:
     // constructor
-    LocationPickerSearchView(HbDocumentLoader &aLoader);
+    LocationPickerSearchView( HbDocumentLoader &aLoader );
     // destructor
     ~LocationPickerSearchView();
     //initialize the action items and connect to slots
-    void init();
+    void init( QStandardItemModel *aModel );
+private:
+    void getData( QModelIndex aIndex, quint32& aValue );
 private slots:
     // slot to perform search
-    void doSearch(QString aCriteria);
+    void doSearch( QString aCriteria );
     // slot to handle select event on a list item
     void handleActivated(const QModelIndex &aIndex);
     // slot to handle backbutton on search panel
@@ -64,8 +66,6 @@ private:
     HbListView  *mListView;
     // search panel
     HbSearchPanel *mSearchPanel;
-    // handle to data manager to populate model
-    LocationPickerDataManager *mDataManager;
     //TextItem
     HbTextItem* mEmptyLabel;
     //Graphicslayout

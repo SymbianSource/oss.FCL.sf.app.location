@@ -20,13 +20,9 @@
 
 
 TEMPLATE = subdirs
-SUBDIRS = maptileservice
+SUBDIRS = locationdatalookupdb maptileservice geocodeupdate mylocationsengine
 
-# Build.inf rules
-BLD_INF_RULES.prj_exports += "./mylocationsengine/loc/mylocations.loc   APP_LAYER_LOC_EXPORT_PATH(mylocations.loc)" 
 
-BLD_INF_RULES.prj_mmpfiles = "./geocodeupdate/group/geocodeupdate.mmp" \
-                             "./mylocationsengine/group/mylocationsengine.mmp"
 # Exports
 deploy.path = /
 

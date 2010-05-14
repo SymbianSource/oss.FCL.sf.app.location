@@ -35,8 +35,8 @@ public:
     ~LocationPickerCollectionListContent();
     //get standard model
     QStandardItemModel* getStandardModel();
-    //get LocationPickerDataManager
-    LocationPickerDataManager* getDataManager();
+    // gets the data pointed to by index and copies to the aValue
+    void getData( QModelIndex aIndex, quint32& aValue );
 
 private:
     Qt::Orientation mOrientation;

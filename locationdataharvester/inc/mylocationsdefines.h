@@ -40,33 +40,12 @@ public:
     TFileName iFilePath;
 };
 
-/** Defines uid source type
- */
-enum TUidSourceType
-{
-    /** Uid Source type calendar */
-    ESourceCalendar=0,
-    /** Uid Source type landmarks */
-    ESourceLandmarks,
-    /** Uid Source type maps history */
-    ESourceMapsHistory,
-    /** Uid Source type contacts default/prefered address */
-    ESourceContactsPref,
-    /** Uid Source type contacts work address */
-    ESourceContactsWork,
-    /** Uid Source type contacts home address */
-    ESourceContactsHome,
-    /** Uid Source type landmarks category */
-    ESourceLandmarksCategory,
-    /** Uid Source type landmarks user created category */
-    ESourceLandmarksUserCat,
-    /** Uid Source type landmarks 'contacts' category */
-    ESourceLandmarksContactsCat,
-    /** Uid Source type landmarks 'calendar' category */
-    ESourceLandmarksCalendarCat,
-    /** Uid Source type maps history' category */
-    ESourceLandmarksHistoryCat
-};
+
+// contacts category in landmarks db
+_LIT( KContactsCategory, "Contacts" );
+
+// calendar category in landmarks db
+_LIT( KCalendarCategory, "Calendar" );
 
 // lookup database folder path
 _LIT( KLookupDbPath, "c:\\mylocations\\" );
@@ -118,6 +97,8 @@ const TInt KColumnLmkUid = 3;
 const TInt KColumncntUid = 1;
 // source type column number
 const TInt KColumnFilePath = 3;
+
+const TInt KBufSize=256;
 
 #endif  // __MYLOCATIONSDEFINES_H__
 // End of file

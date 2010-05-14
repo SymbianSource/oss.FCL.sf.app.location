@@ -19,33 +19,41 @@
 #define __GEOCODEUPDATE_H__
 
 #include <e32def.h> 
+#include <QtCore/qglobal.h>
 
 // CLASS DECLARATION
 
 /**
- * CntGeocodeUpdate, a class to update latitude and longtude into contact database
- * for a perticular contact.
+ * GeocodeUpdate, a class to update latitude and longtude into contact and calender database
  */
 class GeocodeUpdate 
 {
 public:    
     /**
-     * Request to create contactmanager ,
-     * contactmanager will create contact db.    
+     Create contact database   
      */
-    IMPORT_C static void CreateContactdb();
+    IMPORT_C static void createContactdb();
     
     /**
-     * Request to update latitude and longitude.    *
-     * @param aCntId contact unique id
-     * @param aLatitude Latitude to be saved
-     * @param aLongitude longitude to be saved
-     * @return Status code (0 is failure,1 success)
+     * Request to update latitude and longitude into contact db. 
+     * @param contactId contact unique id.
+     * @param addressType contact address type.
+     * @param latitude Latitude to be updated.
+     * @param longitude longitude to be updated.
      */
 
-    IMPORT_C static void UpDate(const TInt32 aCntId,
-            const TInt32 aCntAddressType, const TReal aLatitude,
-            const TReal aLongitude);
+    IMPORT_C static void updateGeocodeToContactDB(const quint32 contactId,
+            const int addressType, const double latitude,
+            const double longitude);
+    /**
+     * Request to update latitude and longitude into calender db.    
+     * @param calEntryId calender entry unique id
+     * @param latitude Latitude to be updated.
+     * @param longitude longitude to be updated.
+     */
+
+    IMPORT_C static void updateGeocodeToCalenderDB(const ulong calEntryId,
+            const double latitude, const double longitude);
 };
 
 #endif // __GEOCODEUPDATE_H__ 

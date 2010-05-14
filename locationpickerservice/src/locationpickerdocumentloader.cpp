@@ -40,29 +40,29 @@ LocationPickerDocumentLoader::~LocationPickerDocumentLoader()
 // LocationPickerDocumentLoader::createObject
 // ---------------------------------------------------------------------------
 //
-QObject *LocationPickerDocumentLoader::createObject(const QString& type, const QString &name)
+QObject *LocationPickerDocumentLoader::createObject( const QString& type, const QString &name )
 {   
     //for locationpickerpotraitview
-    if (name == LocationPickerPotraitView::staticMetaObject.className() )
+    if ( name == LocationPickerPotraitView::staticMetaObject.className() )
     {
         QObject *object = new LocationPickerPotraitView(this);
-        object->setObjectName(name);
+        object->setObjectName( name );
         return object;
     }
     //for locationpickerlandscapeview
-    if (name == LocationPickerLandscapeView::staticMetaObject.className())
+    if ( name == LocationPickerLandscapeView::staticMetaObject.className() )
     {
         QObject *object = new LocationPickerLandscapeView(this);
-        object->setObjectName(name);
+        object->setObjectName( name );
         return object;
     }
     //for locationpickersearchview
-    if (name == LocationPickerSearchView::staticMetaObject.className())
+    if ( name == LocationPickerSearchView::staticMetaObject.className() )
     {
         QObject *object = new LocationPickerSearchView(*this);
-        object->setObjectName(name);
+        object->setObjectName( name );
         return object;
     }
     //default case
-    return HbDocumentLoader::createObject(type, name);
+    return HbDocumentLoader::createObject( type, name );
 }

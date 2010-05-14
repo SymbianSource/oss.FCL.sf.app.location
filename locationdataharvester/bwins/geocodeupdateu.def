@@ -1,0 +1,5 @@
+EXPORTS
+	?updateGeocodeToContactDB@GeocodeUpdate@@SAXIHNN@Z @ 1 NONAME ; void GeocodeUpdate::updateGeocodeToContactDB(unsigned int, int, double, double)
+	?createContactdb@GeocodeUpdate@@SAXXZ @ 2 NONAME ; void GeocodeUpdate::createContactdb(void)
+	?updateGeocodeToCalenderDB@GeocodeUpdate@@SAXKNN@Z @ 3 NONAME ; void GeocodeUpdate::updateGeocodeToCalenderDB(unsigned long, double, double)
+

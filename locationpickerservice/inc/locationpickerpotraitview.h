@@ -19,7 +19,7 @@
 #define LOCATIONPICKERPOTRAITVIEW_H
 
 
-#include <hbview>
+#include <HbView>
 #include <hbdocumentloader.h>
 #include "locationpickertypes.h"
 
@@ -27,7 +27,6 @@
 class HbListView;
 class QStandardItemModel;
 class LocationPickerProxyModel;
-class LocationPickerContent;
 class LocationPickerCollectionListContent;
 class LocationPickerCollectionContent;
 class HbListViewItem;
@@ -41,15 +40,14 @@ class LocationPickerPotraitView : public HbView
     Q_OBJECT
 public:
     // constructor
-    LocationPickerPotraitView(HbDocumentLoader* aLoader);
+    LocationPickerPotraitView( HbDocumentLoader* aLoader );
     // destructor
     ~LocationPickerPotraitView();
-private:
-    //disable the tabs
-    void disableTabs();
 public:
+    //disable the tabs
+    void disableTabs( QStandardItemModel *aModel );
     //get the items from docml and connect to respective slots
-    void init(Qt::Orientation aOrientation );
+    void init( bool aPopulated, Qt::Orientation aOrientation, QStandardItemModel *aModel );
     //Set the appropriate model on list view
     void manageListView();
     //Create collection list and sets to list view
@@ -59,10 +57,12 @@ public:
     //Get the view type
     TViewType getViewType();
     //set the view type
-    void setViewType(TViewType aViewType);
+    void setViewType( TViewType aViewType );
+    //clear collection Model
+    void clearContentModel();
 private slots:
     //slot to handle list item actions     
-    void handleActivated(const QModelIndex &aIndex);
+    void handleActivated( const QModelIndex &aIndex );
     //slots to handle menu action items     
     void sortDescending();
     void sortAscending();
@@ -80,13 +80,16 @@ signals:
     void completeService();
     void sendCategoryID( quint32 aCategoryId );
     void handleAllList();
+    void collectionContentExited();
 private:
     //document loader
     HbDocumentLoader* mDocumentLoader;
-    // all view
-    LocationPickerContent* mLocationPickerContent;
     // collection list content
     LocationPickerCollectionListContent* mLocationPickerCollectionListContent;
+    //locationPickerProxyModel
+    LocationPickerProxyModel *mProxyModel;
+	//standard model
+    QStandardItemModel *mModel;
     //actions
     HbAction *mAllAction;
     HbAction *mCollectionAction;

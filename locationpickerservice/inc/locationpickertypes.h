@@ -19,6 +19,7 @@
 #define LOCATIONPICKERTYPES_H
 
 #include <hbglobal.h>
+#include <locationservicedefines.h>
 
 // separator
 const QString KSeparator(",");
@@ -34,8 +35,11 @@ const QString KDummyImage("qtg_large_maps");
 //Contacts collection icon
 const QString KCollectionsContacts("qtg_small_contacts");
 
-//Contacts collection icon
+//Calendar collection icon
 const QString KCollectionsCalendar("qtg_small_calendar");
+
+//Places collection icon
+const QString KCollectionsPlaces("qtg_small_favorite");
 
 //Contacts type prefered icon
 const QString KContactPrefIcon("qtg_mono_favourites");
@@ -43,13 +47,6 @@ const QString KContactPrefIcon("qtg_mono_favourites");
 const QString KContactHomeIcon("qtg_mono_home");
 //Contacts type work icon
 const QString KContactWorkIcon("qtg_mono_work");
-
-
-// strings used to differentiate the contact address type
-const QString KContactHome("Contact Home");
-const QString KContactWork("Contact Work");
-const QString KContactsString("Others");
-
 
 /** 
  * Defines view type in location picker

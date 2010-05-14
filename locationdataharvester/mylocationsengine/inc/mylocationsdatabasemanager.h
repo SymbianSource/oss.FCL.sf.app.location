@@ -20,10 +20,15 @@
 #define __MYLOCATIONSDATABASEMANAGER_H__
 
 // Landmarks
-#include<epos_cposlandmarkdatabase.h>
+#include<EPos_CPosLandmarkDatabase.h>
 #include <EPos_CPosLmCategoryManager.h>
 
-// Lookup database
+#include <locationservicedefines.h>
+
+// lookup database
+#include <locationdatalookupdb.h>
+
+// mylocations lookup db
 #include "mylocationslookupdb.h"
 
 // Maximum string length of landmark address.
@@ -94,17 +99,25 @@ class CMyLocationsDatabaseManager : public CBase
          */      
         void GetLandmarkFullAddress( TBuf<KMaxAddressLength>& aLandmarkAddress, 
                                      const CPosLandmark* aLandmark );
-
-        
+       
+	    /** Update the maptile path to mylocation lookup table
+         *
+         * @param[in] aSourceId Uid of the changed source entry.
+		 * @param[in] aSourceType Source type of the aSourceId.
+         * @param[in] aFilePath Maptile file path.
+         */                               
+        void UpdateMapTilePath( TUint32 aSourceId, TUint32 aSourceType, 
+                                            TFileName aFilePath );
     private:
         
         /**
          * AddMylocationsCategory.
-         * Adds the category to mylocations and landmarks database. 
-         * Used to add history and others categories.
-         * @param[in] aCategoryType defines the category type to be added.
+         * Adds the category to landmarks database. 
+         * Used to add location picker specific categories.
+         * @param[in] aCategoryName defines the category name to be added.
+         * @returns The category id. 
          */
-        void AddMylocationsCategoryL( const TUint32 aCategoryType );
+        TUint32 AddMylocationsCategoryL(  const TDesC&  aCategoryName  );
 
         /**
          * CheckIfDuplicateExistsL.
@@ -156,50 +169,12 @@ class CMyLocationsDatabaseManager : public CBase
        void HandleEntryDeletionL( const TUint32 aUid, const TUint32 aSourceType );
 
        /**
-         * AddToMylocationsDbL.
-         * Adds entry into mylocations db and also updates the lookup table
-         * @param[in] aLandmark Landmark object to be added.
-         * @param[in] aUid Uid of the source entry corresponding to aLandmark..
-         * @param[in] aSourceType source type of the aUid passed.
-        */
-       void AddToMylocationsDbL( CPosLandmark*  aLandmark, const TUint32 aUid, 
-                                 const TUint32 aSourceType );
-
-       /**
-         * ModifyMylocationsDbL.
-         * Updates the entry into mylocations db and also updates the lookup table
+         * HandleLandmarkModificationL.
+         * Handles a landmark modification
          * @param[in] aLandmark Landmark object modified.
          * @param[in] aUid Uid of the source entry corresponding to aLandmark..
-         * @param[in] aSourceType source type of the aUid passed.
         */
-       void ModifyMylocationsDbL( CPosLandmark*  aLandmark, const TUint32 aUid, 
-                                  const TUint32 aSourceType );
-
-       /**
-         * DeleteFromMylocationsDbL.
-         * Deletes the entry from mylocations db and also updates the lookup table
-         * @param[in] aUid Uid of the source entry corresponding to aLandmark..
-         * @param[in] aSourceType source type of the aUid passed.
-        */
-       void DeleteFromMylocationsDbL( const TUint32 aUid, const TUint32 aSourceType );
-
-       /**
-         * CreateCategoryL.
-         * Creates a new category in Mylocations Db and adds a corresponding entry in 
-         * mylocations lookup table.
-         * @param[in] aUid Uid of the source category.
-        */
-       void CreateCategoryL( const TUint32 aUid );
-
-       /**
-          * CheckCategoryAvailabilityL.
-          * Checks whether a category is available in database pointed by category manager.
-          * @param[in] aCategoryManager handle to the category manager
-          * @param[in] aCategoryId Id of the category
-         */
-       void CheckCategoryAvailabilityL( CPosLmCategoryManager* aCategoryManager, 
-                                        const TUint32 aCategoryId );
-
+       void HandleLandmarkModificationL( CPosLandmark* aLandmark, const TUint32 aUid );
        /**
           * CheckAndReadLandmarkL.
           * Checks whether a category is available in database pointed by category manager.
@@ -207,36 +182,58 @@ class CMyLocationsDatabaseManager : public CBase
           * @param[in] aLmId Id of the landmark
           * @returns landmark object if found else NULL
          */
-       CPosLandmark* CMyLocationsDatabaseManager::CheckAndReadLandmarkL( 
+       CPosLandmark* CheckAndReadLandmarkL( 
                        CPosLandmarkDatabase* aDb, const TUint32 aLmId );
+        /**
+          * FillLookupItemAddressDetails.
+          * Fills address details into QLookupItem from CPosLandmark.
+          * @param[in] aLandmark a landmark object
+          * @param[out] aLookupItem, a lookup item in which the address details are filled
+         */
+       void FillLookupItemAddressDetails( CPosLandmark* aLandmark, QLookupItem &aLookupItem );
+
+        /**
+          * UnsetDuplicateNextCalEntry.
+          * Finds a calendar lookup entry whose detination id  is aLandmarkId
+		  * and unsets it duplcate flag.
+          * @param[in] aLandmarkId a landmark id.
+         */
+       void UnsetDuplicateNextCalEntry( quint32 aLandmarkId );
+
+        /**
+          * IsDuplicateCalEntry.
+          * Checks if there is a duplicate entry present whose destination id 
+		  * is aLandmarkId
+          * @param[in] aLandmarkId a landmark id.
+         */
+       bool IsDuplicateEntry( quint32 aLandmarkId );
+
+        /**
+          * CreateLandmarkItemLC.
+          * Creates a landmark from a QLookupItem
+          * @param[in] aLookupItem a lookup item.
+          * @returns CPosLandmark a newly created landmark.
+         */
+       CPosLandmark* CreateLandmarkItemLC( const QLookupItem &aLookupItem );
        
     private:
-        
         // Handle to the landmark database
         CPosLandmarkDatabase* iLandmarkDb;
-        
-        // Handle to the mylocations landmark database
-        CPosLandmarkDatabase* iMyLocationsLandmarksDb;
 
-        // Contacts category to be created for contacts and calendar 
-        // related location entries in landmark database
+        // Calendar category to be created for calendar related location entries in landmark database
+        TPosLmItemId iLmCalendarCatId;  
+        // Contacts category to be created for contacts related location entries in landmark database
         TPosLmItemId iLmContactsCatId;  
-        
         // handle to landmarks lookup database.
         CLookupDatabase*  iLandmarksLookupDb;
 
-        // handle to mylocations lookup database.
-        CLookupDatabase*  iMylocationsLookupDb;
-
-        // handle to mylocations category manager
-        CPosLmCategoryManager* iMyLocationsCatManager;
+        // handle to the location app lookup database.
+        LocationDataLookupDb*  iLocationAppLookupDb;
 
         // handle to landmarks category manager
         CPosLmCategoryManager* iLandmarksCatManager;
-        
+
         // handle to the file session
         RFs iFsSession;
-       
     };
-
 #endif  // __MYLOCATIONSDATABASEMANAGER_H__

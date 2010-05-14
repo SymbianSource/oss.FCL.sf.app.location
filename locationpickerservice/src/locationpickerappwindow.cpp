@@ -25,21 +25,25 @@
 #include "locationpickerdatamanager.h"
 #include "locationpickerdocumentloader.h"
 #include "locationpickerlandscapeview.h"
+#include "locationpickercontent.h"
 
 // ----------------------------------------------------------------------------
 // LocationPickerAppWindow::LocationPickerAppWindow()
 // ----------------------------------------------------------------------------
-LocationPickerAppWindow::LocationPickerAppWindow(QWidget *parent, Hb::WindowFlags windowFlags)
+LocationPickerAppWindow::LocationPickerAppWindow( QWidget *parent, Hb::WindowFlags windowFlags )
 	:HbMainWindow(parent, windowFlags),
 	mLocationPickerSearchView(NULL),
     mLocationPickerDocumentLoader(NULL),
 	mLocationPickerPotraitView(NULL),
 	mLocationPickerLandscapeView(NULL),
+	mLocationPickerContent(NULL),
     mService(NULL),
 	mviewType(ELocationPickerContent)
 {
     // create the service object;
     mService = new LocationPickerService(this);
+    mLocationPickerContent = new LocationPickerContent();
+    
     //create document loader object
     mLocationPickerDocumentLoader = new LocationPickerDocumentLoader();
    
@@ -51,28 +55,39 @@ LocationPickerAppWindow::LocationPickerAppWindow(QWidget *parent, Hb::WindowFlag
     QGraphicsWidget *locationPickerWidget = mLocationPickerDocumentLoader->findWidget("LocationPickerPotraitView");
     Q_ASSERT_X((locationPickerWidget != 0), "locationpickerservice", "invalid DocML file");
     mLocationPickerPotraitView = qobject_cast<LocationPickerPotraitView*>(locationPickerWidget);
+    bool populated = mLocationPickerContent->populateModel(Qt::Vertical);
     //initialize potrait widgets and connect to respective signals 
-    mLocationPickerPotraitView->init(Qt::Vertical);
+    mLocationPickerPotraitView->init(populated, Qt::Vertical, mLocationPickerContent->getStandardListModel());
     connectPotraitSlots();
-    addView( mLocationPickerPotraitView );
+    if(!populated)
+    {
+        mLocationPickerPotraitView->disableTabs(mLocationPickerContent->getStandardListModel());
+        addView( mLocationPickerPotraitView );
+        setCurrentView(mLocationPickerPotraitView);
+    }
+    else
+    {
+        addView( mLocationPickerPotraitView );
 
-    mLocationPickerDocumentLoader->reset();
+        mLocationPickerDocumentLoader->reset();
 
-    //load the Locationpicker landscape view
-    mLocationPickerDocumentLoader->load(":/locationpickerlandscape.docml", &ok);
-    Q_ASSERT_X(ok, "locationpickerservice", "invalid DocML file");
-    //find graphics location picker landscape view
-    locationPickerWidget = mLocationPickerDocumentLoader->findWidget("LocationPickerLandscapeView");
-    Q_ASSERT_X((locationPickerWidget != 0), "locationpickerservice", "invalid DocML file");
-    mLocationPickerLandscapeView = qobject_cast<LocationPickerLandscapeView*>(locationPickerWidget);
-    //initialize widgets and connect to respective signals 
-    mLocationPickerLandscapeView->init(Qt::Horizontal);
-    connectLandscapeSlots();
-    addView(mLocationPickerLandscapeView);
-    //connect to orientationChanged signal
-    connect(this, SIGNAL(orientationChanged(Qt::Orientation)),this, SLOT(changeOrientation(Qt::Orientation)));
-    //launch the view in current orientation
-    changeOrientation(this->orientation());
+        //load the Locationpicker landscape view
+        mLocationPickerDocumentLoader->load(":/locationpickerlandscape.docml", &ok);
+        Q_ASSERT_X(ok, "locationpickerservice", "invalid DocML file");
+        //find graphics location picker landscape view
+        locationPickerWidget = mLocationPickerDocumentLoader->findWidget("LocationPickerLandscapeView");
+        Q_ASSERT_X((locationPickerWidget != 0), "locationpickerservice", "invalid DocML file");
+        mLocationPickerLandscapeView = qobject_cast<LocationPickerLandscapeView*>(locationPickerWidget);
+        mLocationPickerContent->populateModel(Qt::Horizontal);
+        //initialize widgets and connect to respective signals 
+        mLocationPickerLandscapeView->init(Qt::Horizontal, mLocationPickerContent->getStandardGridModel());
+        connectLandscapeSlots();
+        addView(mLocationPickerLandscapeView);
+        //connect to orientationChanged signal
+        connect(this, SIGNAL(orientationChanged(Qt::Orientation)),this, SLOT(changeOrientation(Qt::Orientation)));
+        //launch the view in current orientation
+        changeOrientation(this->orientation());
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -85,6 +100,7 @@ LocationPickerAppWindow::~LocationPickerAppWindow()
     delete mLocationPickerDocumentLoader;
     delete mLocationPickerPotraitView;
     delete mLocationPickerLandscapeView;
+    delete mLocationPickerContent;
 }
 
 // ----------------------------------------------------------------------------
@@ -93,8 +109,7 @@ LocationPickerAppWindow::~LocationPickerAppWindow()
 void LocationPickerAppWindow::itemSelected( quint32 aLmid )
 {
     QLocationPickerItem item;
-    LocationPickerDataManager dataManager;
-    dataManager.getLocationItem(aLmid, item);
+    LocationPickerDataManager::getInstance()->getLocationItem(aLmid, item);
     // complete the request
     mService->complete(item);
 }
@@ -124,7 +139,7 @@ void LocationPickerAppWindow::activateSearchView()
         Q_ASSERT_X((mLocationPickerSearchView != 0), "mLocationPickerSearchView", 
             "qobject cast failure");
         //initialize the action items and connect to slots
-        mLocationPickerSearchView->init();
+        mLocationPickerSearchView->init(mLocationPickerContent->getStandardListModel());
         connect(mLocationPickerSearchView,SIGNAL(switchView()),this,SLOT(activateLocationPickerView()));
         connect(mLocationPickerSearchView,SIGNAL(selectItem( quint32 )),this,SLOT(itemSelected( quint32 )));
         addView(mLocationPickerSearchView);
@@ -132,6 +147,7 @@ void LocationPickerAppWindow::activateSearchView()
     //set LocationPickerSearchview as current view
     setCurrentView(mLocationPickerSearchView);
     mviewType = ELocationPickerSearchView;
+
 }
 
 // ----------------------------------------------------------------------------
@@ -158,7 +174,7 @@ void LocationPickerAppWindow::activateLocationPickerView()
 // ----------------------------------------------------------------------------
 // LocationPickerAppWindow::changeOrientation()
 // ----------------------------------------------------------------------------
-void LocationPickerAppWindow::changeOrientation(Qt::Orientation)
+void LocationPickerAppWindow::changeOrientation( Qt::Orientation )
 {   
     //check the orientation and load view accordingly 
     if( orientation() == (Qt::Horizontal ))
@@ -214,8 +230,9 @@ void LocationPickerAppWindow::connectPotraitSlots()
      connect(mLocationPickerPotraitView,SIGNAL(switchToSearchView()),this,SLOT(activateSearchView()));
      connect(mLocationPickerPotraitView,SIGNAL(selectItem( quint32 )),this,SLOT(itemSelected( quint32 )));
      connect(mLocationPickerPotraitView,SIGNAL(completeService()),this,SLOT(serviceComplete()));
-     connect(mLocationPickerPotraitView,SIGNAL(sendCategoryID( quint32 )),this,SLOT(setCategoryID( quint32 )));
+     connect(mLocationPickerPotraitView,SIGNAL(sendCategoryID( quint32 )),this,SLOT(setCategoryId( quint32 )));
      connect(mLocationPickerPotraitView,SIGNAL(handleAllList()),this,SLOT(allListHandle()));
+    connect(mLocationPickerPotraitView,SIGNAL(collectionContentExited()),this,SLOT(clearContentModels()));
 }
 
 // ----------------------------------------------------------------------------
@@ -226,14 +243,15 @@ void LocationPickerAppWindow::connectLandscapeSlots()
     connect(mLocationPickerLandscapeView,SIGNAL(switchToSearchView()),this,SLOT(activateSearchView()));
     connect(mLocationPickerLandscapeView,SIGNAL(selectItem( quint32 )),this,SLOT(itemSelected( quint32 )));
     connect(mLocationPickerLandscapeView,SIGNAL(completeService()),this,SLOT(serviceComplete()));
-    connect(mLocationPickerLandscapeView,SIGNAL(sendCategoryID( quint32 )),this,SLOT(setCategoryID( quint32 )));
+    connect(mLocationPickerLandscapeView,SIGNAL(sendCategoryID( quint32 )),this,SLOT(setCategoryId( quint32 )));
     connect(mLocationPickerLandscapeView,SIGNAL(handleCollectionList()),this,SLOT(handleCollectionList()));
+    connect(mLocationPickerLandscapeView,SIGNAL(collectionContentExited()),this,SLOT(clearContentModels()));
 }
 
 // ----------------------------------------------------------------------------
-// LocationPickerAppWindow::setCategoryID()
+// LocationPickerAppWindow::setCategoryId()
 // ----------------------------------------------------------------------------
-void LocationPickerAppWindow::setCategoryID( quint32 acategoryId )
+void LocationPickerAppWindow::setCategoryId( quint32 acategoryId )
 {
     //set the same category id to both views
     mLocationPickerPotraitView->setCategoryID(acategoryId);
@@ -273,6 +291,15 @@ void LocationPickerAppWindow::allListHandle()
     mLocationPickerLandscapeView->setViewType( ELocationPickerContent );
     mLocationPickerLandscapeView->manageGridView();
     setCurrentView(mLocationPickerLandscapeView);
+}
+
+// ----------------------------------------------------------------------------
+// LocationPickerAppWindow::clearContentModels()
+// ----------------------------------------------------------------------------
+void LocationPickerAppWindow::clearContentModels()
+{
+    mLocationPickerLandscapeView->clearContentModel();
+    mLocationPickerPotraitView->clearContentModel();
 }
 
 Q_IMPLEMENT_USER_METATYPE(QLocationPickerItem)

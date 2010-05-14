@@ -56,7 +56,7 @@ private:
      * ConstructL.
      * 2nd phase constructor.
      */
-    void ConstructL(MNotifyChange* aNotifyChange);
+    void ConstructL();
     /**
      * CMyLocationsEngine.
      * C++ default constructor. 
@@ -87,3 +87,4 @@ private:
     MNotifyChange& iNotifyChange;
 };
 #endif /* CALENDERNOTIFICATION_H_ */
+//End of file

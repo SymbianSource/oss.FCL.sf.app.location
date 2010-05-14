@@ -23,6 +23,7 @@
 #include <d32dbms.h>  //RDbNamedDatabase,RDbView 
 
 #include "mylocationsdefines.h"
+#include "locationservicedefines.h"
  
 /**
  * CLookupDatabase class.

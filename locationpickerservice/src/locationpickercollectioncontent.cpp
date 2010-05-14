@@ -31,12 +31,14 @@ LocationPickerCollectionContent::LocationPickerCollectionContent( Qt::Orientatio
     :mOrientation(aOrientation),
 	 mProxyModel(NULL),
     mModel(NULL),
-    mDataManager(NULL)
+    mDataManager(NULL),
+	mLocationFound(false)
 {
     // Create a standard model for the view list
     mModel = new QStandardItemModel( this );
-    mDataManager = new LocationPickerDataManager( *mModel, ELocationPickerCollectionContent );
-    if( mDataManager->populateModel( mOrientation , aCollectionId ) )
+    // create data manager to manage data in the model
+    mDataManager = LocationPickerDataManager::getInstance();
+    if( mDataManager->populateModel( *mModel, ELocationPickerCollectionContent, mOrientation , aCollectionId ) )
     {
         // Create the proxy model.
         mProxyModel = new LocationPickerProxyModel(mOrientation);
@@ -46,6 +48,7 @@ LocationPickerCollectionContent::LocationPickerCollectionContent( Qt::Orientatio
         mProxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
         // sort
         mProxyModel->sort(0, Qt::AscendingOrder);
+        mLocationFound = true;
     }
     else
     {
@@ -53,6 +56,7 @@ LocationPickerCollectionContent::LocationPickerCollectionContent( Qt::Orientatio
         QStandardItem *modelItem = new QStandardItem();
         modelItem->setData(QVariant(hbTrId("txt_lint_list_no_location_entries_present")), Qt::DisplayRole);
         mModel->appendRow( modelItem );
+        mLocationFound = false;
      }
 }
 
@@ -63,22 +67,39 @@ LocationPickerCollectionContent::~LocationPickerCollectionContent()
 {
     delete mProxyModel;
     delete mModel;
-    delete mDataManager;
 }
 
 // ----------------------------------------------------------------
 // LocationPickerCollectionContent::getProxyModel
 // -----------------------------------------------------------------
 LocationPickerProxyModel* LocationPickerCollectionContent::getProxyModel()
-    {
+{
     return mProxyModel;
-    }
-
+}
 
 // ----------------------------------------------------------------
-// LocationPickerCollectionContent::getDataManager
+// LocationPickerCollectionContent::getStandardModel
 // -----------------------------------------------------------------
-LocationPickerDataManager* LocationPickerCollectionContent::getDataManager()
-    {
-    return mDataManager;
-    }
+QStandardItemModel* LocationPickerCollectionContent::getStandardModel()
+{
+    return mModel;
+}
+
+// ----------------------------------------------------------------------------
+// LocationPickerCollectionContent::getData()
+// ----------------------------------------------------------------------------
+
+void LocationPickerCollectionContent::getData( QModelIndex aIndex, quint32& aValue )
+{
+    QStandardItem* item = mModel->item( aIndex.row(), aIndex.column() );
+    QVariant var = item->data( Qt::UserRole );
+    aValue = var.toUInt();
+}
+
+// ----------------------------------------------------------------------------
+// LocationPickerCollectionContent::locationFound()
+// ----------------------------------------------------------------------------
+bool LocationPickerCollectionContent::locationFound()
+{
+    return mLocationFound;
+}

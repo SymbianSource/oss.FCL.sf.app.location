@@ -15,7 +15,7 @@
 *
 */
 
-#include <BAUTILS.H>
+#include <bautils.h>
 #include "mylocationlogger.h"
 #include "lookupmaptiledb.h"
 

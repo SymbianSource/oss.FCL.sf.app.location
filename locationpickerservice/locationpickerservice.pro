@@ -35,15 +35,13 @@ symbian: {
     TARGET.CAPABILITY = ALL \
         -TCB
     
-    LIBS += -llbs \
-        -leposlandmarks \
-        -leposlmsearchlib
 }
 
 # ##### qthighway
 CONFIG += service
 LIBS += -lxqservice \
-    -lxqserviceutil 
+    -lxqserviceutil \
+    -llocationdatalookupdb
 SERVICE.FILE = service_conf.xml
 SERVICE.OPTIONS = embeddable
 SERVICE.OPTIONS += hidden

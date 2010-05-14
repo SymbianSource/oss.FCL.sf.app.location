@@ -20,14 +20,15 @@
 #include <f32file.h>
 #include <calchangecallback.h> 
 #include <cntitem.h>
-#include <CNTFLDST.H>
+#include <cntfldst.h>
 #include <EPos_CPosLmDatabaseManager.h>
 #include <lbsposition.h>
 #include <bautils.h>
 #include <f32file.h>
+#include <locationservicedefines.h>
 #include "mylocationsengine.h"
 #include "mylocationsdefines.h"
-#include "geocodeupdate.h" //header for CGeocodeUpdate class
+#include "geocodeupdate.h" //header for GeocodeUpdate class
 //handle for CMyLocationsHistoryDbObserver class
 #include "mylocationlogger.h"
 #if ( defined __WINSCW__ ) || ( defined __WINS__ )
@@ -35,14 +36,10 @@ _LIT ( KImageStorageDrive, "C:\\Maptile\\");
 #endif
 _LIT(KFolderName,":\\MapTile\\");
 const TInt KImagePathSize=36;
-const TInt KBufSize=256;
 const TInt KDefaultFilePathSize = 20;
 
 // separator
 _LIT( KSeparator, ",");
-_LIT(KContactPrefered, "Contact Prefered");
-_LIT(KContactHome, "Contact Home");
-_LIT(KContactWork, "Contact Work");
 _LIT(KPNGType, ".png");
 _LIT(KSingleSpace, " ");
 
@@ -66,8 +63,6 @@ void CMyLocationsEngine::ConstructL()
 {
     __TRACE_CALLSTACK;
     CActiveScheduler::Add(this);
-
-   
 
     //Connection to Landmark DB
     iLandmarkDb = CPosLandmarkDatabase::OpenL();
@@ -96,8 +91,6 @@ void CMyLocationsEngine::ConstructL()
 
     MYLOCLOGSTRING(" start contact db observation ");
     StartContactsChangeNotifierL();
-    MYLOCLOGSTRING(" start landmark db observation ");
-    StartLandmarksChangeNotifier();
 
     //set the folder path to store maptile
     imageFilePath.Zero();
@@ -106,6 +99,9 @@ void CMyLocationsEngine::ConstructL()
     TInt status;
     iCalSession = CCalSession::NewL();
     NotifyChangeL(status);
+
+    // Start listening to landmarks db changes
+    StartLandmarksChangeNotifier();
 
 }
 // -----------------------------------------------------------------------------
@@ -207,8 +203,10 @@ void CMyLocationsEngine::SetFolderPathL()
 // -----------------------------------------------------------------------------
 //
 CMyLocationsEngine::CMyLocationsEngine() :
-    CActive(EPriorityStandard), iCalSession(NULL), iCalView(NULL), iContactsDb(
-            NULL), iContactChangeNotifier(NULL), iLandmarkDb(NULL),
+            CActive(EPriorityStandard), 
+            iCalSession(NULL), iCalView(NULL), 
+	        iContactsDb(NULL), iContactChangeNotifier(NULL), 
+			iLandmarkDb(NULL),
             iMapTileInterface(NULL), iMyLocationsDatabaseManager(NULL),
             iMaptileDatabase(NULL), iAddressCompare(NULL),
             iMaptileGeocoderPluginAvailable(EFalse),iCalenderNotification(NULL)
@@ -257,8 +255,7 @@ void CMyLocationsEngine::NotifyChangeL(TInt &aStatus)
     __TRACE_CALLSTACK;
     
     TBufC<KDefaultFilePathSize> defaultFile = iCalSession->DefaultFileNameL();
-    TChar drive = defaultFile[0];
-    
+    TChar drive = defaultFile[0];    
     TRAP(aStatus, iCalSession->OpenL( defaultFile ));
     MYLOCLOGSTRING1("iCalSession->OpenL() status-%d",aStatus);
     if ( KErrNone == aStatus )
@@ -328,7 +325,7 @@ void CMyLocationsEngine::StartContactsChangeNotifierL()
 {
     __TRACE_CALLSTACK;
    
-    GeocodeUpdate::CreateContactdb();
+    GeocodeUpdate::createContactdb();
     iContactsDb = CContactDatabase::OpenL();
     // Create CContactChangeNotifier object with 'this' object. 
     iContactChangeNotifier = CContactChangeNotifier::NewL(*iContactsDb,this);
@@ -346,7 +343,6 @@ void CMyLocationsEngine::StartLandmarksChangeNotifier()
     SetActive();
 }
 
-
 // -----------------------------------------------------------------------------
 // CMyLocationsEngine::CalChangeNotification()
 // Callback when there is a change in the calendar database.
@@ -357,7 +353,7 @@ void CMyLocationsEngine::CalChangeNotification(
         RArray<TCalChangeEntry>& aChangeItems)
 {
     __TRACE_CALLSTACK;
-    
+       
     if(iCalenderNotification)
     {
         delete iCalenderNotification;
@@ -381,7 +377,13 @@ void CMyLocationsEngine::CalChangeNotification(
 
         case EChangeModify:
         {
-
+            if (iMapTileRequestQueue.Count() > 0)
+            {
+                if (calChangeEntry.iEntryId == iMapTileRequestQueue[0]->iUId)
+                {
+                    return;
+                }
+            }
             TLookupItem lookupItem;
             lookupItem.iSource = ESourceCalendar;
             lookupItem.iUid = calChangeEntry.iEntryId;
@@ -396,6 +398,9 @@ void CMyLocationsEngine::CalChangeNotification(
             lookupItem.iSource = ESourceCalendar;
             lookupItem.iUid = calChangeEntry.iEntryId;
            TRAP_IGNORE( iMaptileDatabase->DeleteEntryL(lookupItem));
+           
+           TRAP_IGNORE( UpdateDatabaseL( NULL, 
+                              calChangeEntry.iEntryId, ESourceCalendar, EEntryDeleted ) );
             break;
         }
         };
@@ -403,6 +408,10 @@ void CMyLocationsEngine::CalChangeNotification(
     }
 }
 
+// -----------------------------------------------------------------------------
+// CMyLocationsEngine::CalenderEntryAddedL()
+// -----------------------------------------------------------------------------
+//
 void CMyLocationsEngine::CalenderEntryAddedL(TCalChangeEntry aCalChangeEntry)
 {
     __TRACE_CALLSTACK;
@@ -474,13 +483,13 @@ void CMyLocationsEngine::HandlelandmarkDatabaseL(
                 {
                     // If the contact is a modified one and it might already exist in
                     // mylocations db, so delete it
-                    iMyLocationsDatabaseManager->UpdateDatabaseL(NULL,
+                    UpdateDatabaseL(NULL,
                             aEvent.iContactId, ESourceContactsPref,
                             EEntryDeleted);
-                    iMyLocationsDatabaseManager->UpdateDatabaseL(NULL,
+                    UpdateDatabaseL(NULL,
                             aEvent.iContactId, ESourceContactsWork,
                             EEntryDeleted);
-                    iMyLocationsDatabaseManager->UpdateDatabaseL(NULL,
+                    UpdateDatabaseL(NULL,
                             aEvent.iContactId, ESourceContactsHome,
                             EEntryDeleted);
                 }
@@ -496,7 +505,7 @@ void CMyLocationsEngine::HandlelandmarkDatabaseL(
                 // if home address available, update Mylocations.  
                 if (homeAddressLm)
                 {
-                    iMyLocationsDatabaseManager->UpdateDatabaseL(homeAddressLm,
+                    UpdateDatabaseL(homeAddressLm,
                             aEvent.iContactId, ESourceContactsHome, changeType);
                     CleanupStack::PopAndDestroy(homeAddressLm);
                 }
@@ -504,7 +513,7 @@ void CMyLocationsEngine::HandlelandmarkDatabaseL(
                 // if work address available, update Mylocations.  
                 if (workAddressLm)
                 {
-                    iMyLocationsDatabaseManager->UpdateDatabaseL(workAddressLm,
+                    UpdateDatabaseL(workAddressLm,
                             aEvent.iContactId, ESourceContactsWork, changeType);
                     CleanupStack::PopAndDestroy(workAddressLm);
                 }
@@ -512,7 +521,7 @@ void CMyLocationsEngine::HandlelandmarkDatabaseL(
                 // if prefered address available, update Mylocations.  
                 if (preferedAddressLm)
                 {
-                    iMyLocationsDatabaseManager->UpdateDatabaseL(
+                    UpdateDatabaseL(
                             preferedAddressLm, aEvent.iContactId,
                             ESourceContactsPref, changeType);
                     CleanupStack::PopAndDestroy(preferedAddressLm);
@@ -529,15 +538,15 @@ void CMyLocationsEngine::HandlelandmarkDatabaseL(
         // the contact is deleted, so delete the corresponding entries from database.
 
         // delete prefered address in database
-        iMyLocationsDatabaseManager->UpdateDatabaseL(NULL, aEvent.iContactId,
+        UpdateDatabaseL(NULL, aEvent.iContactId,
                 ESourceContactsPref, EEntryDeleted);
 
         // delete work address in database
-        iMyLocationsDatabaseManager->UpdateDatabaseL(NULL, aEvent.iContactId,
+        UpdateDatabaseL(NULL, aEvent.iContactId,
                 ESourceContactsWork, EEntryDeleted);
 
         // delete home address in database
-        iMyLocationsDatabaseManager->UpdateDatabaseL(NULL, aEvent.iContactId,
+        UpdateDatabaseL(NULL, aEvent.iContactId,
                 ESourceContactsHome, EEntryDeleted);
     }
 }
@@ -554,19 +563,20 @@ void CMyLocationsEngine::TriggerMaptileRequestL(TContactDbObserverEvent& aEvent)
     TLookupItem lookupItem;
     lookupItem.iUid = aEvent.iContactId;
     // If contact is deleted delete from mylocations db
-    /*    if (aEvent.iType == EContactDbObserverEventContactDeleted)
+        if (aEvent.iType == EContactDbObserverEventContactDeleted)
      {
-     MYLOCLOGSTRING("EContactDbObserverEventContactDeleted" );
-     // delete prefered address in database
-     lookupItem.iSource = ESourceContactsPref;
-     FindEntryAndDeleteL(lookupItem);
+        lookupItem.iSource = ESourceContactsPref;
+        iMaptileDatabase->DeleteEntryL(lookupItem);
 
-     lookupItem.iSource = ESourceContactsWork;
-     FindEntryAndDeleteL(lookupItem);
+        lookupItem.iSource = ESourceContactsWork;
+        iMaptileDatabase->DeleteEntryL(lookupItem);
 
-     lookupItem.iSource = ESourceContactsHome;
-     FindEntryAndDeleteL(lookupItem);
-     }*/
+        lookupItem.iSource = ESourceContactsHome;
+        iMaptileDatabase->DeleteEntryL(lookupItem);
+
+        MYLOCLOGSTRING("EContactDbObserverEventContactDeleted ");
+        return;
+     }
 
     //Get the contact item
     iEventType = aEvent.iType;
@@ -709,26 +719,7 @@ void CMyLocationsEngine::TriggerMaptileRequestL(TContactDbObserverEvent& aEvent)
         }
         // }
         break;
-    }
-    case EContactDbObserverEventContactDeleted:
-    {
-
-        lookupItem.iSource = ESourceContactsPref;
-        iMaptileDatabase->DeleteEntryL(lookupItem);
-
-        lookupItem.iSource = ESourceContactsWork;
-        iMaptileDatabase->DeleteEntryL(lookupItem);
-
-        lookupItem.iSource = ESourceContactsHome;
-        iMaptileDatabase->DeleteEntryL(lookupItem);
-
-        MYLOCLOGSTRING("EContactDbObserverEventContactDeleted ");
-        /*             // the contact is deleted, so delete the corresponding entries from database.
-         TLookupItem lookupItem;
-         lookupItem.iUid = aEvent.iContactId;
-         iMaptileDatabase->DeleteEntryL(lookupItem);*/
-        break;
-    }
+    }    
     case EContactDbObserverEventContactAdded:
     {
         MYLOCLOGSTRING("EContactDbObserverEventContactAdded" );
@@ -850,7 +841,7 @@ void CMyLocationsEngine::RequestMapTileImageL(CPosLandmark& aLandmark,
 TInt CMyLocationsEngine::RequestExecute( CMapTileRequest* aMapTileRequest)
 {
     __TRACE_CALLSTACK;
-    TInt errorCode;
+    TInt errorCode = KErrNone;
     switch (aMapTileRequest->iAddressType)
     {
         case ESourceCalendar:
@@ -867,6 +858,8 @@ TInt CMyLocationsEngine::RequestExecute( CMapTileRequest* aMapTileRequest)
                             aMapTileRequest->iImagePath, this));            
             break;
         }
+        default:
+            break;
     };  
 
     return errorCode;
@@ -1050,19 +1043,6 @@ CPosLandmark* CMyLocationsEngine::GetContactLocationDetailsLC(
 
                     TRAP_IGNORE( landmark->SetLandmarkNameL( sName1 ) );
 
-                    if (aAddressType == EAddressPref) // default/prefered address
-                    {
-                        TRAP_IGNORE( landmark->SetLandmarkDescriptionL(KContactPrefered) );
-                    }
-                    else if (aAddressType == EAddressWork) // work address
-                    {
-                        TRAP_IGNORE( landmark->SetLandmarkDescriptionL(KContactWork) );
-                    }
-                    else // home address
-                    {
-                        TRAP_IGNORE( landmark->SetLandmarkDescriptionL(KContactHome) );
-                    }
-
                     // Set the street
                     TInt adrId = FindContactsField(aContactItem, aAddressType,
                             KUidContactFieldVCardMapADR);
@@ -1184,6 +1164,23 @@ TEntryChangeType CMyLocationsEngine::MapChangeType(TUidSourceType aSrcType,
 
     switch (aSrcType)
     {
+    // if source type is calendar
+    case ESourceCalendar:
+    {
+        switch( aChangeType )
+            {
+            case EChangeAdd:
+                retVal = EEntryAdded;
+                break;
+            case EChangeDelete:
+                retVal =  EEntryDeleted;
+                break;
+            case EChangeModify:
+                retVal =  EEntryModified;
+                break;
+            }
+        break;
+    }
     // if source type is contacts
     case ESourceContactsPref:
     case ESourceContactsWork:
@@ -1236,16 +1233,6 @@ TEntryChangeType CMyLocationsEngine::MapChangeType(TUidSourceType aSrcType,
 }
 
 // -----------------------------------------------------------------------------
-// CMyLocationsEngine::MyLocationsDbManager()
-// Gets handle to mylocations database manager.
-// -----------------------------------------------------------------------------
-//
-CMyLocationsDatabaseManager& CMyLocationsEngine::MyLocationsDbManager()
-{
-    __TRACE_CALLSTACK;
-    return *iMyLocationsDatabaseManager;
-}
-// -----------------------------------------------------------------------------
 // CMyLocationsEngine::RunL()
 // Handles active object's request completion event.
 // -----------------------------------------------------------------------------
@@ -1255,62 +1242,30 @@ void CMyLocationsEngine::RunL()
     __TRACE_CALLSTACK;
     switch (iLmEvent.iEventType)
     {
-    case EPosLmEventLandmarkCreated:
-    case EPosLmEventLandmarkUpdated:
-    {
-        TBuf<KMaxAddressLength> lmAddress;
-        CPosLandmark* readLandmark = iLandmarkDb->ReadLandmarkLC(
-                iLmEvent.iLandmarkItemId);
-
-        if (readLandmark)
+        case EPosLmEventLandmarkCreated:
+        case EPosLmEventLandmarkUpdated:
         {
-            iMyLocationsDatabaseManager->GetLandmarkFullAddress(lmAddress,
-                    readLandmark);
-
-            CPosLandmark* landmark = CPosLandmark::NewL();
-            CleanupStack::PushL(landmark);
-
-            TRAP_IGNORE( landmark->SetLandmarkNameL( lmAddress ));
-
-            TPtrC iconFileName;
-            TInt iconIndex;
-            TInt iconMaskIndex;
-            TInt err = readLandmark->GetIcon(iconFileName, iconIndex,
-                    iconMaskIndex);
-
-            if (err == KErrNone)
-            {
-                TRAP_IGNORE( landmark->SetIconL(
-                                iconFileName, iconIndex, iconMaskIndex ) );
+            CPosLandmark* readLandmark = iLandmarkDb->ReadLandmarkLC(
+                    iLmEvent.iLandmarkItemId);
+    
+            if (readLandmark)
+            {    
+                // update the entry in database.
+                UpdateDatabaseL( readLandmark,
+                        iLmEvent.iLandmarkItemId, ESourceLandmarks, MapChangeType(
+                                ESourceLandmarks, iLmEvent.iEventType ) );
+    
+                CleanupStack::PopAndDestroy(readLandmark);
             }
-
-            // update the entry in mylocations database.
-            iMyLocationsDatabaseManager->UpdateDatabaseL(landmark,
-                    iLmEvent.iLandmarkItemId, ESourceLandmarks, MapChangeType(
-                            ESourceLandmarks, iLmEvent.iEventType));
-
-            CleanupStack::PopAndDestroy(landmark);
-            CleanupStack::PopAndDestroy(readLandmark);
         }
-    }
         break;
-    case EPosLmEventLandmarkDeleted:
-    {
-        // delete the corresponding entries in mylocations database.
-        iMyLocationsDatabaseManager->UpdateDatabaseL(NULL,
-                iLmEvent.iLandmarkItemId, ESourceLandmarks, EEntryDeleted);
-    }
+        case EPosLmEventLandmarkDeleted:
+        {
+            // delete the corresponding entries in mylocations database.
+            UpdateDatabaseL(NULL,
+                    iLmEvent.iLandmarkItemId, ESourceLandmarks, EEntryDeleted);
+        }
         break;
-
-    case EPosLmEventCategoryCreated:
-    {
-        // delete the corresponding entries in mylocations database.
-        iMyLocationsDatabaseManager->UpdateDatabaseL(NULL,
-                iLmEvent.iLandmarkItemId, ESourceLandmarksCategory,
-                MapChangeType(ESourceLandmarksCategory, iLmEvent.iEventType));
-    }
-        break;
-
 
     }
 
@@ -1318,7 +1273,6 @@ void CMyLocationsEngine::RunL()
     StartLandmarksChangeNotifier();
 
 }
-
 // -----------------------------------------------------------------------------
 // CMyLocationsEngine::DoCancel()
 // Implements cancellation of an outstanding request.
@@ -1328,17 +1282,6 @@ void CMyLocationsEngine::DoCancel()
 {
     __TRACE_CALLSTACK;
     iLandmarkDb->CancelNotifyDatabaseEvent();
-}
-
-// -----------------------------------------------------------------------------
-// CMyLocationsEngine::RunError()
-// Implements cancellation of an outstanding request.
-// -----------------------------------------------------------------------------
-//
-TInt CMyLocationsEngine::RunError(TInt /*aError*/)
-{
-    __TRACE_CALLSTACK;
-    return KErrNone;
 }
 
 // -----------------------------------------------------------------------------
@@ -1425,6 +1368,8 @@ void CMyLocationsEngine::HandleMaptileDatabaseL(
         iMaptileDatabase->CreateEntryL(aLookupItem);
 
     }
+    iMyLocationsDatabaseManager->UpdateMapTilePath( aLookupItem.iUid, aLookupItem.iSource, 
+                                            aLookupItem.iFilePath );    
 }
 
 // -----------------------------------------------------------------------------
@@ -1442,21 +1387,29 @@ void CMyLocationsEngine::RestGeoCodeCompleted(TReal aLatitude, TReal aLongitude)
     {
         switch (iMapTileRequestQueue[0]->iAddressType)
         {
-            /*//TODO:
-            case ESourceCalendar:
-            {
-                break;
-            }*/
-            case ESourceContactsPref:
-            case ESourceContactsWork:
-            case ESourceContactsHome:
-            {
-                GeocodeUpdate::UpDate(iMapTileRequestQueue[0]->iUId,
-                        iMapTileRequestQueue[0]->iAddressType, aLatitude,
-                        aLongitude);
-                MYLOCLOGSTRING("Geo code updated into contact db");
-                break;
-            }
+        //TODO:
+        case ESourceCalendar:
+        {
+           
+            CPosLandmark *landmark=NULL;
+            landmark=iMapTileInterface->GetLandMarkDetails();
+            TRAP_IGNORE( UpdateDatabaseL( landmark, iMapTileRequestQueue[0]->iUId,
+                ESourceCalendar,
+                MapChangeType( ESourceCalendar, iMapTileRequestQueue[0]->iEventType ) ) );
+            MYLOCLOGSTRING("Geo-codinate updated to calender db");                     
+            break;
+        }
+        case ESourceContactsPref:
+        case ESourceContactsWork:
+        case ESourceContactsHome:
+        {
+            GeocodeUpdate::updateGeocodeToContactDB(
+                    iMapTileRequestQueue[0]->iUId,
+                    iMapTileRequestQueue[0]->iAddressType, aLatitude,
+                    aLongitude);
+            MYLOCLOGSTRING("Geo-codinate updated to contact db");
+            break;
+        }
         };
 
         
@@ -1464,4 +1417,23 @@ void CMyLocationsEngine::RestGeoCodeCompleted(TReal aLatitude, TReal aLongitude)
 
 }
 
+// -----------------------------------------------------------------------------
+// CMyLocationsEngine::UpdateDatabaseL()
+// -----------------------------------------------------------------------------
+//
+void CMyLocationsEngine::UpdateDatabaseL( CPosLandmark* aLandmark, const TUint32 aUid, 
+        const TUint32 aSourceType, const TEntryChangeType aChangeType )
+{
+    __TRACE_CALLSTACK;
+    Cancel();
+    iMyLocationsDatabaseManager->UpdateDatabaseL( aLandmark, aUid, 
+        aSourceType, aChangeType );
+    if( aSourceType != ESourceLandmarks )
+    {
+        StartLandmarksChangeNotifier();
+    }
+    
+}
+
 //End of file
+

@@ -34,33 +34,26 @@ class LocationPickerContent : public QObject
 public:
 
     // contructor
-    LocationPickerContent(Qt::Orientation aOrientation );
+    LocationPickerContent();
 
     // destructor
     ~LocationPickerContent();
     
-    // locationsNotFound
-    bool locationsFound();
+    //get standard List Model
+    QStandardItemModel* getStandardListModel();
     
-    //get proxy model
-    LocationPickerProxyModel* getListProxyModel();
+    //get standard Grid Model
+    QStandardItemModel* getStandardGridModel();
     
-    //get standard Model
-    QStandardItemModel* getStandardModel();
+    void createNoEntryDisplay( QStandardItemModel *aModel );
     
-    //get data manager
-    LocationPickerDataManager* getDataManager();
-    
-    //get hbgridview proxy model
-    LocationPickerProxyModel* getGridProxyModel();
+    bool populateModel( Qt::Orientation aOrientation );
 
 private:
     Qt::Orientations mOrientation;
-    LocationPickerProxyModel *mListProxyModel;
-    LocationPickerProxyModel *mProxyGridModel;
     LocationPickerDataManager *mDataManager;
-    QStandardItemModel *mModel;
-    bool mLocationsFound;
+    QStandardItemModel *mListModel;
+    QStandardItemModel *mGridModel;
     
 };
 

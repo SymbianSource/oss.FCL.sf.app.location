@@ -20,7 +20,8 @@
 
 #include <e32std.h> 
 #include <e32base.h>
-
+// Header for landmarks db
+#include<EPos_CPosLandmarkDatabase.h>
 #include <maptilegeocoderplugin.h>
 
 
@@ -89,6 +90,13 @@ public:
             const TDesC& aFilePath, MMapTileObserver* aObserver);
     
     /**
+     * Interface for requesting  for a landmark object.
+     * @return CPosLandmark object.
+     */
+    CPosLandmark* GetLandMarkDetails();
+        
+    
+    /**
      * Constructor
      */
     CMapTileInterface();
@@ -107,6 +115,12 @@ private:
      * @param[in] aLongitude Longitude value
      */
 	void GetMapTileL( TReal aLatitude, TReal aLongitude	);
+	
+    /**
+     * Interface for requesting  for a landmark object.
+     * @param[in] aAddressInfo , geo-code address details
+     */
+    void SetLandMarkDetailsL(MAddressInfo& aAddressInfo);
     
 protected: 
 	
@@ -137,6 +151,8 @@ private:
 	HBufC* iFilePath;
 	//Maptile observer
 	MMapTileObserver* iObserver ;
+	//pointer to landmark  from address information.
+	CPosLandmark  *iLandmark;
 
     };
 #endif // MAPTILEINTERFACE_H

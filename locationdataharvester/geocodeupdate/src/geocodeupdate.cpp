@@ -19,7 +19,10 @@
 #include <qcontactmanager.h>
 #include <qtcontacts.h>
 #include <cntdef.h>
-#include <qstring>
+#include <agendautil.h>
+#include <agendaentry.h>
+#include <QString>
+#include <locationservicedefines.h>
 
 #include "geocodeupdate.h"
 #include "mylocationsdefines.h"
@@ -27,9 +30,9 @@
 
 using namespace QTM_NAMESPACE;
 // ----------------------------------------------------------------------------
-// CGeocodeUpdate::CreateContactdb()
+// GeocodeUpdate::createContactdb()
 // ----------------------------------------------------------------------------
-EXPORT_C void GeocodeUpdate::CreateContactdb()
+EXPORT_C void GeocodeUpdate::createContactdb()
 {
     QContactManager* contactManger = NULL;
     MYLOCLOGSTRING("call to create contactManger object and contactdb as well.");
@@ -38,12 +41,12 @@ EXPORT_C void GeocodeUpdate::CreateContactdb()
 }
 
 // ----------------------------------------------------------------------------
-// CGeocodeUpdate::UpDateL()
-// To update contact db with this latitude and longitude value 
+// CGeocodeUpdate::updateGeocodeToContactDB()
+// Geo-cordinate updation to contact db  
 // ----------------------------------------------------------------------------
-EXPORT_C void GeocodeUpdate::UpDate(const TInt32 aCntId,
-        const TInt32 aCntAddressType, const TReal aLatitude,
-        const TReal aLongitude)
+EXPORT_C void GeocodeUpdate::updateGeocodeToContactDB(const quint32 contactId,
+        const int addressType, const double latitude,
+        const double longitude)
 
 {
     __TRACE_CALLSTACK;
@@ -54,10 +57,10 @@ EXPORT_C void GeocodeUpdate::UpDate(const TInt32 aCntId,
 
     MYLOCLOGSTRING("contactManger object is not null .");
     QStringList definitionRestrictions;
-    QContact contact = contactManger->contact(aCntId ,definitionRestrictions);
+    QContact contact = contactManger->contact(contactId ,definitionRestrictions);
     QContactGeoLocation location;
 
-    switch (aCntAddressType)
+    switch (addressType)
     {
     case ESourceContactsPref:
     {
@@ -78,12 +81,30 @@ EXPORT_C void GeocodeUpdate::UpDate(const TInt32 aCntId,
         break;
     }
     }
-    location.setLongitude(aLongitude);
-    location.setLatitude(aLatitude);
+    location.setLongitude(longitude);
+    location.setLatitude(latitude);
     contact.saveDetail(&location);
     contactManger->saveContact(&contact);
     delete contactManger;
 
 }
 
+// ----------------------------------------------------------------------------
+// CGeocodeUpdate::updateGeocodeToCalenderDB()
+// Geo-cordinate updation to contact db  
+// ----------------------------------------------------------------------------
+EXPORT_C void GeocodeUpdate::updateGeocodeToCalenderDB(const ulong calEntryId,
+        const double latitude, const double longitude)
+
+{
+    __TRACE_CALLSTACK;
+    AgendaUtil agendaUtil;
+    AgendaEntry agendaEntry (agendaUtil.fetchById(calEntryId));
+    MYLOCLOGSTRING("agenda entry created from calender id .");
+    AgendaGeoValue geoValue;
+    geoValue.setLatLong(latitude,longitude);
+    MYLOCLOGSTRING("latitude and longitude set to  AgendaGeoValue object.");
+    agendaEntry.setGeoValue(geoValue);
+    agendaUtil.updateEntry(agendaEntry);
+}
 //end of line

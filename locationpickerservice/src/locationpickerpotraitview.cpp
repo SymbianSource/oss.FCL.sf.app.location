@@ -34,10 +34,10 @@
 // ----------------------------------------------------
 // LocationPickerPotraitView::LocationPickerView()
 // ----------------------------------------------------
-LocationPickerPotraitView::LocationPickerPotraitView(HbDocumentLoader* aLoader)
+LocationPickerPotraitView::LocationPickerPotraitView( HbDocumentLoader* aLoader )
     :mDocumentLoader(aLoader),
-    mLocationPickerContent(NULL),
     mLocationPickerCollectionListContent(NULL),
+    mProxyModel(NULL),
     mAllAction(NULL),
     mCollectionAction(NULL),
     mSearchAction(NULL),
@@ -48,7 +48,7 @@ LocationPickerPotraitView::LocationPickerPotraitView(HbDocumentLoader* aLoader)
     mViewType(ELocationPickerContent)
 {   
     // create back action
-    mPotraitBackAction = new HbAction(Hb::BackAction);
+    mPotraitBackAction = new HbAction(Hb::BackNaviAction);
     // add back key action
     setNavigationAction(mPotraitBackAction);
     //connect to slots
@@ -65,7 +65,6 @@ LocationPickerPotraitView::LocationPickerPotraitView(HbDocumentLoader* aLoader)
 LocationPickerPotraitView::~LocationPickerPotraitView()
 {
     delete mCollectionContent;
-    delete mLocationPickerContent;
     delete mLocationPickerCollectionListContent;
     delete mAllAction;
     delete mCollectionAction;
@@ -83,8 +82,7 @@ void LocationPickerPotraitView::backTriggered()
     if(mViewType == ELocationPickerCollectionContent)
     {
         colectionTabTriggered();
-        delete mCollectionContent;
-        mCollectionContent=NULL; 
+        emit collectionContentExited(); 
     }
     else
     {
@@ -97,16 +95,26 @@ void LocationPickerPotraitView::backTriggered()
 // ----------------------------------------------------
 // LocationPickerPotraitView::init()
 // ----------------------------------------------------
-void LocationPickerPotraitView::init(Qt::Orientation aOrientation )
+void LocationPickerPotraitView::init( bool aPopulated, Qt::Orientation aOrientation, QStandardItemModel *aModel )
 {   
+    mModel = aModel;
+    if(aPopulated)
+    {
     // Create Collection List Content
     mLocationPickerCollectionListContent = new LocationPickerCollectionListContent(aOrientation);
-    mLocationPickerContent = new LocationPickerContent(aOrientation);
-
+    //create proxy model
+    mProxyModel = new LocationPickerProxyModel( aOrientation , this  );
+    mProxyModel->setSourceModel(aModel);
+    // set sort properties
+    mProxyModel->setDynamicSortFilter(TRUE);
+    mProxyModel->setSortRole(Qt::DisplayRole);
+    mProxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
+    // sort in ascending order
+    mProxyModel->sort(0, Qt::AscendingOrder); 
+    }
     //Get HbAction items
     mListView = qobject_cast<HbListView*> (mDocumentLoader->findObject(QString(
-            "ListView")));
-
+                   "ListView")));
     //get the action items from docml
     mAllAction = qobject_cast<HbAction*> (mDocumentLoader->findObject(QString(
             "allAction")));
@@ -118,11 +126,11 @@ void LocationPickerPotraitView::init(Qt::Orientation aOrientation )
             QString("ascendingAction")));
     mDescendingAction = qobject_cast<HbAction*> (mDocumentLoader->findObject(
             QString("descendingAction")));
-      if( !mAllAction || !mCollectionAction || !mSearchAction || !mListView || !mAscendingAction || !mDescendingAction)
-      {
-          qFatal("Error Reading Docml");
-      }
-
+    if( !mAllAction || !mCollectionAction || !mSearchAction || !mAscendingAction || !mDescendingAction || !mListView)
+    {
+        qFatal("Error Reading Docml");
+    }
+      
     //connect to slots
     connect(mAscendingAction, SIGNAL(triggered()), this, SLOT(sortAscending()));
     connect(mDescendingAction, SIGNAL(triggered()), this,
@@ -137,54 +145,46 @@ void LocationPickerPotraitView::init(Qt::Orientation aOrientation )
 }
 
 void LocationPickerPotraitView::manageListView()
-{
-    if (!mLocationPickerContent->locationsFound())
+{   
+    //set the appropriate model
+    switch(mViewType)
     {
-        //if no location entries present
-        mListView->setModel(mLocationPickerContent->getStandardModel(),mListItem);
-        disableTabs();
-    }
-    else
-    {   
-        //set the appropriate model
-        switch(mViewType)
-        {
-            case ELocationPickerContent:
-            {   
-                mListItem->setGraphicsSize(HbListViewItem::Thumbnail);
-                mListView->setModel(mLocationPickerContent->getListProxyModel(),mListItem);
-                mAllAction->setChecked(true);
-                mCollectionAction->setChecked(false);
-                mViewType = ELocationPickerContent;
-            }
-                break;
-            case ELocationPickerCollectionListContent:
-            {
-                 mListItem->setGraphicsSize(HbListViewItem::MediumIcon);
-                 mListView->setModel(mLocationPickerCollectionListContent->getStandardModel(),mListItem);
-                 mCollectionAction->setChecked(true);
-                 mAllAction->setChecked(false);
-                 mViewType = ELocationPickerCollectionListContent;
-            }
-                break;
-            case ELocationPickerCollectionContent:
-            {
-                 setCollectionData(mCategoryId);
-                 mCollectionAction->setChecked(true);
-                 mAllAction->setChecked(false);
-                 mViewType = ELocationPickerCollectionContent;
-            }
-                break;
-            default:
-                break;
+        case ELocationPickerContent:
+        {   
+            mListItem->setGraphicsSize(HbListViewItem::Thumbnail);
+            mListView->setModel(mProxyModel,mListItem);
+            mAllAction->setChecked(true);
+            mCollectionAction->setChecked(false);
+            mViewType = ELocationPickerContent;
         }
-        
+        break;
+        case ELocationPickerCollectionListContent:
+        {
+            mListItem->setGraphicsSize(HbListViewItem::MediumIcon);
+            mListView->setModel(mLocationPickerCollectionListContent->getStandardModel(),mListItem);
+            mCollectionAction->setChecked(true);
+            mAllAction->setChecked(false);
+            mViewType = ELocationPickerCollectionListContent;
+        }
+        break;
+        case ELocationPickerCollectionContent:
+        {
+            setCollectionData(mCategoryId);
+            mCollectionAction->setChecked(true);
+            mAllAction->setChecked(false);
+            mViewType = ELocationPickerCollectionContent;
+        }
+        break;
+        default:
+            break;
     }
 }
 
 
-void LocationPickerPotraitView::disableTabs()
+void LocationPickerPotraitView::disableTabs( QStandardItemModel *aModel )
 {
+    //if no location entries present
+    mListView->setModel(aModel,mListItem);
     mAllAction->setDisabled(true);
     mCollectionAction->setDisabled(true);
     mSearchAction->setDisabled(true);
@@ -195,25 +195,31 @@ void LocationPickerPotraitView::disableTabs()
 // -----------------------------------------------------------------------------
 // LocationPickerView::handleActivated()
 // -----------------------------------------------------------------------------
-void LocationPickerPotraitView::handleActivated(const QModelIndex &aIndex)
+void LocationPickerPotraitView::handleActivated( const QModelIndex &aIndex )
 {   
     //handle the activated signal according to model set
     switch(mViewType)
     {
         case ELocationPickerContent:
-        {
-            QModelIndex   index = mLocationPickerContent->getListProxyModel()->mapToSource(
+        {   
+            if(!mProxyModel)
+            {
+            break;
+            }
+            QModelIndex   index = mProxyModel->mapToSource(
                     aIndex);
             quint32 lm = 0;
-            mLocationPickerContent->getDataManager()->getData(index.row(), lm);
+            QStandardItem* item = mModel->item( index.row(), index.column() );
+            QVariant var = item->data( Qt::UserRole );
+            lm = var.toUInt();
             //item selected, complete request
             emit selectItem( lm );
         }
             break;
         case ELocationPickerCollectionListContent:
         {
-            mLocationPickerCollectionListContent->getDataManager()->getData(
-                    aIndex.row(), mCategoryId);
+            mLocationPickerCollectionListContent->getData(
+                    aIndex, mCategoryId );
             mViewType = ELocationPickerCollectionContent;
             //send categoryID to set the collection content
             emit sendCategoryID(mCategoryId);
@@ -221,10 +227,14 @@ void LocationPickerPotraitView::handleActivated(const QModelIndex &aIndex)
             break;
         case ELocationPickerCollectionContent:
         {
+            if(!mCollectionContent->getProxyModel())
+            {
+                break;
+            }
             QModelIndex  index = mCollectionContent->getProxyModel()->mapToSource(
                         aIndex);
             quint32 lm = 0;
-            mCollectionContent->getDataManager()->getData(index.row(), lm);
+            mCollectionContent->getData(index, lm);
             //item selected, complete request
             emit selectItem(lm);
         }
@@ -242,7 +252,7 @@ void LocationPickerPotraitView::sortAscending()
     //check the model set and do sorting accordingly
     if (mViewType == ELocationPickerContent)
     {
-        mLocationPickerContent->getListProxyModel()->sort(0, Qt::AscendingOrder);
+        mProxyModel->sort(0, Qt::AscendingOrder);
     }
     else
     {
@@ -258,7 +268,7 @@ void LocationPickerPotraitView::sortDescending()
     //check the model set and do sorting accordingly
     if (mViewType == ELocationPickerContent)
     {
-        mLocationPickerContent->getListProxyModel()->sort(0, Qt::DescendingOrder);
+        mProxyModel->sort(0, Qt::DescendingOrder);
     }
     else
     {
@@ -283,7 +293,7 @@ void LocationPickerPotraitView::allTabTriggered()
         else
         {
             mListItem->setGraphicsSize(HbListViewItem::Thumbnail);
-            mListView->setModel(mLocationPickerContent->getListProxyModel(),mListItem);
+            mListView->setModel(mProxyModel,mListItem);
             mCollectionAction->setChecked(false);
         }
         mAscendingAction->setEnabled(true);
@@ -338,10 +348,21 @@ void LocationPickerPotraitView::searchTabTriggered()
 // -----------------------------------------------------------------------------
 void LocationPickerPotraitView::setCollectionData( quint32 acategoryId )
 {
-    mCollectionContent
-    = new LocationPickerCollectionContent(this->mainWindow()->orientation() , acategoryId);
+    
+    if(!mCollectionContent)
+    {
+        mCollectionContent
+        = new LocationPickerCollectionContent(Qt::Vertical , acategoryId);
+    }
     mListItem->setGraphicsSize(HbListViewItem::Thumbnail);
-    mListView->setModel(mCollectionContent->getProxyModel(),mListItem);
+    if(mCollectionContent->locationFound())
+    {
+        mListView->setModel(mCollectionContent->getProxyModel(),mListItem);
+    }
+    else
+    {
+        mListView->setModel(mCollectionContent->getStandardModel(),mListItem);
+    }
     mViewType = ELocationPickerCollectionContent;
     //Enable the options
     mAscendingAction->setEnabled(true);
@@ -372,3 +393,17 @@ void LocationPickerPotraitView::setViewType(TViewType aViewType)
 {
     mViewType = aViewType;
 }
+
+
+// -----------------------------------------------------------------------------
+// LocationPickerView::clearContentModel()
+// -----------------------------------------------------------------------------
+void LocationPickerPotraitView::clearContentModel()
+{
+    if(mCollectionContent)
+    {
+    delete mCollectionContent;
+    mCollectionContent = NULL;
+    }
+}
+
