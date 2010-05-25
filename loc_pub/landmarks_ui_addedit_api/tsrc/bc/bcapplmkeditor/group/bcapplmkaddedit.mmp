@@ -22,7 +22,7 @@
 
 
 #if defined(__S60_)
-        // To get the OSEXT_LAYER_SYSTEMINCLUDE-definition
+        // To get the APP_LAYER_SYSTEMINCLUDE-definition
         #include <platform_paths.hrh>
 #endif
 
@@ -31,10 +31,6 @@ TARGETTYPE      dll
 UID             0x1000008D 0x101FB3E3
 
 CAPABILITY      ALL -TCB
-/* Remove comments and replace 0x00000000 with correct vendor id */
-// VENDORID     0x00000000
-/* Remove comments and replace 0x00000000 with correct secure id */
-// SECUREID     0x00000000
 
 //TARGETPATH      ?target_path
 DEFFILE         bcapplmkaddedit.def
@@ -43,7 +39,7 @@ DEFFILE         bcapplmkaddedit.def
 	USERINCLUDE     ../inc 
 
 	#if defined(__S60_)
-	    OSEXT_LAYER_SYSTEMINCLUDE
+	    APP_LAYER_SYSTEMINCLUDE
 	#else // __S60_ not defined
 	    SYSTEMINCLUDE   /epoc32/include 
 	    SYSTEMINCLUDE   /epoc32/include/internal
@@ -54,7 +50,7 @@ DEFFILE         bcapplmkaddedit.def
 	USERINCLUDE     ../inc 
 
 	#if defined(__S60_)
-	    OSEXT_LAYER_SYSTEMINCLUDE
+	    APP_LAYER_SYSTEMINCLUDE
 	#else // __S60_ not defined
 	    SYSTEMINCLUDE   /epoc32/include 
 	    SYSTEMINCLUDE   /epoc32/include/internal
@@ -84,8 +80,7 @@ SOURCE	c12 context_pane_icon.bmp context_pane_icon_mask.bmp \
 			list_icon.bmp list_icon_mask.bmp 
 END
 
-//RESOURCE        resource_file
-//RESOURCE        resource_file2
+
 
 LIBRARY         euser.lib
 LIBRARY         stiftestinterface.lib
@@ -110,30 +105,9 @@ LIBRARY  eposlandmarks.lib
 LIBRARY	 lbs.lib
 LIBRARY	 satinfo.lib
 LIBRARY					LmkCommonUi.lib
-//LIBRARY					eposlmdbmanlib.lib
+
 
 LANG            SC
 
-/*
-START WINS      
-?wins_specific_information
-END
-
-START MARM
-?marm_specific_information
-END
-*/
-// Other possible keywords:
- 
-// DOCUMENT     ?file, that is not compiled, but added to MSVC project workspace (i.e. release notes)
-/*
-START BITMAP ?target
-TARGETPATH   ?emulated_path_on_target_machine
-HEADER
-SOURCE       ?color_depth ?source_bitmap
-END
-*/
-// DEFFILE ?filename
-// AIF ?filename
 
 // End of File
