@@ -63,6 +63,7 @@ public:
 private slots:
     //slot to handle list item actions     
     void handleActivated( const QModelIndex &aIndex );
+    void changeModel();
     //slots to handle menu action items     
     void sortDescending();
     void sortAscending();
@@ -108,6 +109,8 @@ private:
     TViewType mViewType ;
     // get the collection/category id
     quint32 mCategoryId;
+    // model Index
+    QModelIndex mIndex;
 };
 
 

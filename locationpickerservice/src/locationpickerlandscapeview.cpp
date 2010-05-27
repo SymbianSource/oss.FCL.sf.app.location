@@ -23,6 +23,7 @@
 #include <HbGridView>
 #include <HbStyleLoader>
 #include <HbAction>
+#include <HbToolBar>
 
 #include "locationpickerproxymodel.h"
 #include "locationpickerdatamanager.h"
@@ -107,13 +108,22 @@ void LocationPickerLandscapeView::init(Qt::Orientation aOrientation, QStandardIt
      //Get HbAction items
 	 mGridView = qobject_cast<HbGridView*> (mDocumentLoader->findObject(QString(
                   "gridView")));
-      //get the action items from docml
-      mAllAction = qobject_cast<HbAction*> (mDocumentLoader->findObject(QString(
-              "allAction")));
-      mCollectionAction = qobject_cast<HbAction*> (mDocumentLoader->findObject(
-              QString("collectionAction")));
-      mSearchAction = qobject_cast<HbAction*> (mDocumentLoader->findObject(QString(
-              "searchAction")));
+	 HbToolBar* toolbar = new HbToolBar();
+	//Create Action Items
+	 mAllAction = new HbAction();
+	 mAllAction->setIcon(QString("qtg_mono_location"));
+	 mAllAction->setCheckable(true);
+	 mCollectionAction =new HbAction();
+	 mCollectionAction->setIcon(QString("qtg_mono_location_collection"));
+	 mCollectionAction->setCheckable(true);
+	 mSearchAction = new HbAction();
+	 mSearchAction->setIcon(QString("qtg_mono_search"));
+
+	 toolbar->addAction(mAllAction);
+	 toolbar->addAction(mCollectionAction);
+	 toolbar->addAction(mSearchAction);
+	 this->setToolBar(toolbar);
+	 
       mAscendingAction = qobject_cast<HbAction*> (mDocumentLoader->findObject(
               QString("ascendingAction")));
       mDescendingAction = qobject_cast<HbAction*> (mDocumentLoader->findObject(
@@ -143,7 +153,9 @@ void LocationPickerLandscapeView::init(Qt::Orientation aOrientation, QStandardIt
       connect(mGridView, SIGNAL(activated(const QModelIndex &)), this, SLOT(handleActivated(const QModelIndex &)));
 }
 
-
+// -----------------------------------------------------------------------------
+// LocationPickerLandscapeView::manageGridView()
+// -----------------------------------------------------------------------------
 void LocationPickerLandscapeView::manageGridView()
 {
     //set the appropriate model

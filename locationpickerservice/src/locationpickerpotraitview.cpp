@@ -22,6 +22,8 @@
 #include <HbListView>
 #include <HbListViewItem>
 #include <HbAction>
+#include <QTimer>
+#include <HbToolBar>
 
 #include "locationpickerproxymodel.h"
 #include "locationpickerdatamanager.h"
@@ -115,13 +117,21 @@ void LocationPickerPotraitView::init( bool aPopulated, Qt::Orientation aOrientat
     //Get HbAction items
     mListView = qobject_cast<HbListView*> (mDocumentLoader->findObject(QString(
                    "ListView")));
-    //get the action items from docml
-    mAllAction = qobject_cast<HbAction*> (mDocumentLoader->findObject(QString(
-            "allAction")));
-    mCollectionAction = qobject_cast<HbAction*> (mDocumentLoader->findObject(
-            QString("collectionAction")));
-    mSearchAction = qobject_cast<HbAction*> (mDocumentLoader->findObject(QString(
-            "searchAction")));
+    HbToolBar* toolbar = new HbToolBar();
+    //Create Action Items
+    mAllAction = new HbAction();
+    mAllAction->setIcon(QString("qtg_mono_location"));
+    mAllAction->setCheckable(true);
+    mCollectionAction =new HbAction();
+    mCollectionAction->setIcon(QString("qtg_mono_location_collection"));
+    mCollectionAction->setCheckable(true);
+    mSearchAction = new HbAction();
+    mSearchAction->setIcon(QString("qtg_mono_search"));
+    
+    toolbar->addAction(mAllAction);
+    toolbar->addAction(mCollectionAction);
+    toolbar->addAction(mSearchAction);
+    this->setToolBar(toolbar);
     mAscendingAction = qobject_cast<HbAction*> (mDocumentLoader->findObject(
             QString("ascendingAction")));
     mDescendingAction = qobject_cast<HbAction*> (mDocumentLoader->findObject(
@@ -195,7 +205,16 @@ void LocationPickerPotraitView::disableTabs( QStandardItemModel *aModel )
 // -----------------------------------------------------------------------------
 // LocationPickerView::handleActivated()
 // -----------------------------------------------------------------------------
-void LocationPickerPotraitView::handleActivated( const QModelIndex &aIndex )
+void LocationPickerPotraitView::handleActivated(const QModelIndex &aIndex)
+{
+    mIndex = aIndex;
+    QTimer::singleShot(0, this, SLOT(changeModel()));
+}
+
+// -----------------------------------------------------------------------------
+// LocationPickerPotraitView::changeModel()
+// -----------------------------------------------------------------------------
+void LocationPickerPotraitView::changeModel()
 {   
     //handle the activated signal according to model set
     switch(mViewType)
@@ -207,7 +226,7 @@ void LocationPickerPotraitView::handleActivated( const QModelIndex &aIndex )
             break;
             }
             QModelIndex   index = mProxyModel->mapToSource(
-                    aIndex);
+                    mIndex);
             quint32 lm = 0;
             QStandardItem* item = mModel->item( index.row(), index.column() );
             QVariant var = item->data( Qt::UserRole );
@@ -219,7 +238,7 @@ void LocationPickerPotraitView::handleActivated( const QModelIndex &aIndex )
         case ELocationPickerCollectionListContent:
         {
             mLocationPickerCollectionListContent->getData(
-                    aIndex, mCategoryId );
+                    mIndex, mCategoryId );
             mViewType = ELocationPickerCollectionContent;
             //send categoryID to set the collection content
             emit sendCategoryID(mCategoryId);
@@ -232,7 +251,7 @@ void LocationPickerPotraitView::handleActivated( const QModelIndex &aIndex )
                 break;
             }
             QModelIndex  index = mCollectionContent->getProxyModel()->mapToSource(
-                        aIndex);
+                    mIndex);
             quint32 lm = 0;
             mCollectionContent->getData(index, lm);
             //item selected, complete request
@@ -245,7 +264,7 @@ void LocationPickerPotraitView::handleActivated( const QModelIndex &aIndex )
 }
 
 // -----------------------------------------------------------------------------
-// LocationPickerView::sortAscending()
+// LocationPickerPotraitView::sortAscending()
 // -----------------------------------------------------------------------------
 void LocationPickerPotraitView::sortAscending()
 {   
@@ -261,7 +280,7 @@ void LocationPickerPotraitView::sortAscending()
 }
 
 // -----------------------------------------------------------------------------
-// LocationPickerView::sortDescending()
+// LocationPickerPotraitView::sortDescending()
 // -----------------------------------------------------------------------------
 void LocationPickerPotraitView::sortDescending()
 {
@@ -277,7 +296,7 @@ void LocationPickerPotraitView::sortDescending()
 }
 
 // -----------------------------------------------------------------------------
-// LocationPickerView::handleAllTab()
+// LocationPickerPotraitView::handleAllTab()
 // -----------------------------------------------------------------------------
 void LocationPickerPotraitView::allTabTriggered()
 {
@@ -314,7 +333,7 @@ void LocationPickerPotraitView::allTabTriggered()
 }
 
 // -----------------------------------------------------------------------------
-// LocationPickerView::handleCollectionTab()
+// LocationPickerPotraitView::handleCollectionTab()
 // -----------------------------------------------------------------------------
 void LocationPickerPotraitView::colectionTabTriggered()
 {
@@ -336,7 +355,7 @@ void LocationPickerPotraitView::colectionTabTriggered()
 }
 
 // -----------------------------------------------------------------------------
-// LocationPickerView::searchTabTriggered()
+// LocationPickerPotraitView::searchTabTriggered()
 // -----------------------------------------------------------------------------
 void LocationPickerPotraitView::searchTabTriggered()
 {
@@ -344,7 +363,7 @@ void LocationPickerPotraitView::searchTabTriggered()
 }
 
 // -----------------------------------------------------------------------------
-// LocationPickerView::setCollectionData()
+// LocationPickerPotraitView::setCollectionData()
 // -----------------------------------------------------------------------------
 void LocationPickerPotraitView::setCollectionData( quint32 acategoryId )
 {
@@ -371,7 +390,7 @@ void LocationPickerPotraitView::setCollectionData( quint32 acategoryId )
 }
 
 // -----------------------------------------------------------------------------
-// LocationPickerView::setCategoryID()
+// LocationPickerPotraitView::setCategoryID()
 // -----------------------------------------------------------------------------
 void LocationPickerPotraitView::setCategoryID( quint32 aCategoryId  )
 {
@@ -379,7 +398,7 @@ void LocationPickerPotraitView::setCategoryID( quint32 aCategoryId  )
 }
 
 // -----------------------------------------------------------------------------
-// LocationPickerView::getViewType()
+// LocationPickerPotraitView::getViewType()
 // -----------------------------------------------------------------------------
 TViewType LocationPickerPotraitView::getViewType()
 {
@@ -387,7 +406,7 @@ TViewType LocationPickerPotraitView::getViewType()
 }
 
 // -----------------------------------------------------------------------------
-// LocationPickerView::setViewType()
+// LocationPickerPotraitView::setViewType()
 // -----------------------------------------------------------------------------
 void LocationPickerPotraitView::setViewType(TViewType aViewType)
 {
@@ -396,7 +415,7 @@ void LocationPickerPotraitView::setViewType(TViewType aViewType)
 
 
 // -----------------------------------------------------------------------------
-// LocationPickerView::clearContentModel()
+// LocationPickerPotraitView::clearContentModel()
 // -----------------------------------------------------------------------------
 void LocationPickerPotraitView::clearContentModel()
 {

@@ -39,11 +39,6 @@
                 <anchoritem dst="gridView" dstEdge="BOTTOM" spacing="0un" src="" srcEdge="BOTTOM"/>
             </layout>
         </widget>
-        <widget name="viewToolbar" role="HbView:toolBar" type="HbToolBar">
-            <ref object="allAction" role="HbToolBar:addAction"/>
-            <ref object="collectionAction" role="HbToolBar:addAction"/>
-            <ref object="searchAction" role="HbToolBar:addAction"/>
-        </widget>
         <widget name="viewMenu" role="HbView:menu" type="HbMenu">
             <widget name="sortByMenu" role="HbMenu:menu" type="HbMenu">
                 <ref object="ascendingAction" role="HbMenu:addAction"/>
