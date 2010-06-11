@@ -20,13 +20,16 @@
 #define __MYLOCATIONSENGINE_H__
 
 // INCLUDES
-
 // calendar related headers
 #include <calsession.h>
 #include <calentryview.h>
 
 // Header for contact DB
 #include <cntdb.h>
+
+//Qt contacts mobility apis
+#include <qtcontacts.h>
+#include <qcontactmanager.h>
 
 // Header for landmarks db
 #include<EPos_CPosLandmarkDatabase.h>
@@ -37,6 +40,9 @@
 #include "lookupmaptiledb.h"
 #include "addresscomparision.h"
 #include "calendernotification.h"
+#include "mylocationgeotagtimerao.h"
+
+using namespace QTM_NAMESPACE;
 
 /**  
  * This class contains the required data  for maptile image  processing.
@@ -74,7 +80,8 @@ public:
  * This process starts on phone bootup and always runs in the background.
  */
 class CMyLocationsEngine : public CActive, public MCalChangeCallBack2,
-				 public MContactDbObserver, public MMapTileObserver,public MNotifyChange
+				 public MContactDbObserver, public MMapTileObserver,public MNotifyChange,
+				 public MyLocationTimerObserver
 			
 {
     
@@ -130,8 +137,11 @@ public:
      */      
     TEntryChangeType MapChangeType( TUidSourceType aSrcType, TUint32 aChangeType );    
  
-
+#ifdef MYLOCATIONENGINE_UNIT_TEST
+public:
+#else
 private:
+#endif
     
     /**
      * ConstructL.
@@ -146,30 +156,11 @@ private:
     CMyLocationsEngine();
     
     /** Creates a landmark object from contact item's location details and checks whether address available.
-    * @param[in] aContactItem A contact item whose location details needs to be used to create landmark object.
-    * @param[in] aAddressType Mentions the address type ( prefered/work/home ) of the contact item to be used.
-    * @returns A valid landmark object if location in the contact item is validated, NULL otherwise.
+     * @param[in] aContactAddress A contact address whose location details needs to be used to create landmark object.
+     * @returns A valid landmark object if location in the contact item is validated, NULL otherwise.
      */      
-    CPosLandmark* GetContactAddressDetailsLC( const CContactItem *aContactItem, 
-            TContactAddressType aAddressType );
+    CPosLandmark* GetContactAddressDetailsLC( QContactAddress& aContactAddress );
             
-    /** Creates a landmark object from contact item's location details
-    * @param[in] aContactItem A contact item whose location details needs to be used to create landmark object.
-    * @param[in] aAddressType Mentions the address type ( prefered/work/home ) of the contact item to be used.
-    * @returns A valid landmark object if location in the contact item is validated, NULL otherwise.
-    */    
-    CPosLandmark* GetContactLocationDetailsLC( const CContactItem *aContactItem, 
-           TContactAddressType aAddressType );
-
-    /** Finds the contact's field type id
-    * @param[in] aContactItem A contact item whose field details needs to found.
-    * @param[in] aAddressType Mentions the address type ( prefered/work/home ) of the contact item to be used.
-    * @param[in] aField The field type of interest.
-    * @return If found, the index of the field within the field set, or KErrNotFound if not found.
-    */      
-    TInt FindContactsField( const CContactItem *aContactItem, TContactAddressType aAddressType, 
-            TUid aField );
-
     /**
      *  A call back function for calendar change notification
 	 *	@param aChangeItems  List of changes since the last notification.	
@@ -198,9 +189,9 @@ private:
     * @param aEventType  Provides information about the type of request address.
     * @param aLookupItem Provides information about single address of contact.  
     */  
-	void HandleMaptileDatabaseL(TInt aEventType ,
+	void UpdateMaptileDatabaseL(TInt aEventType ,
 	                             TLookupItem& aLookupItem );
-
+	
     /**
      *  Handles active object's request completion event. 
      */
@@ -211,6 +202,7 @@ private:
      */
     void DoCancel();
  
+    
     /** 
      * Requests for map tile image , structure serch.
      * @param aLandmark  Provides information about the address.
@@ -228,6 +220,17 @@ private:
      */
     void RequestMapTileImageL(const TDesC& aAddressDetails,
             const TUidSourceType aAddressType, const TInt32 aUId);
+ 
+    /** 
+     * Checks whether contact has a valid geocoordinates.
+     * @param aContact  Provides all the required information about the contact.
+     * @param aAddressType Provides information about address type .  
+     * @param aLatitude, Latitude information.
+     * @param aLongitude, Longitude information.
+     * @return If geocoordinate available returns TRUE otherwise FALSE
+     */    
+    TBool IsGeoCoordinateAvailable( QContact& aContact, 
+            QString aAddressType, double& aLatitude , double& aLongitude );
     
     /** 
      * Add to maptile request queue.
@@ -250,8 +253,21 @@ private:
     */
     void UpdateDatabaseL( CPosLandmark* aLandmark, const TUint32 aUid, 
             const TUint32 aSourceType, const TEntryChangeType aChangeType );
-
-
+			
+    /** 
+     * Informs the geocode completion
+     */
+    void UpdateGeoCodeToAppDataBase( TReal latitude,TReal longitude );		
+    
+    /** 
+     * Process the pending maptile requests
+     */
+    void ProcessNextMaptileRequest();
+    
+    /**
+     * maptile database manipulation.
+     */
+    void ManipulateMapTileDataBaseL(TLookupItem aLookupItem);
 public:  //From MMapTileObserver
     
     /**
@@ -259,13 +275,23 @@ public:  //From MMapTileObserver
      */ 
     void MapTilefetchingCompleted( TInt aErrCode,const TDesC& aMapTilePath );
     
-    /** 
-     * Informs the geocode completion
+    /**
+     *  Informs the geo codes fetching completion  
      */
-    void RestGeoCodeCompleted( TReal latitude,TReal longitude);
+    void GeoCodefetchingCompleted( TInt aErrCode, const TReal& aLatitude,
+	                                   const TReal& aLongitude, const TDesC& aMapTilePath );
+    
+
     
 public://from MNotifychange
     void NotifyChangeL(TInt &aStatus);
+	
+public: //from MyLocationTimerObserver
+    /** 
+     * Notifies the timer expiry when 3AM timer was started to notify. 
+     */
+    void MyLocationThreeAMTimerExpiredL();
+
     
 private:
 
@@ -307,13 +333,20 @@ private:
     //Maptile image request queue
     RArray<CMapTileRequest*> iMapTileRequestQueue;
     
+    // 3am Timer
+    CLocationGeoTagTimerAO *iMyLocationThreeAMTimer;
+    
     //Flag to check maptilegeocoder plugin availability
     TBool iMaptileGeocoderPluginAvailable;
 	
 	//Maptile image path
     TFileName imageFilePath;
+    
     //Object to listen calender db create notification.    
     CCalenderNotification  *iCalenderNotification;
+    
+    //Contact manager instance for retrieving contact info.
+    QContactManager* iContactManager;
     
 };
 

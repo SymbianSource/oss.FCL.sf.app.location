@@ -43,6 +43,8 @@ const TInt KColumnSource = 2;
 // source type column number
 const TInt KColumnFilePath = 3;
 
+const TInt KColumnMapTileFetchingStatus = 4;
+
 
 /**
  *  Maptile database lookup entry
@@ -64,6 +66,8 @@ public:
     
     // File Path
     TFileName iFilePath;
+    //MK  map tile fetching status
+     TUint32 iFetchingStatus;    
 };
 
 /**

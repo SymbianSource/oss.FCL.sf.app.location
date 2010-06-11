@@ -56,8 +56,7 @@ EXPORT_C void GeocodeUpdate::updateGeocodeToContactDB(const quint32 contactId,
     MYLOCLOGSTRING("contactManger object created .");
 
     MYLOCLOGSTRING("contactManger object is not null .");
-    QStringList definitionRestrictions;
-    QContact contact = contactManger->contact(contactId ,definitionRestrictions);
+    QContact contact = contactManger->contact( contactId );
     QContactGeoLocation location;
 
     switch (addressType)

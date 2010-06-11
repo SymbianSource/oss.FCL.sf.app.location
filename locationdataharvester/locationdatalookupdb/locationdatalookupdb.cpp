@@ -34,7 +34,10 @@ const QString KLocationDataLookupDbName = "c:\\locationdatalookupdb.db";
 // Constructor
 // ---------------------------------------------------------
 //
-LocationDataLookupDb::LocationDataLookupDb( QObject *parent) : QObject(parent)
+LocationDataLookupDb::LocationDataLookupDb( QObject *parent) : 
+        QObject( parent ),
+        mDb( NULL ),
+        mDbOpen( false )
 {
     mDb = new QSqlDatabase();
     *mDb = QSqlDatabase::addDatabase( "QSQLITE" );
@@ -83,7 +86,11 @@ LocationDataLookupDb::~LocationDataLookupDb()
 // ---------------------------------------------------------
 bool LocationDataLookupDb::open()
 {
-    return mDb->open();
+    if( !mDbOpen )
+    {
+        mDbOpen = mDb->open();
+    }
+    return mDbOpen;
 }
 
 // ---------------------------------------------------------
@@ -91,16 +98,17 @@ bool LocationDataLookupDb::open()
 // ---------------------------------------------------------
 void LocationDataLookupDb::close()
 {
-    if( mDb )
+    if( mDbOpen )
         mDb->close();
+    mDbOpen = false;
 }
 
 // ---------------------------------------------------------
 // LocationDataLookupDb::createEntry()
 // ---------------------------------------------------------
-void LocationDataLookupDb::createEntry( const QLookupItem& aLookupItem )
+void LocationDataLookupDb::createEntry( QLookupItem& aLookupItem )
 {
-    if( mDb )
+    if( mDbOpen )
     {
         QSqlQuery query(*mDb);
         query.prepare("INSERT INTO lplookup ("
@@ -153,6 +161,10 @@ void LocationDataLookupDb::createEntry( const QLookupItem& aLookupItem )
         query.bindValue(":iconpath", aLookupItem.mIconPath);
         query.bindValue(":maptile", aLookupItem.mMapTilePath);
         query.exec();
+        
+        QVariant var = query.lastInsertId();
+        aLookupItem.mId = var.toInt();
+        
     }
 }
 
@@ -161,7 +173,7 @@ void LocationDataLookupDb::createEntry( const QLookupItem& aLookupItem )
 // ---------------------------------------------------------
 void LocationDataLookupDb::updateEntryBySourceIdAndType( const QLookupItem& aLookupItem )
 {
-    if( mDb )
+    if( mDbOpen )
     {
         QSqlQuery query(*mDb);
         query.prepare("UPDATE lplookup SET "
@@ -213,7 +225,7 @@ void LocationDataLookupDb::updateEntryBySourceIdAndType( const QLookupItem& aLoo
 void LocationDataLookupDb::updateMaptileBySourceIdAndType( quint32 aSourceId, 
         quint32 aSourceType, QString aImagePath )
 {
-    if( mDb )
+    if( mDbOpen )
     {
         QSqlQuery query(*mDb);
         query.prepare("UPDATE lplookup SET "
@@ -233,7 +245,7 @@ void LocationDataLookupDb::updateMaptileBySourceIdAndType( quint32 aSourceId,
 // ---------------------------------------------------------
 void LocationDataLookupDb::updateEntryById( const QLookupItem& aLookupItem )
 {
-    if( mDb )
+    if( mDbOpen )
     {
         QSqlQuery query(*mDb);
         query.prepare("UPDATE lplookup SET "
@@ -283,7 +295,7 @@ void LocationDataLookupDb::updateEntryById( const QLookupItem& aLookupItem )
 // ---------------------------------------------------------
 void LocationDataLookupDb::deleteEntryBySourceIdAndType( const QLookupItem& aLookupItem )
 {
-    if( mDb )
+    if( mDbOpen )
     {
         QSqlQuery query(*mDb);
         query.prepare( "DELETE FROM lplookup "
@@ -297,27 +309,11 @@ void LocationDataLookupDb::deleteEntryBySourceIdAndType( const QLookupItem& aLoo
 }
 
 // ---------------------------------------------------------
-// LocationDataLookupDb::deleteEntryById()
-// ---------------------------------------------------------
-void LocationDataLookupDb::deleteEntryById( const QLookupItem& aLookupItem )
-{
-    if( mDb )
-    {
-        QSqlQuery query(*mDb);
-        query.prepare( "DELETE FROM lplookup "
-                       "WHERE id = ?" );
-    
-        query.addBindValue( aLookupItem.mId );
-        query.exec();
-    }
-}
-
-// ---------------------------------------------------------
 // LocationDataLookupDb::findEntryBySourceIdAndType()
 // ---------------------------------------------------------
 bool LocationDataLookupDb::findEntryBySourceIdAndType( QLookupItem& aLookupItem )
 {
-    if( mDb )
+    if( mDbOpen )
     {
         QSqlQuery query(*mDb);
         query.prepare( "SELECT * FROM lplookup "    
@@ -343,7 +339,7 @@ bool LocationDataLookupDb::findEntryBySourceIdAndType( QLookupItem& aLookupItem 
 // ---------------------------------------------------------
 bool LocationDataLookupDb::findEntryById( QLookupItem& aLookupItem )
 {
-    if( mDb )
+    if( mDbOpen )
     {
         QSqlQuery query(*mDb);
         query.prepare( "SELECT * FROM lplookup "    
@@ -371,7 +367,7 @@ bool LocationDataLookupDb::findEntryById( QLookupItem& aLookupItem )
 void LocationDataLookupDb::findEntriesByLandmarkId( const quint32 aLandmarkId, 
         QList<QLookupItem>& aLookupItemArray )
 {
-    if( mDb )
+    if( mDbOpen )
     {
 
         QSqlQuery query(*mDb);
@@ -389,36 +385,12 @@ void LocationDataLookupDb::findEntriesByLandmarkId( const quint32 aLandmarkId,
         } 
     }   
 }
-
-// ---------------------------------------------------------
-// LocationDataLookupDb::findEntriesBySourceType()
-// ---------------------------------------------------------
-void LocationDataLookupDb::findEntriesBySourceType( const quint32 aSourceType, 
-        QList<QLookupItem>& aLookupItemArray )
-{
-    if( mDb )
-    {
-        QSqlQuery query(*mDb);
-        query.prepare( "SELECT * FROM lplookup "    
-                       "WHERE sourceType = ?" );
-        query.addBindValue( aSourceType );
-        query.exec();
-       
-        while( query.next() )
-        {    
-            QLookupItem lookupItem;
-            fillLookupEntry( query, lookupItem );
-            aLookupItemArray.append( lookupItem );
-        }
-    }
-}
-
 // ---------------------------------------------------------
 // LocationDataLookupDb::getEntries()
 // ---------------------------------------------------------
 void LocationDataLookupDb::getEntries( QList<QLookupItem>& aLookupItemArray, const quint32 aCollectionId )
 {
-    if( mDb )
+    if( mDbOpen )
     {
         QSqlQuery query(*mDb);
         if( aCollectionId == ESourceLandmarksContactsCat )

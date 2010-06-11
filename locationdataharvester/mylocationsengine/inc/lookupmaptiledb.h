@@ -79,7 +79,13 @@ public:
     * Deletes an entry from the lookup table.
     * @param[in] aLookupItem The lookup item to be deleted from the database.
     */
-    void DeleteEntryL( const TLookupItem& aLookupItem );
+    void DeleteEntryL( TLookupItem& aLookupItem );
+    
+    /**
+    * Deletes maptile from the repository if the ref to that maptile in the db reaches one
+    * @param[in] aLookupItem The lookup item containing the path to the maptile
+    */
+    void DeleteMapTileL( const TLookupItem& aLookupItem );
 
     /**
     * Finds an entry in the lookup table.
@@ -88,7 +94,16 @@ public:
     * @return ETrue if found, else EFalse
     */
     TBool FindEntryL( TLookupItem& aLookupItem);
+    
+    /**
+    * Finds an entry in the lookup table for the given maptile name.
+    * @param[in] aFilePath The lookup item to be found in the database. maptile file path is passed
+    * @return ETrue if found, else EFalse
+    */
+    TBool FindEntryByFilePathL(const TDesC& aFilePath);
 
+    void FindEntriesByMapTileFetchingStateL(const TUint32 aFetchingState,
+            RArray<TLookupItem>& aLookupItemArray);
 
 
 private:

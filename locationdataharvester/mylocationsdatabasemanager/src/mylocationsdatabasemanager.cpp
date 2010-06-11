@@ -11,26 +11,27 @@
 *
 * Contributors:
 *
-* Description: Database manager implementation for location picker and
-*              maptile service.
+* Description: Database manager implementation 
 *
 */
 
-#include <EPos_CPosLandmark.h>
 #include <EPos_CPosLandmarkCategory.h>
 #include <EPos_CPosLmTextCriteria.h>
 #include <EPos_CPosLandmarkSearch.h>
 #include <EPos_CPosLmDatabaseManager.h>
 #include <EPos_CPosLmNearestCriteria.h>
+#include <EPos_CPosLandmarkDatabase.h>
+#include <EPos_CPosLmCategoryManager.h>
 
 #include <lbsposition.h>
-//#include <mylocations.rsg>
 #include <barsread.h>
 #include <barsc.h>
 #include <locationservicedefines.h>
 #include "mylocationsdatabasemanager.h"
 #include "mylocationlogger.h"
 #include "mylocationsdefines.h"
+
+#include <locationdatalookupdb.h>
 
 // separator
 _LIT( KSeparator, ",");
@@ -45,20 +46,19 @@ const QString KQStringSpace = " ";
 // Used to set nearest landmarks search distance criteria
 const TUint32 KSearchCriteriaDistance = 100; 
 
+// Maximum string length of landmark address.
+const TUint32 KMaxAddressLength = 255; 
+
 // -----------------------------------------------------------------------------
 // CMyLocationsDatabaseManager::ConstructL()
 // 2nd phase constructor.
 // -----------------------------------------------------------------------------
 //
-void CMyLocationsDatabaseManager::ConstructL()
+EXPORT_C void CMyLocationsDatabaseManager::ConstructL()
 {
     __TRACE_CALLSTACK;//Open and intialize Landmark DB
     iLandmarkDb = CPosLandmarkDatabase::OpenL();
     ExecuteAndDeleteLD(iLandmarkDb->InitializeL());
-
-    // create landmarks lookup database.
-    iLandmarksLookupDb = CLookupDatabase::NewL(KLandmarksLookupDatabaseName);
-    User::LeaveIfError( iLandmarksLookupDb->Open() );
  
     iLocationAppLookupDb = new LocationDataLookupDb();
     if( !iLocationAppLookupDb->open() )
@@ -83,8 +83,8 @@ void CMyLocationsDatabaseManager::ConstructL()
 // Default constructor.
 // -----------------------------------------------------------------------------
 //
-CMyLocationsDatabaseManager::CMyLocationsDatabaseManager() : iLandmarkDb( NULL ),
-                iLmContactsCatId( 0 ), iLandmarksLookupDb( NULL ), 
+EXPORT_C  CMyLocationsDatabaseManager::CMyLocationsDatabaseManager() : iLandmarkDb( NULL ),
+                iLmContactsCatId( 0 ), //iLandmarksLookupDb( NULL ), 
                 iLocationAppLookupDb( NULL ),
                 iLandmarksCatManager( NULL )
 {
@@ -98,11 +98,7 @@ CMyLocationsDatabaseManager::CMyLocationsDatabaseManager() : iLandmarkDb( NULL )
 CMyLocationsDatabaseManager::~CMyLocationsDatabaseManager()
 {
     __TRACE_CALLSTACK;// delete member variables.
-    if (iLandmarksLookupDb)
-    {
-        iLandmarksLookupDb->Close();
-        delete iLandmarksLookupDb;
-    }
+
     if (iLocationAppLookupDb)
     {
         iLocationAppLookupDb->close();
@@ -153,8 +149,8 @@ TUint32 CMyLocationsDatabaseManager::AddMylocationsCategoryL( const TDesC&  aCat
 // addition/modification/deletion.
 // -----------------------------------------------------------------------------
 //
-void CMyLocationsDatabaseManager::UpdateDatabaseL(CPosLandmark* aLandmark,
-        const TUint32 aUid, const TUint32 aSourceType, const TEntryChangeType aChangeType)
+EXPORT_C void CMyLocationsDatabaseManager::UpdateDatabaseL(CPosLandmark* aLandmark,
+        const TUint32 aUid, const TUint32 aSourceType, const TUint32 aChangeType)
 {
     __TRACE_CALLSTACK;//open the lookup database
     switch (aChangeType)
@@ -846,7 +842,7 @@ void CMyLocationsDatabaseManager::HandleLandmarkModificationL(
 // Gets the comma separated full address of the given landmark.
 // -----------------------------------------------------------------------------
 //
-void CMyLocationsDatabaseManager::GetLandmarkFullAddress(
+EXPORT_C void CMyLocationsDatabaseManager::GetLandmarkFullAddress(
         TBuf<KMaxAddressLength>& aLandmarkAddress,
         const CPosLandmark* aLandmark)
 {
@@ -1080,7 +1076,7 @@ CPosLandmark* CMyLocationsDatabaseManager::CreateLandmarkItemLC( const QLookupIt
 // CMyLocationsDatabaseManager::UpdateMapTilePath()
 // -----------------------------------------------------------------------------
 //
-void CMyLocationsDatabaseManager::UpdateMapTilePath( TUint32 aSourceId, TUint32 aSourceType, 
+EXPORT_C void CMyLocationsDatabaseManager::UpdateMapTilePath( TUint32 aSourceId, TUint32 aSourceType, 
                                             TFileName aFilePath )
 {
     QString filePath = QString( (QChar*)aFilePath.Ptr(), aFilePath.Length() );

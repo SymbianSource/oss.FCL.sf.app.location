@@ -43,13 +43,16 @@ public:
     */    
     virtual void MapTilefetchingCompleted( TInt aErrCode,const TDesC& aMapTilePath ) = 0;
     
-    /** Informs once geocoding completed 
-     * 
-     * @param[in] aLatitude converted latitude value
-     * @param[in] aLongitude converted longitude value
-     * 
-     */       
-    virtual void RestGeoCodeCompleted( TReal aLatitude,TReal aLongitude ) = 0;
+    /** Informs once geo coordinates  retrived from the REST server
+    * 
+    * @param[in] aErrCode Error code
+    * @param[in] aMapTilePath Path where the maptile image staroed
+    * 
+    */    
+    virtual void GeoCodefetchingCompleted( TInt aErrCode, const TReal& aLatitude,
+	                const TReal& aLongitude, const TDesC& aMapTilePath ) = 0;
+    
+  
     
     };
 
@@ -70,23 +73,24 @@ public:
     static CMapTileInterface* NewL(); 
     
     /**
-     * Interface for requesting maptile image for a landmark object
+     * Interface for requesting GEO fields a landmark object containing address
      * 
      * @param[in] aLandmark Landmark containing address details
      * @param[in] aFilePath Path where the maptile image to be stored
      * @param[in] aObserver Observer for callback notification
+     * 
      */
-    void GetMapTileImageL(  CPosLandmark*  aLandmark , 
-            const TDesC& aFilePath,   MMapTileObserver* aObserver  );
+    void GetGeoCodeFromAddressL(  CPosLandmark*  aLandmark , 
+            const TDesC& aFilePath, MMapTileObserver* aObserver  );
     
     /**
-     * Interface for requesting maptile image for a landmark object
+     * Interface for requesting GEO fields for the address
      * 
      * @param[in] aAddressDetails containing address details
      * @param[in] aFilePath Path where the maptile image to be stored
      * @param[in] aObserver Observer for callback notification
      */
-    void GetMapTileImageL(const TDesC& aAddressDetails,
+    void GetGeoCodeFromAddressL(const TDesC& aAddressDetails,
             const TDesC& aFilePath, MMapTileObserver* aObserver);
     
     /**
@@ -105,16 +109,19 @@ public:
      * Destructor
      */
     ~CMapTileInterface();
+    
+    /**
+     * Function for Retrieving maptile     
+     */
+    void GetMapTileL( const TReal& aLatitude, const TReal& aLongitude );    
 
 private:
-
-    /**
-     * Function for Retrieving latitude & longitude information
-     * 
-     * @param[in] aLatitude latitude value
-     * @param[in] aLongitude Longitude value
-     */
-	void GetMapTileL( TReal aLatitude, TReal aLongitude	);
+	
+	/**
+	 * Converts geocoordinates to maptile pixel coordinate and update the 
+	 * image saving file path to MaptileFolder\RowCol.png
+	 */	
+	void UpdateFilePathL( const TReal& aLatitude, const TReal& aLongitude );
 	
     /**
      * Interface for requesting  for a landmark object.

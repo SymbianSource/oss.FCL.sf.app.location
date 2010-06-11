@@ -23,8 +23,10 @@ file=ABI_DIR\BUILD_DIR\mylocationsengine.exe PROGRAMS_DIR\mylocationsengine.exe
 file=ABI_DIR\BUILD_DIR\geocodeupdate.dll PROGRAMS_DIR\geocodeupdate.dll
 file=ABI_DIR\BUILD_DIR\maptileservice.dll PROGRAMS_DIR\maptileservice.dll
 file=ABI_DIR\BUILD_DIR\locationdatalookupdb.dll PROGRAMS_DIR\locationdatalookupdb.dll
+file=ABI_DIR\BUILD_DIR\mylocationsdatabasemanager.dll PROGRAMS_DIR\mylocationsdatabasemanager.dll
+
 
 //Resource file(s) for Mylocations application (mylocations.iby)
-data=DATAZ_\APP_RESOURCE_DIR\mylocations.rsc APP_RESOURCE_DIR\mylocations.rsc
+data=DATAZ_\APP_RESOURCE_DIR\mylocations.rsc APP_RESOURCE_DIR\mylocationsengine.rsc
 
 #endif

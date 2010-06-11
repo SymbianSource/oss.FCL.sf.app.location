@@ -1,0 +1,7 @@
+EXPORTS
+	?GetLandmarkFullAddress@CMyLocationsDatabaseManager@@QAEXAAV?$TBuf@$0PP@@@PBVCPosLandmark@@@Z @ 1 NONAME ; void CMyLocationsDatabaseManager::GetLandmarkFullAddress(class TBuf<255> &, class CPosLandmark const *)
+	?ConstructL@CMyLocationsDatabaseManager@@QAEXXZ @ 2 NONAME ; void CMyLocationsDatabaseManager::ConstructL(void)
+	?UpdateMapTilePath@CMyLocationsDatabaseManager@@QAEXKKV?$TBuf@$0BAA@@@@Z @ 3 NONAME ; void CMyLocationsDatabaseManager::UpdateMapTilePath(unsigned long, unsigned long, class TBuf<256>)
+	?UpdateDatabaseL@CMyLocationsDatabaseManager@@QAEXPAVCPosLandmark@@KKK@Z @ 4 NONAME ; void CMyLocationsDatabaseManager::UpdateDatabaseL(class CPosLandmark *, unsigned long, unsigned long, unsigned long)
+	??0CMyLocationsDatabaseManager@@QAE@XZ @ 5 NONAME ; CMyLocationsDatabaseManager::CMyLocationsDatabaseManager(void)
+

@@ -21,6 +21,14 @@
 
 _LIT( KSelectAllFrom, "SELECT * FROM " );
 _LIT(KQueryToDB,"SELECT * FROM cntmaptilelookuptable WHERE cntuid = %d AND source = %d");
+_LIT( KSelectfilepathFrom, "SELECT filepath FROM " );
+_LIT(KQueryMaptile, "SELECT filepath FROM cntmaptilelookuptable WHERE filepath = '%S'");
+// string 'where'
+_LIT( KStringWhere, " WHERE " );
+// string ' = '
+_LIT( KStringEqual, " = " );
+
+_LIT(KQueryByMaptileFetchingState,"SELECT * FROM cntmaptilelookuptable WHERE fetchingstatus = %d");
 
 // -----------------------------------------------------------------------------
 // CLookupMapTileDatabase::CLookupMapTileDatabase()
@@ -148,6 +156,11 @@ void CLookupMapTileDatabase::CreateTableL(RDbDatabase& aDatabase)
 
     // add file path type column
     columns->AddL(TDbCol(NCntColFilePath, EDbColText16));
+    
+    //MK 
+    // add map tile fetching status to the db
+    columns->AddL(TDbCol(MapTileFetchingStatus, EDbColUint32));
+    
 
     // Create a table
     User::LeaveIfError(aDatabase.CreateTable(KMapTileLookupTable, *columns));
@@ -187,6 +200,7 @@ void CLookupMapTileDatabase::CreateEntryL(const TLookupItem& aLookupItem)
     myView.SetColL(KColumncntUid, aLookupItem.iUid);
     myView.SetColL(KColumnSource, aLookupItem.iSource);
     myView.SetColL(KColumnFilePath, aLookupItem.iFilePath);
+    myView.SetColL(KColumnMapTileFetchingStatus, aLookupItem.iFetchingStatus); //MK
 
     myView.PutL();
 
@@ -227,6 +241,7 @@ void CLookupMapTileDatabase::UpdateEntryL(const TLookupItem& aLookupItem)
         // found the entry. update it.
         myView.UpdateL();
         myView.SetColL(KColumnFilePath, aLookupItem.iFilePath);
+        myView.SetColL(KColumnMapTileFetchingStatus, aLookupItem.iFetchingStatus); //MK
         myView.PutL();
     }
 
@@ -242,7 +257,7 @@ void CLookupMapTileDatabase::UpdateEntryL(const TLookupItem& aLookupItem)
 // Deletes an entry from the lookup table.
 // -----------------------------------------------------------------------------
 //
-void CLookupMapTileDatabase::DeleteEntryL(const TLookupItem& aLookupItem)
+void CLookupMapTileDatabase::DeleteEntryL(TLookupItem& aLookupItem)
 {
     __TRACE_CALLSTACK;// Create the query to find the row to be deleted.
 
@@ -274,7 +289,8 @@ void CLookupMapTileDatabase::DeleteEntryL(const TLookupItem& aLookupItem)
         myView.GetL();
         if (aLookupItem.iUid == myView.ColUint(KColumncntUid))
         {
-            ret = iFsSession.Delete(myView.ColDes16(KColumnFilePath));
+            aLookupItem.iFilePath.Copy(myView.ColDes16(KColumnFilePath));
+            
         }
         myView.DeleteL();
     }
@@ -285,6 +301,92 @@ void CLookupMapTileDatabase::DeleteEntryL(const TLookupItem& aLookupItem)
     iItemsDatabase.Compact();
 
     Close();
+}
+
+// -----------------------------------------------------------------------------
+// CLookupMapTileDatabase::DeleteMapTileL()
+// Deletes an maptile if there's no reference to maptile in lookupdb
+// -----------------------------------------------------------------------------
+//
+void CLookupMapTileDatabase::DeleteMapTileL( const TLookupItem& aLookupItem)
+{
+    __TRACE_CALLSTACK;// Create the query to find the row to be deleted.
+
+    TFileName queryBuffer;    
+    queryBuffer.Format(KQueryMaptile, &aLookupItem.iFilePath);
+    
+    TInt ret = Open();
+    if (ret != KErrNone)
+    {
+       Close();
+       Open();      
+    }
+    
+    iItemsDatabase.Begin();
+
+    RDbView myView;
+    // query buffer finds only the selected item row.
+    myView.Prepare(iItemsDatabase, TDbQuery(queryBuffer));
+    CleanupClosePushL(myView);
+
+    myView.EvaluateAll();
+
+    // positions the cursor on the first row of the rowset
+    myView.FirstL();
+
+    // Delete if no reference to maptile
+    if (!myView.AtRow())
+    {
+        ret = iFsSession.Delete(aLookupItem.iFilePath);     
+    }
+        
+    CleanupStack::PopAndDestroy(&myView); // myView
+
+    Close();
+}
+
+
+// -----------------------------------------------------------------------------
+// CLookupMapTileDatabase::FindEntriesByMapTileFetchingStatusL()
+// Finds a list of lookup items given a landmark uid.
+// -----------------------------------------------------------------------------
+//
+void CLookupMapTileDatabase::FindEntriesByMapTileFetchingStateL(const TUint32 aFetchingState,
+        RArray<TLookupItem>& aLookupItemArray)
+{
+    __TRACE_CALLSTACK;// Create a query to find the item.
+    TFileName queryBuffer;
+    queryBuffer.Format(KQueryByMaptileFetchingState,aFetchingState);
+    
+    TInt ret = Open();
+        if (ret != KErrNone)
+        {
+           Close();
+           ret= Open();
+           
+        }
+      iItemsDatabase.Begin();
+
+    
+    // Create a view of the table with the above query.
+    RDbView myView;
+    myView.Prepare(iItemsDatabase, TDbQuery(queryBuffer));
+    CleanupClosePushL(myView);
+    myView.EvaluateAll();
+    myView.FirstL();
+
+    while (myView.AtRow())
+    {
+        // Item found. get the details.
+        myView.GetL();
+        TLookupItem newItem;
+        newItem.iUid = myView.ColUint(KColumnUid);
+        newItem.iSource = myView.ColUint(KColumnSource);
+        aLookupItemArray.Append(newItem);
+        myView.NextL();
+    }
+
+    CleanupStack::PopAndDestroy(&myView); // myView
 }
 
 // -----------------------------------------------------------------------------
@@ -320,10 +422,6 @@ TBool CLookupMapTileDatabase::FindEntryL(TLookupItem& aLookupItem)
     {
         // Item found. get the details.
         myView.GetL();
-        if (aLookupItem.iUid == myView.ColUint(KColumncntUid))
-        {
-            aLookupItem.iFilePath.Copy(myView.ColDes16(KColumnFilePath));
-        }
         retVal = ETrue;
     }
 
@@ -331,5 +429,57 @@ TBool CLookupMapTileDatabase::FindEntryL(TLookupItem& aLookupItem)
     Close();
     return retVal;
 }
+
+// -----------------------------------------------------------------------------
+// CLookupMapTileDatabase::FindEntryByFIlePathLL()
+// Finds an entry in the lookup table for maptile image file
+// -----------------------------------------------------------------------------
+//
+TBool CLookupMapTileDatabase::FindEntryByFilePathL(const TDesC& aFilePath)
+{
+    __TRACE_CALLSTACK;// used to store return value
+    TBool retVal = EFalse;
+   
+    TInt ret = Open();
+    if (ret != KErrNone)
+    {
+        Close();
+        Open();
+       
+    }
+    
+    iItemsDatabase.Begin();
+    
+    // Create a query to find the item.
+    TFileName queryBuffer;
+    _LIT(KFormatSpec, "%S%S%S%S%S'%S'");
+    
+    queryBuffer.Format(KFormatSpec, 
+        &KSelectfilepathFrom(), 
+        &KMapTileLookupTable(),
+        &KStringWhere(),
+        &NCntColFilePath(),
+        &KStringEqual(),
+        &aFilePath);
+    
+    // Create a view of the table with the above query.
+    RDbView myView;
+    TInt retPrep = myView.Prepare(iItemsDatabase, TDbQuery(queryBuffer));
+    CleanupClosePushL(myView);
+    myView.EvaluateAll();
+    myView.FirstL();
+
+    if (myView.AtRow())
+    {
+        // Item found, return true
+        retVal = ETrue;
+    }
+
+    CleanupStack::PopAndDestroy(&myView); // myView
+    Close();
+
+    return retVal;
+}
+
 // End of file
 

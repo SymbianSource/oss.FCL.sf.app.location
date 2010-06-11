@@ -377,15 +377,16 @@ void LocationPickerPotraitView::setCollectionData( quint32 acategoryId )
     if(mCollectionContent->locationFound())
     {
         mListView->setModel(mCollectionContent->getProxyModel(),mListItem);
+        //Enable the options
+        mAscendingAction->setEnabled(true);
+        mDescendingAction->setEnabled(true);
     }
     else
     {
         mListView->setModel(mCollectionContent->getStandardModel(),mListItem);
     }
     mViewType = ELocationPickerCollectionContent;
-    //Enable the options
-    mAscendingAction->setEnabled(true);
-    mDescendingAction->setEnabled(true);
+    
     mCollectionAction->setChecked(true);
 }
 

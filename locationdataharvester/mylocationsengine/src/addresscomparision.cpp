@@ -19,37 +19,36 @@
 #include "mylocationlogger.h"
 #include "addresscomparision.h"
 
-
+// -----------------------------------------------------------------------------
+// CAddressComparision::NewL()
+// -----------------------------------------------------------------------------
+//
 CAddressComparision* CAddressComparision::NewL()
 {
     CAddressComparision* self = new (ELeave) CAddressComparision();
     return self;
 }
-
+// -----------------------------------------------------------------------------
+// CAddressComparision::CAddressComparision()
+// -----------------------------------------------------------------------------
+//
 CAddressComparision::CAddressComparision()
 {
 
 }
-
+// -----------------------------------------------------------------------------
+// CAddressComparision::IsAddressChangedL()
 // Need to enhance the functionality for address comparison
+// -----------------------------------------------------------------------------
+//
+
 TBool CAddressComparision::IsAddressChangedL(const CPosLandmark& /*aLandmarks*/,
-        const TInt32 aCntId, const TUidSourceType aAddressType)
+        const TInt32 /*aCntId*/, const TUidSourceType/* aAddressType*/)
 {
     __TRACE_CALLSTACK;
     
     
     TBool addressChanged = ETrue;
-    CLookupDatabase* lookupdb = NULL;
-    lookupdb = CLookupDatabase::NewLC(KMylocationsLookupDatabaseName);
-
-    TLookupItem lookupItem;
-    lookupItem.iUid = aCntId;
-    lookupItem.iSource = aAddressType;
-    User::LeaveIfError(lookupdb->Open());
-    addressChanged=lookupdb->FindEntryL(lookupItem);
-	addressChanged=ETrue;
-    lookupdb->Close();
-    CleanupStack::PopAndDestroy(lookupdb);
     return addressChanged;//addressChanged;
 }
 

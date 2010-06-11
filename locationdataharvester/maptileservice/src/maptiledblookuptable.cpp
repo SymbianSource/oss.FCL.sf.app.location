@@ -32,6 +32,8 @@ _LIT( KStringEqual, " = " );
 _LIT( KStringAnd, " AND " );
 
 
+
+
 // -----------------------------------------------------------------------------
 // CLookupMapTileDatabase::CLookupMapTileDatabase()
 // Default constructor.

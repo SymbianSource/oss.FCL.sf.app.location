@@ -314,15 +314,16 @@ void LocationPickerLandscapeView::setCollectionData( quint32 aCategoryId )
     if(mCollectionContent->locationFound())
     {
         mGridView->setModel(mCollectionContent->getProxyModel(),mGridViewItem);
+        //Enable the options
+        mAscendingAction->setEnabled(true);
+        mDescendingAction->setEnabled(true);
     }
     else
     {
         mGridView->setModel(mCollectionContent->getStandardModel(),mGridViewItem);
     }
     mViewType = ELocationPickerCollectionContent;
-    //Enable the options
-    mAscendingAction->setEnabled(true);
-    mDescendingAction->setEnabled(true);
+    
     mCollectionAction->setChecked(true);
 }
 

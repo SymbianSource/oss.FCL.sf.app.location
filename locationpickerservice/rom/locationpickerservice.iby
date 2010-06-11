@@ -22,5 +22,7 @@
 file=ABI_DIR/BUILD_DIR/locationpickerservice.exe                   PROGRAMS_DIR/locationpickerservice.exe
 data=ZPRIVATE/10003a3f/import/apps/locationpickerservice_reg.rsc		/private/10003a3f/import/apps/locationpickerservice_reg.rsc	
 data=DATAZ_/resource/apps/locationpickerservice.rsc		/resource/apps/locationpickerservice.rsc
+// Localizations
+data=DATAZ_\QT_TRANSLATIONS_DIR\lilpicker_en.qm     QT_TRANSLATIONS_DIR\lilpicker_en.qm
 
 #endif // __LOCATION_PICKER_SERVICE_IBY__

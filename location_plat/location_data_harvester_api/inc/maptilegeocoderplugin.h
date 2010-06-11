@@ -133,8 +133,9 @@ public:
      * @param aSize requested maptile size
      *
      */
-    TMapTileParam( const TReal aLatitude, const TReal aLongitude, const TInt aZoom, const TInt aSize ):
-        iLattitude( aLatitude ), iLongitude( aLongitude ), iZoomLevel( aZoom ), iSize( aSize )
+    TMapTileParam( const TReal aLatitude, const TReal aLongitude, 
+            const TInt aZoom, const TInt aWidth, const TInt aHeight ): iLattitude( aLatitude ),
+            iLongitude( aLongitude ), iZoomLevel( aZoom ), iWidth( aWidth ), iHeight( aHeight )
     {
     }
 		
@@ -155,8 +156,10 @@ public:
     TReal iLongitude;
     //Zoom level
     TInt iZoomLevel;
-    //Required image size
-    TInt iSize;
+    //Required image width
+    TInt iWidth;
+    //Required image height
+    TInt iHeight;
 };
 
 

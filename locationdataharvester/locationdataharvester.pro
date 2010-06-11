@@ -20,7 +20,7 @@
 
 
 TEMPLATE = subdirs
-SUBDIRS = locationdatalookupdb maptileservice geocodeupdate mylocationsengine
+SUBDIRS = locationdatalookupdb maptileservice geocodeupdate mylocationsdatabasemanager mylocationsengine
 
 
 # Exports

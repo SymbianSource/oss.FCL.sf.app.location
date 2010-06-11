@@ -136,7 +136,7 @@ public: // Constructor
     * Creates an entry in the lookup table.
     * @param[in] aLookupItem The lookup item to be created in the database.
     */
-    void createEntry( const QLookupItem& aLookupItem );
+    void createEntry( QLookupItem& aLookupItem );
 
     /**
     * Updates an entry in the lookup table.
@@ -167,13 +167,6 @@ public: // Constructor
     void deleteEntryBySourceIdAndType( const QLookupItem& aLookupItem );
 
     /**
-    * Deletes an entry from the lookup table.
-    * The id is used to find the entry in db
-    * @param[in] aLookupItem The lookup item to be deleted from the database.
-    */
-    void deleteEntryById( const QLookupItem& aLookupItem );
-
-    /**
     * Finds an entry in the lookup table.
     * @param[in/out] aLookupItem The lookup item to be found in the database. The source id and source type 
     * is passed in the lookup item. If the entry is found, all other fields are updated in the lookup item.
@@ -197,16 +190,7 @@ public: // Constructor
     void findEntriesByLandmarkId( const quint32 aLandmarkId, 
             QList<QLookupItem>& aLookupItemArray );
 
-    /**
-    * Finds list of lookup items given a source type.
-    * @param[in] aSourceType The source type to be found in the lookup database.  
-    * @param[out] aLookupItemArray List of lookup entries found.  
-    */
-    void findEntriesBySourceType( const quint32 aSourceType, 
-            QList<QLookupItem>& aLookupItemArray );
-
-
-    /**
+   /**
     * Gets list of lookup items.
     * @param[in] aCollectionId The collection id, whose whose corresponding entries needs to be fetched.
     *            By default all the entries in the lookup db are fetched.  
@@ -222,6 +206,9 @@ private:
     
     // Handle to the items database
     QSqlDatabase *mDb;
+
+    // Flag to indicate if db is open
+    bool mDbOpen;
 };
 #endif  // LOCATIONDATA_LOOKUPDB_H
 

@@ -49,4 +49,19 @@ enum TUidSourceType
     ESourceInvalid
 };
 
+/** Defines entry change type
+*/
+enum TEntryChangeType
+    {
+    /** Entry added */
+    EEntryAdded,
+    /** Entry modified */
+    EEntryModified,
+    /** Entry deleted */
+    EEntryDeleted,
+    /** Entry change unknown */
+    EEntryUnknown
+    };
+
+
 #endif // QLOCATIONPICKERITEM_H

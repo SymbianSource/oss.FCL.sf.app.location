@@ -17,8 +17,10 @@
 
 #ifndef ADDRESSCOMPARISION_H_
 #define ADDRESSCOMPARISION_H_
+#include <locationservicedefines.h>
 #include <EPos_CPosLandmarkDatabase.h>
-#include "mylocationslookupdb.h"
+
+
 class CAddressComparision : public CBase
     {
 public:
@@ -45,7 +47,5 @@ private:
     // Handle to landmarks db
     CPosLandmarkDatabase* iLandmarkDb;
 
-    // Handle to the My locations database manager
-    CLookupDatabase *iLookUpDatabase;
     };
 #endif /* ADDRESSCOMPARISION_H_ */

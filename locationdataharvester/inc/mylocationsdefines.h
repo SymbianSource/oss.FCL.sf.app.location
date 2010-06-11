@@ -38,9 +38,27 @@ public:
    
     // File Path
     TFileName iFilePath;
+    
+    //MK  map tile fetching status
+    TUint32 iFetchingStatus;
 };
 
+/** Defines map tile fetching states.
+ */
 
+enum TMapTileFetchingState
+    {
+    /** Map tile fetching completed */
+    EMapTileFectchingCompleted,
+    /** Map tile fetching in progress */
+    EMapTileFetchingInProgress,
+    /** Map  tile fetching n/w error */
+    EMapTileFetchingNetworkError,
+    /** Map tile fetching invalid address */
+    EMapTileFetchingInvalidAddress,
+    /** Map tile fetching unknown erro */
+    EMapTileFetchingUnknownError
+    };
 // contacts category in landmarks db
 _LIT( KContactsCategory, "Contacts" );
 
@@ -79,6 +97,7 @@ _LIT( NColLmUid, "lmuid" );
 // maptile database column names
 _LIT( NCntColUid, "cntuid" );
 _LIT( NCntColFilePath, "filepath" );
+_LIT( MapTileFetchingStatus, "fetchingstatus" );
 
 // database table name
 _LIT( KLookupTable, "lookuptable" );
@@ -97,6 +116,8 @@ const TInt KColumnLmkUid = 3;
 const TInt KColumncntUid = 1;
 // source type column number
 const TInt KColumnFilePath = 3;
+// fetching state  column number
+const TInt KColumnMapTileFetchingStatus = 4;
 
 const TInt KBufSize=256;
 
