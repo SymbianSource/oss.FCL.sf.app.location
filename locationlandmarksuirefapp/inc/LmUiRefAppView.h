@@ -93,7 +93,7 @@ class CLmUiRefAppView : public CAknView
 		TBool IsLmDbEmptyL();
 
 		// Single category selector dialog
-		TInt CLmUiRefAppView::LaunchSingleCategoeyDialogL();
+		TInt LaunchSingleCategoeyDialogL();
 
     public: // From CAknView
         TUid Id() const;

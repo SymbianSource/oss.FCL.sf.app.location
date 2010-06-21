@@ -87,7 +87,7 @@ class  CLmkSaveLandmarkUtils : public CBase, public MLmkAOOperationObserver
         * @param aNewFoundCategory
         * @param aNewcategories
         */
-        TInt CLmkSaveLandmarkUtils::CheckForNewCategories2L(
+        TInt CheckForNewCategories2L(
                                      TDes& aNewFoundCategory,
                                      RArray<TCategoryName>& aNewcategories);
          /*
@@ -97,7 +97,7 @@ class  CLmkSaveLandmarkUtils : public CBase, public MLmkAOOperationObserver
          /*
          * Display confirmation note
          */
-        void CLmkSaveLandmarkUtils::LmsSavedConfirmationNoteL(RArray<TUint> & aImportIndexes,
+        void LmsSavedConfirmationNoteL(RArray<TUint> & aImportIndexes,
                                            			  TInt aEditedItemIndex = 0);
 
     public://New Functions

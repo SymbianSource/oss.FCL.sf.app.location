@@ -37,17 +37,11 @@ PRJ_EXPORTS
 ../conf/odometersettings.confml          APP_LAYER_CONFML(odometersettings.confml)     
 ../conf/odometersettings_101F85A0.crml   APP_LAYER_CRML(odometersettings_101F85A0.crml)
 
-// TODO: Remove it after Crml
-../cenrep/101F85A0.txt         /epoc32/data/Z/private/10202be9/101F85A0.txt
-../cenrep/101F85A0.txt         /epoc32/release/winscw/udeb/Z/private/10202be9/101F85A0.txt
-
 // Backup CenRep Settings
-../data/backup_registration.xml     /epoc32/RELEASE/winscw/udeb/z/private/101F85A0/backup_registration.xml
-../data/backup_registration.xml     /epoc32/data/z/private/101F85A0/backup_registration.xml
+../data/backup_registration.xml     Z:/private/101F85A0/backup_registration.xml
 
 #include "../engine/group/bld.inf"
 #include "../ui/group/bld.inf"
 #include "../help/group/bld.inf"
 
-PRJ_MMPFILES
 //  End of File  

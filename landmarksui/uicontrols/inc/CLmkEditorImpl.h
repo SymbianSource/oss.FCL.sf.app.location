@@ -302,7 +302,7 @@ private:
 
     TBool IsFieldEmptyL(const TUint16 aFieldType);
 
-    TBool CLmkEditorImpl::IsInvalidUriL();
+    TBool IsInvalidUriL();
 
     void LaunchLmkEditorL();
 

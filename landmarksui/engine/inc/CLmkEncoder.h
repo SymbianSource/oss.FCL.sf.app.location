@@ -88,7 +88,7 @@ class CLmkEncoder : public CBase, public MLmkAOOperationObserver
         * @param aFile where parsed data is stored
         * @param aLandmarks
         */
-        IMPORT_C void CLmkEncoder::StartEncodingL(const TDesC& aFileName,
+        IMPORT_C void StartEncodingL(const TDesC& aFileName,
                     	const RPointerArray<CLmkLandmark>& aLandmarks );
 
         /**

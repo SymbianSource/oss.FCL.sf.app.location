@@ -40,16 +40,9 @@ PRJ_EXPORTS
 ../conf/evtstorage.confml               APP_LAYER_CONFML(evtstorage.confml) 
 ../conf/evtstorage_2001E66D.crml        APP_LAYER_CRML(evtstorage_2001E66D.crml)
 
-// Localization resource files
-// Stub sis files
-
-// TODO: Remove it after Crml
-../cenrep/2001E66D.txt          /epoc32/data/Z/private/10202be9/2001E66D.txt
-../cenrep/2001E66D.txt          /epoc32/release/winscw/udeb/Z/private/10202be9/2001E66D.txt
 
 // Backup Db files
-../data/backup_registration.xml     /epoc32/RELEASE/winscw/udeb/z/private/2001E663/backup_registration.xml
-../data/backup_registration.xml     /epoc32/data/z/private/2001E663/backup_registration.xml
+../data/backup_registration.xml     z:/private/2001E663/backup_registration.xml
 
 PRJ_MMPFILES
 
@@ -68,6 +61,3 @@ PRJ_MMPFILES
 // Events Management UI
 #include "../eventsmgmtui/group/bld.inf"
 
-PRJ_TESTMMPFILES
-
-PRJ_TESTEXPORTS

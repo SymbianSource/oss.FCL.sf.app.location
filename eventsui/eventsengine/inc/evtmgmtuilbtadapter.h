@@ -333,7 +333,7 @@ public:
          * @param [in] aCenter - location of the trigger.
          * @param [out] CLbtTriggerConditionArea - Condition Area for Trigger.
          */
-        CLbtTriggerConditionArea* CEvtMgmtUiLbtAdapter::GetConditionAreaL( 
+        CLbtTriggerConditionArea* GetConditionAreaL( 
                         const TCoordinate& aCenter,
                         TReal aRadiusInKiloMeters );
     private:

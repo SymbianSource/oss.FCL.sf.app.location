@@ -26,5 +26,8 @@ PRJ_EXPORTS
 
 // Files to be exported
 nmea.nme							/epoc32/release/winscw/udeb/z/system/data/nmea.nme
+nmea.nme							/epoc32/release/winscw/urel/z/system/data/nmea.nme
 simu_move_const.sps   /epoc32/release/winscw/udeb/z/system/data/simu_move_const.sps
+simu_move_const.sps   /epoc32/release/winscw/urel/z/system/data/simu_move_const.sps
 simu_move_speed.sps   /epoc32/release/winscw/udeb/z/system/data/simu_move_speed.sps
+simu_move_speed.sps   /epoc32/release/winscw/urel/z/system/data/simu_move_speed.sps

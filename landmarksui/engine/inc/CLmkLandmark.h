@@ -74,7 +74,7 @@ class CLmkLandmark : public CBase
         const RPointerArray<CPosLandmarkCategory>& aCategories
        );
 
-       IMPORT_C static CLmkLandmark* CLmkLandmark::NewL(
+       IMPORT_C static CLmkLandmark* NewL(
        const CLmkLandmark&  aLandmark);
 
 

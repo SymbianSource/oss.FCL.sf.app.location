@@ -42,6 +42,3 @@ OPTION HEADERFILE evtmgmtui.mbg
 OPTION SOURCES -c32,8 qgn_prop_locev_new.svg -c32,8 qgn_prop_locev_draft.svg -c32,8 qgn_prop_locev_invalid.svg -c32,8 qgn_prop_locev_completed.svg -c32,8 qgn_prop_locev_trigger -c8,8 qgn_indi_repeat_add
 END
 
-PRJ_TESTMMPFILES
-
-PRJ_TESTEXPORTS

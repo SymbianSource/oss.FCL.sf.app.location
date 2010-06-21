@@ -75,7 +75,7 @@ class CBlidSatelliteView : public CBlidBaseView
         void HandleResourceChangeL( TInt aType );
 
 		#ifdef RD_SCALABLE_UI_V2
-		void CBlidSatelliteView::HandleListBoxSelectionL();
+		void HandleListBoxSelectionL();
 		#endif //RD_SCALABLE_UI_V2
 		
     public: //From MBlidEngObserver

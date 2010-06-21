@@ -19,8 +19,6 @@ PRJ_PLATFORMS
 DEFAULT ARMV5
 
 PRJ_MMPFILES
-// gnumakefile lmrefapp_icons_scalable_dc.mk
-// gnumakefile lmrefapp_icons_bitmaps_dc.mk
 LmRefApp.mmp
 
 PRJ_EXTENSIONS

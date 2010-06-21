@@ -67,10 +67,10 @@ class CLmkAppLmItemSelectorImpl
         */
         void ChangeIconCmdL();
         // Added for Bug Fix
-        void CLmkAppLmItemSelectorImpl::DiskSpaceBelowCriticalLevelL(
+        void DiskSpaceBelowCriticalLevelL(
 									    TInt aBytesToWrite, TChar aDrive);
 
-		TInt CLmkAppLmItemSelectorImpl::CalculateLandmarkDisksize(
+		TInt CalculateLandmarkDisksize(
     									const CPosLandmark& aLandmark);
 
     public: // From CLmkAppSelectorImplBase
