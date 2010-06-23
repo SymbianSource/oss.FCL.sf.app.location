@@ -80,11 +80,11 @@ LocationPickerAppWindow::LocationPickerAppWindow( QWidget *parent, Hb::WindowFla
         mLocationPickerLandscapeView = qobject_cast<LocationPickerLandscapeView*>(locationPickerWidget);
         mLocationPickerContent->populateModel(Qt::Horizontal);
         //initialize widgets and connect to respective signals 
-        mLocationPickerLandscapeView->init(Qt::Horizontal, mLocationPickerContent->getStandardGridModel());
+        mLocationPickerLandscapeView->init(Qt::Horizontal, mLocationPickerContent->getStandardModel());
         connectLandscapeSlots();
         addView(mLocationPickerLandscapeView);
         //connect to orientationChanged signal
-        connect(this, SIGNAL(orientationChanged(Qt::Orientation)),this, SLOT(changeOrientation(Qt::Orientation)));
+   	    connect(this, SIGNAL(orientationChanged(Qt::Orientation)),this, SLOT(changeOrientation(Qt::Orientation)));
         //launch the view in current orientation
         changeOrientation(this->orientation());
     }
@@ -147,7 +147,6 @@ void LocationPickerAppWindow::activateSearchView()
     //set LocationPickerSearchview as current view
     setCurrentView(mLocationPickerSearchView);
     mviewType = ELocationPickerSearchView;
-
 }
 
 // ----------------------------------------------------------------------------
@@ -160,7 +159,7 @@ void LocationPickerAppWindow::activateLocationPickerView()
     if(this->orientation() == Qt::Horizontal)
     {
         mLocationPickerLandscapeView->setViewType( ELocationPickerContent );
-        mLocationPickerLandscapeView->manageGridView();
+        mLocationPickerLandscapeView->manageHgWidget();
         setCurrentView(mLocationPickerLandscapeView);
     }
     else
@@ -216,7 +215,7 @@ void LocationPickerAppWindow::loadLandscape()
          //load landscape for all content except collectionlistcontent
     	 if(mLocationPickerPotraitView->getViewType() != ELocationPickerCollectionListContent)
     	 {
-             mLocationPickerLandscapeView->manageGridView();
+             mLocationPickerLandscapeView->manageHgWidget();
     		 setCurrentView(mLocationPickerLandscapeView);
 		 }
 	 }
@@ -289,7 +288,7 @@ void LocationPickerAppWindow::allListHandle()
 {
     //all list after collection list in horizontal orientation
     mLocationPickerLandscapeView->setViewType( ELocationPickerContent );
-    mLocationPickerLandscapeView->manageGridView();
+    mLocationPickerLandscapeView->manageHgWidget();
     setCurrentView(mLocationPickerLandscapeView);
 }
 

@@ -59,7 +59,11 @@ public:
      void StartTimer();
 
      
+#ifdef MYLOCATIONENGINE_UNIT_TEST
+public:
+#else
 protected:
+#endif
      /*
       * @see CActive::RunL()
       */

@@ -22,17 +22,36 @@
 #include <agendautil.h>
 #include <agendaentry.h>
 #include <QString>
+#include <QEventLoop>
 #include <locationservicedefines.h>
-
 #include "geocodeupdate.h"
 #include "mylocationsdefines.h"
 #include "mylocationlogger.h"
 
 using namespace QTM_NAMESPACE;
+
+
+// ----------------------------------------------------------------------------
+// GeocodeUpdate::GeocodeUpdate()
+// ----------------------------------------------------------------------------
+GeocodeUpdate::GeocodeUpdate()
+{
+    
+}
+
+// ----------------------------------------------------------------------------
+// GeocodeUpdate::~GeocodeUpdate()
+// ----------------------------------------------------------------------------
+GeocodeUpdate::~GeocodeUpdate()
+{
+    __TRACE_CALLSTACK;
+    
+}
+
 // ----------------------------------------------------------------------------
 // GeocodeUpdate::createContactdb()
 // ----------------------------------------------------------------------------
-EXPORT_C void GeocodeUpdate::createContactdb()
+void GeocodeUpdate::createContactdb()
 {
     QContactManager* contactManger = NULL;
     MYLOCLOGSTRING("call to create contactManger object and contactdb as well.");
@@ -44,7 +63,7 @@ EXPORT_C void GeocodeUpdate::createContactdb()
 // CGeocodeUpdate::updateGeocodeToContactDB()
 // Geo-cordinate updation to contact db  
 // ----------------------------------------------------------------------------
-EXPORT_C void GeocodeUpdate::updateGeocodeToContactDB(const quint32 contactId,
+bool GeocodeUpdate::updateGeocodeToContactDB(const quint32 contactId,
         const int addressType, const double latitude,
         const double longitude)
 
@@ -61,49 +80,63 @@ EXPORT_C void GeocodeUpdate::updateGeocodeToContactDB(const quint32 contactId,
 
     switch (addressType)
     {
-    case ESourceContactsPref:
-    {
-        break;
-    }
-    case ESourceContactsWork:
-    {
-        location.setContexts(QContactDetail::ContextWork);
-        break;
-    }
-    case ESourceContactsHome:
-    {
-        location.setContexts(QContactDetail::ContextHome);
-        break;
-    }
-    default:
-    {
-        break;
-    }
+        case ESourceContactsPref:
+        {
+            break;
+        }
+        case ESourceContactsWork:
+        {
+            location.setContexts(QContactDetail::ContextWork);
+            break;
+        }
+        case ESourceContactsHome:
+        {
+            location.setContexts(QContactDetail::ContextHome);
+            break;
+        }
+        default:
+        {
+            return false;       
+        }
     }
     location.setLongitude(longitude);
     location.setLatitude(latitude);
     contact.saveDetail(&location);
-    contactManger->saveContact(&contact);
+    bool ret=false;
+    ret=contactManger->saveContact(&contact);
     delete contactManger;
-
+    return ret;
 }
 
 // ----------------------------------------------------------------------------
 // CGeocodeUpdate::updateGeocodeToCalenderDB()
 // Geo-cordinate updation to contact db  
 // ----------------------------------------------------------------------------
-EXPORT_C void GeocodeUpdate::updateGeocodeToCalenderDB(const ulong calEntryId,
+bool GeocodeUpdate::updateGeocodeToCalenderDB(const ulong calEntryId,
         const double latitude, const double longitude)
 
 {
     __TRACE_CALLSTACK;
-    AgendaUtil agendaUtil;
+    AgendaUtil agendaUtil ;    
+    connect(&agendaUtil , SIGNAL(instanceViewCreationCompleted(int)) ,this ,SLOT(agendautilInstanceCreated(int)));
+    QEventLoop loop;
+    connect(this,SIGNAL(eventCompleted()),&loop,SLOT(quit()));
+    loop.exec();
     AgendaEntry agendaEntry (agendaUtil.fetchById(calEntryId));
     MYLOCLOGSTRING("agenda entry created from calender id .");
     AgendaGeoValue geoValue;
     geoValue.setLatLong(latitude,longitude);
     MYLOCLOGSTRING("latitude and longitude set to  AgendaGeoValue object.");
     agendaEntry.setGeoValue(geoValue);
-    agendaUtil.updateEntry(agendaEntry);
+    bool ret=false;
+    ret=agendaUtil.updateEntry(agendaEntry) ;
+    return ret;
+}
+
+void GeocodeUpdate::agendautilInstanceCreated(int status)
+{
+    if (AgendaUtil::NoError == status){
+        emit eventCompleted();
+    }
 }
 //end of line

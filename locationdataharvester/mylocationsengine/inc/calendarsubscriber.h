@@ -11,40 +11,34 @@
  *
  * Contributors:
  *
- * Description: calender db create notification .
+ * Description: Subscribe notification .
  *
  */
-
-#ifndef CALENDERNOTIFICATION_H_
-#define CALENDERNOTIFICATION_H_
+#ifndef CALENDARSUBSCRIBER_H
+#define CALENDARSUBSCRIBER_H
 
 // INCLUDES
 
 #include <e32base.h>
-#include <f32file.h>
+#include <e32property.h>
 #include "notification.h" 
-/**  
- * The observer class gives notification to derive class .
- * When calender db creates in specific path.
- */
-
-class CCalenderNotification : public CActive
+class CCalendarSubscriber : public CActive
 {
 public:
     /** 
-     * CCalenderNotification::NewL()
+     * CCalendarSubscriber::NewL()
      */
-    static CCalenderNotification* NewL(MNotifyChange* aNotifyChange);
+    static CCalendarSubscriber* NewL(MNotifyChange* aNotifyChange);
 
     /** 
-     * CCalenderNotification::NewL()
+     * CCalendarSubscriber::NewL()
      */
-    static CCalenderNotification* NewLC(MNotifyChange* aNotifyChange);
+    static CCalendarSubscriber* NewLC(MNotifyChange* aNotifyChange);
     /**
-     * ~CCalenderNotification.
+     * ~CCalendarSubscriber.
      * Virtual Destructor.
      */
-    virtual ~ CCalenderNotification();
+    virtual ~ CCalendarSubscriber();
 
 private:
     /**
@@ -56,15 +50,18 @@ private:
      * CMyLocationsEngine.
      * C++ default constructor. 
      */
-    CCalenderNotification(MNotifyChange* aNotifyChange);
+    CCalendarSubscriber(MNotifyChange* aNotifyChange);
     
+#ifdef MYLOCATIONENGINE_UNIT_TEST
 public:
+#else
+private:
+#endif
     
     /**
-     * CheckCalenderDbFileStructure.
-     * Observes the calendar db file structure changes. 
+     * start subscribe for calendar entry
      */
-    void CheckCalenderDbFileStructure( TChar aDrive );
+    void SubscribeChangeNotiFication();
 
     /**
      *  Handles active object's request completion event. 
@@ -74,12 +71,9 @@ public:
      * Implements cancellation of an outstanding request. 
      */
     void DoCancel();
-private:
-    //data member
-    //file server 
-    RFs iFsession;
+private:   
     //observer to provide notification on completion of event
     MNotifyChange& iNotifyChange;
+    RProperty iProperty;
 };
-#endif /* CALENDERNOTIFICATION_H_ */
-//End of file
+#endif // CALENDARSUBSCRIBER_H

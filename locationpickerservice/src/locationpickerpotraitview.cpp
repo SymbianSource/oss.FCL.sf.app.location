@@ -22,8 +22,9 @@
 #include <HbListView>
 #include <HbListViewItem>
 #include <HbAction>
-#include <QTimer>
+#include <HbMenu>
 #include <HbToolBar>
+#include <QGraphicsLinearLayout>
 
 #include "locationpickerproxymodel.h"
 #include "locationpickerdatamanager.h"
@@ -47,7 +48,10 @@ LocationPickerPotraitView::LocationPickerPotraitView( HbDocumentLoader* aLoader 
     mDescendingAction(NULL),
     mListView(NULL),
     mCollectionContent(NULL),
-    mViewType(ELocationPickerContent)
+    mViewType(ELocationPickerContent),
+    mLinerLayout(NULL),
+    mColllabel(NULL),
+    mLongPressMenu(NULL)
 {   
     // create back action
     mPotraitBackAction = new HbAction(Hb::BackNaviAction);
@@ -73,6 +77,7 @@ LocationPickerPotraitView::~LocationPickerPotraitView()
     delete mAscendingAction;
     delete mDescendingAction;
     delete mListView;
+    delete mLongPressMenu;
 }
 
 // ----------------------------------------------------------------------------
@@ -91,6 +96,13 @@ void LocationPickerPotraitView::backTriggered()
         //complete the service
         emit completeService();
     } 
+    if (mLinerLayout && mColllabel)
+       {
+            mColllabel->setPlainText("");
+           mLinerLayout->removeItem(mColllabel);
+           mLinerLayout->updateGeometry();           
+           update();
+       }
 }
 
 
@@ -140,6 +152,8 @@ void LocationPickerPotraitView::init( bool aPopulated, Qt::Orientation aOrientat
     {
         qFatal("Error Reading Docml");
     }
+
+    mColllabel =  new HbLabel();
       
     //connect to slots
     connect(mAscendingAction, SIGNAL(triggered()), this, SLOT(sortAscending()));
@@ -152,8 +166,13 @@ void LocationPickerPotraitView::init( bool aPopulated, Qt::Orientation aOrientat
             SLOT(searchTabTriggered()));
     // connect the signal of the list activated to a slot.
     connect(mListView, SIGNAL(activated(const QModelIndex &)), this, SLOT(handleActivated(const QModelIndex &)));
+    connect(mListView,SIGNAL(longPressed(HbAbstractViewItem*, const QPointF &)),this,
+            SLOT(launchPopUpMenu(HbAbstractViewItem*, const QPointF &)));
 }
 
+// ----------------------------------------------------
+// LocationPickerPotraitView::manageListView()
+// ----------------------------------------------------
 void LocationPickerPotraitView::manageListView()
 {   
     //set the appropriate model
@@ -174,6 +193,11 @@ void LocationPickerPotraitView::manageListView()
             mListView->setModel(mLocationPickerCollectionListContent->getStandardModel(),mListItem);
             mCollectionAction->setChecked(true);
             mAllAction->setChecked(false);
+            if(mAscendingAction->isEnabled())
+            {
+                mAscendingAction->setDisabled(true);
+                mDescendingAction->setDisabled(true);
+            }
             mViewType = ELocationPickerCollectionListContent;
         }
         break;
@@ -190,7 +214,9 @@ void LocationPickerPotraitView::manageListView()
     }
 }
 
-
+// -----------------------------------------------------------------------------
+// LocationPickerPotraitView::disableTabs()
+// -----------------------------------------------------------------------------
 void LocationPickerPotraitView::disableTabs( QStandardItemModel *aModel )
 {
     //if no location entries present
@@ -203,19 +229,10 @@ void LocationPickerPotraitView::disableTabs( QStandardItemModel *aModel )
 }
 
 // -----------------------------------------------------------------------------
-// LocationPickerView::handleActivated()
+// LocationPickerPotraitView::handleActivated()
 // -----------------------------------------------------------------------------
 void LocationPickerPotraitView::handleActivated(const QModelIndex &aIndex)
 {
-    mIndex = aIndex;
-    QTimer::singleShot(0, this, SLOT(changeModel()));
-}
-
-// -----------------------------------------------------------------------------
-// LocationPickerPotraitView::changeModel()
-// -----------------------------------------------------------------------------
-void LocationPickerPotraitView::changeModel()
-{   
     //handle the activated signal according to model set
     switch(mViewType)
     {
@@ -226,7 +243,7 @@ void LocationPickerPotraitView::changeModel()
             break;
             }
             QModelIndex   index = mProxyModel->mapToSource(
-                    mIndex);
+                    aIndex);
             quint32 lm = 0;
             QStandardItem* item = mModel->item( index.row(), index.column() );
             QVariant var = item->data( Qt::UserRole );
@@ -238,7 +255,7 @@ void LocationPickerPotraitView::changeModel()
         case ELocationPickerCollectionListContent:
         {
             mLocationPickerCollectionListContent->getData(
-                    mIndex, mCategoryId );
+                    aIndex, mCategoryId );
             mViewType = ELocationPickerCollectionContent;
             //send categoryID to set the collection content
             emit sendCategoryID(mCategoryId);
@@ -251,7 +268,7 @@ void LocationPickerPotraitView::changeModel()
                 break;
             }
             QModelIndex  index = mCollectionContent->getProxyModel()->mapToSource(
-                    mIndex);
+                    aIndex);
             quint32 lm = 0;
             mCollectionContent->getData(index, lm);
             //item selected, complete request
@@ -300,6 +317,13 @@ void LocationPickerPotraitView::sortDescending()
 // -----------------------------------------------------------------------------
 void LocationPickerPotraitView::allTabTriggered()
 {
+    if (mLinerLayout && mColllabel)
+        {
+            mColllabel->setPlainText("");
+            mLinerLayout->removeItem(mColllabel);
+            mLinerLayout->updateGeometry();
+            update();
+        }
     //execute only if tab is not pressed
     if (mAllAction->isChecked())
     {    
@@ -337,6 +361,13 @@ void LocationPickerPotraitView::allTabTriggered()
 // -----------------------------------------------------------------------------
 void LocationPickerPotraitView::colectionTabTriggered()
 {
+    if (mLinerLayout  && (mViewType != ELocationPickerCollectionContent) && mColllabel )
+    {
+        mColllabel->setPlainText("");
+        mLinerLayout->removeItem(mColllabel);
+        mLinerLayout->updateGeometry();
+        update();
+    }
     //execute only if tab is not pressed
     if (mCollectionAction->isChecked())
     {   
@@ -367,7 +398,19 @@ void LocationPickerPotraitView::searchTabTriggered()
 // -----------------------------------------------------------------------------
 void LocationPickerPotraitView::setCollectionData( quint32 acategoryId )
 {
+    QString categoryname;
     
+    switch(acategoryId)
+        {
+        
+        case 1: categoryname = "Landmarks";
+                break;
+        case 8: categoryname = "Contacts";     
+                break;
+        case 9: categoryname = "Calender";
+               break;
+			   
+        }
     if(!mCollectionContent)
     {
         mCollectionContent
@@ -388,6 +431,15 @@ void LocationPickerPotraitView::setCollectionData( quint32 acategoryId )
     mViewType = ELocationPickerCollectionContent;
     
     mCollectionAction->setChecked(true);
+    mLinerLayout = static_cast<QGraphicsLinearLayout*>(widget()->layout());
+
+    if(mColllabel)
+    {
+        mLinerLayout->insertItem(0,mColllabel);
+        mColllabel->setPlainText(categoryname);   
+        mLinerLayout->updateGeometry();
+        update();
+     }
 }
 
 // -----------------------------------------------------------------------------
@@ -427,3 +479,24 @@ void LocationPickerPotraitView::clearContentModel()
     }
 }
 
+// -----------------------------------------------------------------------------
+// LocationPickerPotraitView::launchPopUpMenu()
+// -----------------------------------------------------------------------------
+void LocationPickerPotraitView::launchPopUpMenu(HbAbstractViewItem *aItem, const QPointF &aPoint)
+{
+    mLongPressMenu = new HbMenu();
+    mLongPressMenu->setTimeout(HbMenu::NoTimeout);
+    HbAction* selectAction  = mLongPressMenu->addAction(hbTrId("Select"));
+    mIndex = aItem->modelIndex();
+    connect(selectAction, SIGNAL(triggered()), this, SLOT(handleLongPress()));
+    mLongPressMenu->setPreferredPos(aPoint);
+    mLongPressMenu->open();
+}
+
+// -----------------------------------------------------------------------------
+// LocationPickerPotraitView::handleLongPress()
+// -----------------------------------------------------------------------------
+void LocationPickerPotraitView::handleLongPress()
+{
+    handleActivated(mIndex);
+}

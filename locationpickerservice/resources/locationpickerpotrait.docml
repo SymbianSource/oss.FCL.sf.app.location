@@ -29,11 +29,8 @@
                 <real name="z" value="1"/>
                 <sizehint height="48.0597un" type="PREFERRED" width="35.8209un"/>
             </widget>
-            <layout type="anchor">
-                <anchoritem dst="ListView" dstEdge="LEFT" spacing="0un" src="" srcEdge="LEFT"/>
-                <anchoritem dst="ListView" dstEdge="TOP" spacing="0un" src="" srcEdge="TOP"/>
-                <anchoritem dst="ListView" dstEdge="RIGHT" spacing="0un" src="" srcEdge="RIGHT"/>
-                <anchoritem dst="ListView" dstEdge="BOTTOM" spacing="0un" src="" srcEdge="BOTTOM"/>
+            <layout orientation="Vertical" type="linear">
+                <linearitem itemname="ListView"/>
             </layout>
         </widget>
         <widget name="viewMenu" role="HbView:menu" type="HbMenu">
@@ -45,7 +42,7 @@
         </widget>
         <string locid="txt_lint_title_select_location" name="title"/>
     </widget>
-    <metadata activeUIState="Common ui state" display="NHD portrait" unit="un">
+    <metadata activeUIState="Common ui state" display="NHD-3.2-inch_portrait" unit="un">
         <uistate name="Common ui state" sections="#common"/>
         <dummydata objectName="ListView" section="#common" value="0"/>
     </metadata>

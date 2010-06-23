@@ -27,6 +27,7 @@
 _LIT( NCntColUid, "cntuid" );
 _LIT( NAppColFilePath, "filepath" );
 _LIT( NColSource, "source" );
+_LIT( NColMaptileStatus, "fetchingstatus" );
 
 // maptile lookup database name
 _LIT( KMapTileLookupDatabaseName, "mylocationsmaptilelookup.db" );
@@ -40,9 +41,9 @@ _LIT( KLookupDbPath, "c:\\mylocations\\" );
 const TInt KColumnUid = 1;
 // source type column number
 const TInt KColumnSource = 2;
-// source type column number
+// maptile image path column number
 const TInt KColumnFilePath = 3;
-
+// maptile status column number
 const TInt KColumnMapTileFetchingStatus = 4;
 
 
@@ -66,24 +67,9 @@ public:
     
     // File Path
     TFileName iFilePath;
-    //MK  map tile fetching status
-     TUint32 iFetchingStatus;    
-};
-
-/**
- *  Defines uid source type
- */
-enum TUidSourceType
-{    
-    /** Uid Source type calendar plain address */
-    ESourceCalendar = 0,
-    /** Uid Source type contacts default/prefered address */
-    ESourceContactsPref = 3,
-    /** Uid Source type contacts work address */
-    ESourceContactsWork,
-    /** Uid Source type contacts home address */
-    ESourceContactsHome,
     
+    //MK  map tile fetching status
+    TUint32 iFetchingStatus;    
 };
 
 /**
@@ -119,6 +105,13 @@ public:
     * The source iUid is passed in the lookup item
     */
     void FindEntryL( TLookupItem& aLookupItem );
+    
+    /**
+     * Finds the number of address present in db associated with the aId. 
+     * @param id, entry (calendar/contact) uid.
+     * @return Number of address a contact has.
+     */
+    int FindNumberOfAddressL( int& aId );
 
 private:
     

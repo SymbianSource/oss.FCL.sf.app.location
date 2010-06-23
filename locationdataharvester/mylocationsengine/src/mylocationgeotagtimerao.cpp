@@ -47,7 +47,7 @@ CLocationGeoTagTimerAO::CLocationGeoTagTimerAO( MyLocationTimerObserver& aObserv
 CLocationGeoTagTimerAO::~CLocationGeoTagTimerAO()
 {
     MYLOCLOGSTRING ("CLocationGeoTagTimerAO::~CLocationGeoTagTimerAO(), begin");
-    DoCancel();
+    Cancel();
     MYLOCLOGSTRING ("CLocationGeoTagTimerAO::~CLocationGeoTagTimerAO(), end");
 }
 

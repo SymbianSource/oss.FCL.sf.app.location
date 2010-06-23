@@ -20,19 +20,32 @@
 
 #include <e32def.h> 
 #include <QtCore/qglobal.h>
+#include <QObject>
+
+#ifdef  GEOCODEUPDATEDLL
+#define GEOCODEUPDATE_EXPORT Q_DECL_EXPORT
+#else
+#define GEOCODEUPDATE_EXPORT Q_DECL_IMPORT
+#endif
 
 // CLASS DECLARATION
 
 /**
  * GeocodeUpdate, a class to update latitude and longtude into contact and calender database
  */
-class GeocodeUpdate 
+class GEOCODEUPDATE_EXPORT GeocodeUpdate: public QObject
 {
+    Q_OBJECT
 public:    
+    
+    GeocodeUpdate();
+       
+    ~GeocodeUpdate();
+       
     /**
      Create contact database   
      */
-    IMPORT_C static void createContactdb();
+     void createContactdb();
     
     /**
      * Request to update latitude and longitude into contact db. 
@@ -42,7 +55,7 @@ public:
      * @param longitude longitude to be updated.
      */
 
-    IMPORT_C static void updateGeocodeToContactDB(const quint32 contactId,
+      bool updateGeocodeToContactDB(const quint32 contactId,
             const int addressType, const double latitude,
             const double longitude);
     /**
@@ -52,8 +65,13 @@ public:
      * @param longitude longitude to be updated.
      */
 
-    IMPORT_C static void updateGeocodeToCalenderDB(const ulong calEntryId,
+     bool updateGeocodeToCalenderDB(const ulong calEntryId,
             const double latitude, const double longitude);
+private slots:
+    void agendautilInstanceCreated(int);
+signals:
+    void eventCompleted();
+
 };
 
 #endif // __GEOCODEUPDATE_H__ 

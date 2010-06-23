@@ -29,6 +29,7 @@ INCLUDEPATH += .
 INCLUDEPATH += ../inc
 INCLUDEPATH += ../mylocationlogger/inc
 
+
 defines += EPOCALLOWDLLDATA
 
 symbian: { 
@@ -36,7 +37,8 @@ symbian: {
     TARGET.EPOCALLOWDLLDATA = 1
     TARGET.CAPABILITY = All -Tcb
     TARGET.UID3 = 0x2002FF5C
-    
+    INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
+
     LIBS += -llbs \
         -leposlandmarks \
         -leposlmsearchlib \
@@ -56,6 +58,13 @@ SOURCES += src/mylocationsdatabasemanager.cpp
 
 HEADERS += inc/mylocationsdatabasemanager.h 
 
+defBlock = \      
+	"$${LITERAL_HASH}if defined(EABI)" \
+		"DEFFILE  ../eabi/mylocationsdatabasemanager.def" \
+    "$${LITERAL_HASH}else" \
+        "DEFFILE  ../bwins/mylocationsdatabasemanager.def" \
+	"$${LITERAL_HASH}endif"
+MMP_RULES += defBlock
 
 
 

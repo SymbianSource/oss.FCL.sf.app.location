@@ -17,6 +17,7 @@
 */
 
 #include <bautils.h>
+#include <maptileservice.h>
 #include "maptiledblookuptable.h"
 
 // select all from
@@ -32,7 +33,7 @@ _LIT( KStringEqual, " = " );
 _LIT( KStringAnd, " AND " );
 
 
-
+_LIT(KQueryByMaptileState,"SELECT * FROM cntmaptilelookuptable WHERE cntuid = %d AND ( fetchingstatus = %d OR fetchingstatus = %d )");
 
 // -----------------------------------------------------------------------------
 // CLookupMapTileDatabase::CLookupMapTileDatabase()
@@ -108,6 +109,52 @@ void CLookupMapTileDatabase::ConstructL( const TDesC& aLookupTableName )
     }
 }
 
+// -----------------------------------------------------------------------------
+// CLookupMapTileDatabase::FindNumberOfAddressL()
+// find the number of address associated with the aId.
+// -----------------------------------------------------------------------------
+//
+int CLookupMapTileDatabase::FindNumberOfAddressL( int& aId )
+{
+    int count = 0;
+    
+    // Create a query to find the item.
+    TFileName queryBuffer;
+    queryBuffer.Format( KQueryByMaptileState,aId,
+             MapTileService::MapTileFetchingInProgress,
+             MapTileService::MapTileFetchingNetworkError );
+  
+    TInt ret = iItemsDatabase.Open( iFsSession, iDbFileName );
+    
+    if( ret != KErrNone )
+    {          
+        //if already opened , close and open again
+        iItemsDatabase.Close();          
+        User::LeaveIfError( iItemsDatabase.Open( iFsSession, iDbFileName ) );
+    }
+    
+    User::LeaveIfError( iItemsDatabase.Begin() );       
+    // Create a view of the table with the above query.
+    RDbView myView;
+    myView.Prepare( iItemsDatabase, TDbQuery( queryBuffer ) );
+    CleanupClosePushL( myView );
+    myView.EvaluateAll();
+    myView.FirstL();
+    
+    
+    while (myView.AtRow())
+    {
+        count++;
+        myView.NextL();
+    }
+    
+    CleanupStack::PopAndDestroy( &myView ); // myView
+         
+    //Close the database
+    iItemsDatabase.Close();
+
+    return count;
+}
 
 // -----------------------------------------------------------------------------
 // CLookupMapTileDatabase::FindEntryL()
@@ -159,6 +206,7 @@ void CLookupMapTileDatabase::FindEntryL( TLookupItem& aLookupItem )
             if( aLookupItem.iUid == myView.ColUint( KColumnUid ) )
             {               
                 aLookupItem.iFilePath.Copy( myView.ColDes16( KColumnFilePath ) );
+                aLookupItem.iFetchingStatus = myView.ColUint( KColumnMapTileFetchingStatus );
                 entryAvailable = ETrue;
             }      
         } 

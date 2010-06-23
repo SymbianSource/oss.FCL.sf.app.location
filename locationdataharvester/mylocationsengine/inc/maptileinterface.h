@@ -115,7 +115,11 @@ public:
      */
     void GetMapTileL( const TReal& aLatitude, const TReal& aLongitude );    
 
+#ifdef MYLOCATIONENGINE_UNIT_TEST
+public:
+#else
 private:
+#endif
 	
 	/**
 	 * Converts geocoordinates to maptile pixel coordinate and update the 
@@ -129,7 +133,11 @@ private:
      */
     void SetLandMarkDetailsL(MAddressInfo& aAddressInfo);
     
-protected: 
+#ifdef MYLOCATIONENGINE_UNIT_TEST
+public:
+#else
+protected:
+#endif
 	
     /**
      * Derived from MMaptileGeocoderObserver
@@ -141,14 +149,22 @@ protected:
      */
     void MapTileFetchingCompleted( TInt aErrorcode, const TDesC& aMapImagePath );
     
+#ifdef MYLOCATIONENGINE_UNIT_TEST
+public:
+#else
 private:
+#endif
     
     /**
      * Two phase construction
      */
     void ConstructL();
     
+#ifdef MYLOCATIONENGINE_UNIT_TEST
+public:
+#else
 private:
+#endif
 	
     //MaptileGeocode plugin interface instance
     CMaptileGeocoderPlugin* iMaptileGeocoder;

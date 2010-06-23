@@ -40,7 +40,9 @@ public:
 
 private:
     Qt::Orientation mOrientation;
+    //standard Item Model
     QStandardItemModel *mModel;
+    //datamanager
     LocationPickerDataManager *mDataManager;
 };
 

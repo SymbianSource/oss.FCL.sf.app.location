@@ -29,8 +29,8 @@
 #include <math.h>
 
 //Invalid latitude & longitude value
-const TReal KInvalidLatitudeLongitude = 200.00;
-const TInt KStreetLvelZoom = 15;
+const TReal KInvalidLatitudeLongitude =  200.0f;
+const TInt KStreetLvelZoom = 16;
 const TInt KCityLevelZoom = 11;
 const TInt KMapTileWidth= 330;
 const TInt KMapTileHeight= 128;
@@ -142,7 +142,7 @@ void CMapTileInterface::GetGeoCodeFromAddressL(CPosLandmark* aLandmark,
 }
 
 // -----------------------------------------------------------------------------
-// CMapTileInterface::GetMapTileImageL()
+// CMapTileInterface::GetMapTileL()
 // Function for Retrieving latitude & longitude information
 // -----------------------------------------------------------------------------
 //

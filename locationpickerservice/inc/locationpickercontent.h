@@ -43,7 +43,7 @@ public:
     QStandardItemModel* getStandardListModel();
     
     //get standard Grid Model
-    QStandardItemModel* getStandardGridModel();
+    QStandardItemModel* getStandardModel();
     
     void createNoEntryDisplay( QStandardItemModel *aModel );
     
@@ -53,7 +53,7 @@ private:
     Qt::Orientations mOrientation;
     LocationPickerDataManager *mDataManager;
     QStandardItemModel *mListModel;
-    QStandardItemModel *mGridModel;
+    QStandardItemModel *mStandardModel;
     
 };
 

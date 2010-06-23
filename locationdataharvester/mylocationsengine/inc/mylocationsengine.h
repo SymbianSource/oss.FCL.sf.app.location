@@ -38,10 +38,10 @@
 #include "maptileinterface.h"
 #include "mylocationsdatabasemanager.h"
 #include "lookupmaptiledb.h"
-#include "addresscomparision.h"
 #include "calendernotification.h"
 #include "mylocationgeotagtimerao.h"
-
+class CContactSubscriber;
+class CCalendarSubscriber;
 using namespace QTM_NAMESPACE;
 
 /**  
@@ -69,6 +69,18 @@ public:
     TFileName iImagePath;
     //Event type    
     TInt iEventType;
+};
+
+/**  
+ * This class stores the information required for  maptile
+ * processing when it is triggered from the application(contact)
+ * viewer.
+ */
+class TAppAddressInfo
+{
+public:    
+  TInt iUid;
+  TInt iAddressType;
 };
 
 // CLASS DECLARATION
@@ -210,7 +222,7 @@ private:
      * @param aUId, uid of the event.
      */
     void RequestMapTileImageL( CPosLandmark&  aLandmark, const TUidSourceType aAddressType,
-                               const TInt32 aUId  );
+                               const TInt32 aUId, const TInt aEventType  );
     
     /** 
      * Requests for map tile image , one box serch.
@@ -219,7 +231,7 @@ private:
      * @param aUId, uid of the event.
      */
     void RequestMapTileImageL(const TDesC& aAddressDetails,
-            const TUidSourceType aAddressType, const TInt32 aUId);
+            const TUidSourceType aAddressType, const TInt32 aUId,const TInt aEventType);
  
     /** 
      * Checks whether contact has a valid geocoordinates.
@@ -249,6 +261,10 @@ private:
     void CalenderEntryAddedL(TCalChangeEntry aCalChangeEntry);    
 
     /**
+    * Calender entry modifyied.
+    */
+    void CalenderEntryModifyL(TCalChangeEntry aCalChangeEntry);
+    /**
     * Update the mylocations database.
     */
     void UpdateDatabaseL( CPosLandmark* aLandmark, const TUint32 aUid, 
@@ -267,7 +283,8 @@ private:
     /**
      * maptile database manipulation.
      */
-    void ManipulateMapTileDataBaseL(TLookupItem aLookupItem);
+    void ManipulateMapTileDataBaseL(TLookupItem& aLookupItem);
+     
 public:  //From MMapTileObserver
     
     /**
@@ -280,11 +297,10 @@ public:  //From MMapTileObserver
      */
     void GeoCodefetchingCompleted( TInt aErrCode, const TReal& aLatitude,
 	                                   const TReal& aLongitude, const TDesC& aMapTilePath );
-    
-
-    
 public://from MNotifychange
     void NotifyChangeL(TInt &aStatus);
+    void GetChangeNotificationL(TInt &aId, TInt &addressType, TInt &addressCount );
+    void SubscribeFromCalendarL(TInt aId);
 	
 public: //from MyLocationTimerObserver
     /** 
@@ -293,7 +309,11 @@ public: //from MyLocationTimerObserver
     void MyLocationThreeAMTimerExpiredL();
 
     
+#ifdef MYLOCATIONENGINE_UNIT_TEST
+public:
+#else
 private:
+#endif
 
     // Data member
     
@@ -327,9 +347,6 @@ private:
     //Current event type
     TInt iEventType;
     
-    //Address comparison pointer
-    CAddressComparision *iAddressCompare;
-    
     //Maptile image request queue
     RArray<CMapTileRequest*> iMapTileRequestQueue;
     
@@ -348,6 +365,21 @@ private:
     //Contact manager instance for retrieving contact info.
     QContactManager* iContactManager;
     
+    //Subscribe from contact
+    CContactSubscriber *iContactSubscriber;
+    
+    //Subscribe from calendar
+    CCalendarSubscriber *iCalendarSubscriber;
+    
+    //Last viewed contact id
+    TInt iLastContactId;
+    
+    //Last viewed calendar id
+    TInt iLastCalendarId;
+    
+    //Address information for viewver maptile processing.
+    RArray<TAppAddressInfo*> iAddressInfo;
+   
 };
 
 #endif // __MYLOCATIONSENGINE_H__

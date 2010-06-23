@@ -31,10 +31,10 @@ enum TUidSourceType
     ESourceMapsHistory,
     /** Uid Source type contacts default/prefered address */
     ESourceContactsPref,
-    /** Uid Source type contacts work address */
-    ESourceContactsWork,
     /** Uid Source type contacts home address */
     ESourceContactsHome,
+    /** Uid Source type contacts work address */
+    ESourceContactsWork,
     /** Uid Source type landmarks category */
     ESourceLandmarksCategory,
     /** Uid Source type landmarks user created category */

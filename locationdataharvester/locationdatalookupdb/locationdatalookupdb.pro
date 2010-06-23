@@ -17,6 +17,7 @@ TEMPLATE = lib
 DEPENDPATH += .
 INCLUDEPATH += .
 
+
 # By default Qt adds dependencies to QtCore and QtGui, 
 # QtCore is enough for this example 
 #QT = core
@@ -33,5 +34,14 @@ symbian: {
     TARGET.EPOCALLOWDLLDATA = 1
 TARGET.CAPABILITY = ALL \
         -TCB
+    INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
 }    
+
+defBlock = \      
+	"$${LITERAL_HASH}if defined(EABI)" \
+		"DEFFILE  ../eabi/locationdatalookupdb.def" \
+    "$${LITERAL_HASH}else" \
+        "DEFFILE  ../bwins/locationdatalookupdb.def" \
+	"$${LITERAL_HASH}endif"
+MMP_RULES += defBlock
 

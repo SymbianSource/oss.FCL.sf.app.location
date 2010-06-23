@@ -29,6 +29,9 @@ class LocationPickerProxyModel;
 class HbDocumentLoader;
 class HbTextItem;
 class QGraphicsLinearLayout;
+class HbAbstractViewItem;
+class QPoint;
+class HbMenu;
 
 /**  
  * Class defines the search view of location picker
@@ -52,6 +55,10 @@ private slots:
     void handleActivated(const QModelIndex &aIndex);
     // slot to handle backbutton on search panel
     void handleExit();
+	//launch context menu
+    void launchPopUpMenu(HbAbstractViewItem *aItem, const QPointF &aPoint);
+	//handle long press
+    void handleLongPress();
 signals:
     //signals to switch current view
     void switchView();
@@ -72,6 +79,9 @@ private:
     QGraphicsLinearLayout* mVerticalLayout;
     //Documentloader
     HbDocumentLoader &mDocumentLoader;
+    QModelIndex mIndex;
+    //context menu
+    HbMenu* mLongPressMenu;
 };
 
 

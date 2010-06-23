@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hbdocument version="0.9">
+<hbdocument version="1.0">
     <object name="allAction" type="HbAction">
         <bool name="checkable" value="TRUE"/>
         <icon iconName="qtg_mono_location" name="icon"/>
-        <string name="text" value=""/>
+        <string name="text"/>
     </object>
     <object name="collectionAction" type="HbAction">
         <bool name="checkable" value="TRUE"/>
         <icon iconName="qtg_mono_location_collection" name="icon"/>
-        <string name="text" value=""/>
+        <string name="text"/>
     </object>
     <object name="searchAction" type="HbAction">
         <icon iconName="qtg_mono_search" name="icon"/>
-        <string name="text" value=""/>
+        <string name="text"/>
     </object>
     <object name="ascendingAction" type="HbAction">
         <string name="iconText" value="txt_lint_list_ascendingtxt_lint_list_ascending"/>
@@ -24,19 +24,16 @@
     </object>
     <widget name="LocationPickerLandscapeView" type="HbView">
         <widget name="content" role="HbView:widget" type="HbWidget">
-            <widget name="gridView" type="HbGridView">
-                <enums name="scrollDirections" value="Horizontal|Vertical"/>
+            <widget name="vertical" type="HbWidget">
                 <real name="z" value="1"/>
-                <integer name="columnCount" value="1"/>
-                <sizehint height="59.70149un" type="PREFERRED" width="53.28358un"/>
-                <bool name="iconVisible" value="TRUE"/>
-                <integer name="rowCount" value="3"/>
+                <sizehint height="23.8806un" type="PREFERRED" width="11.9403un"/>
+                <layout orientation="Vertical" type="linear"/>
             </widget>
             <layout type="anchor">
-                <anchoritem dst="gridView" dstEdge="LEFT" spacing="0un" src="" srcEdge="LEFT"/>
-                <anchoritem dst="gridView" dstEdge="TOP" spacing="0un" src="" srcEdge="TOP"/>
-                <anchoritem dst="gridView" dstEdge="RIGHT" spacing="0un" src="" srcEdge="RIGHT"/>
-                <anchoritem dst="gridView" dstEdge="BOTTOM" spacing="0un" src="" srcEdge="BOTTOM"/>
+                <anchoritem dst="vertical" dstEdge="LEFT" spacing="0un" src="" srcEdge="LEFT"/>
+                <anchoritem dst="vertical" dstEdge="TOP" spacing="0un" src="" srcEdge="TOP"/>
+                <anchoritem dst="vertical" dstEdge="RIGHT" spacing="0un" src="" srcEdge="RIGHT"/>
+                <anchoritem dst="vertical" dstEdge="BOTTOM" spacing="expr(-var(hb-param-margin-gene-screen) /2)" src="" srcEdge="BOTTOM"/>
             </layout>
         </widget>
         <widget name="viewMenu" role="HbView:menu" type="HbMenu">
@@ -50,6 +47,5 @@
     </widget>
     <metadata activeUIState="Common ui state" display="NHD landscape" unit="un">
         <uistate name="Common ui state" sections="#common"/>
-        <dummydata objectName="gridView" section="#common" value="app_grid_template2"/>
     </metadata>
 </hbdocument>

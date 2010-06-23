@@ -210,6 +210,49 @@ void CLookupMapTileDatabase::CreateEntryL(const TLookupItem& aLookupItem)
 }
 
 // -----------------------------------------------------------------------------
+// CLookupMapTileDatabase::ReSetEntryL()
+// Reset the entry with null value and get the used maptile path as part of aLookupItem.
+// -----------------------------------------------------------------------------
+//
+void CLookupMapTileDatabase::ReSetEntryL(TLookupItem &aLookupItem)
+{
+    TFileName queryBuffer;
+    queryBuffer.Format(KQueryToDB, aLookupItem.iUid, aLookupItem.iSource);
+    TInt ret = Open();
+    if (ret != KErrNone)
+    {
+        Close();
+        Open();
+
+    }
+    iItemsDatabase.Begin();
+
+    // Create a view of the table based on the query created.
+    RDbView myView;
+    myView.Prepare(iItemsDatabase, TDbQuery(queryBuffer));
+    CleanupClosePushL(myView);
+
+    myView.EvaluateAll();
+    myView.FirstL();
+
+    if (myView.AtRow())
+    {
+        myView.GetL();
+        aLookupItem.iFilePath.Copy(myView.ColDes16(KColumnFilePath));
+        // found the entry. update it.
+        myView.UpdateL();
+        myView.SetColL(KColumnFilePath, KNullDesC);
+        myView.SetColL(KColumnMapTileFetchingStatus,
+                aLookupItem.iFetchingStatus); //MK
+        myView.PutL();
+    }
+
+    CleanupStack::PopAndDestroy(&myView); // myView
+    iItemsDatabase.Commit();
+
+    Close();
+}
+// -----------------------------------------------------------------------------
 // CLookupMapTileDatabase::UpdateEntryL()
 // Updates an entry in the lookup table.
 // -----------------------------------------------------------------------------
@@ -235,7 +278,7 @@ void CLookupMapTileDatabase::UpdateEntryL(const TLookupItem& aLookupItem)
 
     myView.EvaluateAll();
     myView.FirstL();
-
+    
     if (myView.AtRow())
     {
         // found the entry. update it.
@@ -243,12 +286,12 @@ void CLookupMapTileDatabase::UpdateEntryL(const TLookupItem& aLookupItem)
         myView.SetColL(KColumnFilePath, aLookupItem.iFilePath);
         myView.SetColL(KColumnMapTileFetchingStatus, aLookupItem.iFetchingStatus); //MK
         myView.PutL();
-    }
+    } 
 
     CleanupStack::PopAndDestroy(&myView); // myView
     iItemsDatabase.Commit();
 
-    Close();
+    Close();  
 
 }
 

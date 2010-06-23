@@ -102,6 +102,9 @@ public:
 
     // map tile path
     QString mMapTilePath;
+    
+    //One line address
+    QString mSingleLineAddress;
 };
 
 /**
@@ -197,8 +200,23 @@ public: // Constructor
     * @param[out] aLookupItemArray List of lookup entries found.  
     */
     void getEntries( QList<QLookupItem>& aLookupItemArray, const quint32 aCollectionId = ESourceInvalid );
+    
+   /**
+    * Gets count  of lookup items.
+	* @param[in/out] aCount  The number of items in lookup table for the collection id
+    * @param[in] aCollectionId The collection id, whose whose corresponding entries needs to be fetched.
+    *            By default all the entries in the lookup db are fetched.  
+    */
+    void getCount( QList<int>& aCount,const quint32 aCollectionId = ESourceInvalid );
 
-
+   /**
+    * Gets single line address
+    * @param mId , id of the entry
+    * @param mSourceType , type of entry
+    * @return QString , address associated with cuurent id and type  
+    */
+    QString getAddressDetails( quint32 mId , quint32 mSourceType );
+    
 private:
 	
     // fills the lookup entry

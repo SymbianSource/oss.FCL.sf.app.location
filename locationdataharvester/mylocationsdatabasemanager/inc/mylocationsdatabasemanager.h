@@ -89,7 +89,28 @@ class  CMyLocationsDatabaseManager : public CBase
          * @param[in] aFilePath Maptile file path.
          */                               
         IMPORT_C void UpdateMapTilePath( TUint32 aSourceId, TUint32 aSourceType, 
-                                            TFileName aFilePath );
+                                            TFileName& aFilePath );
+        
+        /** Compare the address details to lplookupaddres  table
+         *
+         * @param aLandmarks , address formed as landmark object
+         * @parama Id , id of entry to be checked in db table
+         * @param aAddressType , type of entry.
+         * @return , true for match case .
+         */  
+        IMPORT_C TBool CheckIfAddressChanged(const CPosLandmark& aLandmarks,
+                const TUint32 aId, const TUidSourceType aAddressType);
+        
+        /** Compare the address details to lplookupaddres  table
+         *
+         * @param aAddress , one line address .
+         * @parama Id , id of entry to be checked in db table
+         * @param aAddressType , type of entry.
+         * @return , true for match case .
+         */
+        IMPORT_C TBool CheckIfAddressChanged(const TDesC& aAddress,
+                const TUint32 aId, const TUidSourceType aAddressType);
+        
 
 #ifdef LOCATION_DATA_HARVESTER_UNIT_TEST
 public:

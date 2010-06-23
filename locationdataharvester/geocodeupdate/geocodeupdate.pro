@@ -25,7 +25,7 @@ CONFIG += dll
 CONFIG += Qt
 
 DEPENDPATH += .
-INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
+
 
 # Input
 # Input
@@ -34,11 +34,16 @@ HEADERS += ./inc/geocodeupdate.h \
            ../inc   
 SOURCES +=./src/geocodeupdate.cpp 
 
+MOC_DIR = moc
+
+DEFINES += GEOCODEUPDATEDLL
+
 symbian: 
 { 
     TARGET.EPOCALLOWDLLDATA = 1
     TARGET.CAPABILITY = All -Tcb
     TARGET.UID3 = 0x2002C3A9
+    INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
     deploy.path = $$EPOCROOT
     exportheaders.sources = $$PUBLIC_HEADERS
     exportheaders.path = epoc32/include
@@ -53,4 +58,13 @@ symbian:
    
 
 }  
+
+defBlock = \      
+	"$${LITERAL_HASH}if defined(EABI)" \
+		"DEFFILE  ../eabi/geocodeupdate.def" \
+    "$${LITERAL_HASH}else" \
+        "DEFFILE  ../bwins/geocodeupdate.def" \
+	"$${LITERAL_HASH}endif"
+MMP_RULES += defBlock
+
 # End of file	--Don't remove this.

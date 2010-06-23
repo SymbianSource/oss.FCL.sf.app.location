@@ -52,7 +52,7 @@ public:
     ~CLookupMapTileDatabase();
 
 public:
-
+    
     /**
     * Opens the lookup database.
     */
@@ -105,7 +105,12 @@ public:
     void FindEntriesByMapTileFetchingStateL(const TUint32 aFetchingState,
             RArray<TLookupItem>& aLookupItemArray);
 
-
+    /**
+    * ReSet the entry in the lookup table , with null value 
+    * @param aLookupItem The lookup item entry to be reseted in the database,
+    * get the used maptile path as part of lookupItem filepath , to free the resource 
+    */
+    void ReSetEntryL( TLookupItem &aLookupItem );
 private:
     
     // default constructor

@@ -27,7 +27,9 @@
 class QLocationPickerItem
 {
 public:
-    QLocationPickerItem():mIsValid(false)
+    QLocationPickerItem():mIsValid(false),
+    	                  mLatitude(200.0),
+    	                  mLongitude(200.0)
      {};
     ~QLocationPickerItem() {};
 

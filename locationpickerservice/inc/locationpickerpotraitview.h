@@ -22,6 +22,9 @@
 #include <HbView>
 #include <hbdocumentloader.h>
 #include "locationpickertypes.h"
+#include <QGraphicsLinearLayout>
+
+#include <HbLabel>
 
 //forward declarations
 class HbListView;
@@ -31,7 +34,9 @@ class LocationPickerCollectionListContent;
 class LocationPickerCollectionContent;
 class HbListViewItem;
 class HbAction;
-
+class HbAbstractViewItem;
+class HbMenu;
+class QPoint;
 /**  
  * Class defines the location picker view
  */
@@ -63,13 +68,16 @@ public:
 private slots:
     //slot to handle list item actions     
     void handleActivated( const QModelIndex &aIndex );
-    void changeModel();
     //slots to handle menu action items     
     void sortDescending();
     void sortAscending();
     void backTriggered();
     //slot to handle search tab
     void searchTabTriggered();
+	//launch context menu
+    void launchPopUpMenu(HbAbstractViewItem *aItem, const QPointF &aPoint);
+	//handle long press
+    void handleLongPress();
 public slots:
     //slot to handle all tab
     void allTabTriggered();
@@ -109,8 +117,14 @@ private:
     TViewType mViewType ;
     // get the collection/category id
     quint32 mCategoryId;
-    // model Index
+    //label to show current view
     QModelIndex mIndex;
+    //linear Layout
+    QGraphicsLinearLayout *mLinerLayout;
+	//label to show detail of view
+    HbLabel *mColllabel;
+    //context menu
+    HbMenu* mLongPressMenu;
 };
 
 

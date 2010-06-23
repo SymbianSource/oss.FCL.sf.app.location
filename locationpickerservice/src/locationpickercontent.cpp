@@ -30,7 +30,7 @@
 LocationPickerContent::LocationPickerContent()
 	:mDataManager(NULL),
 	mListModel(NULL),
-	mGridModel(NULL)
+	mStandardModel(NULL)
 {
     // create data manager to manage data in the model
     mDataManager = LocationPickerDataManager::getInstance();
@@ -60,15 +60,15 @@ bool LocationPickerContent::populateModel( Qt::Orientation aOrientation )
     //for landscape view
     else
     {
-        // Create a standard model for the grid view
-        mGridModel = new QStandardItemModel( this );
-        if( mDataManager->populateModel(*mGridModel, ELocationPickerContent, aOrientation) )
+        // Create a standard model for the landscape view
+        mStandardModel = new QStandardItemModel( this );
+        if( mDataManager->populateModel(*mStandardModel, ELocationPickerContent, aOrientation) )
         {
             locationsFound = true;
         }
         else
         {
-            createNoEntryDisplay(mGridModel);
+            createNoEntryDisplay(mStandardModel);
             locationsFound = false;
         }
     }
@@ -81,7 +81,7 @@ bool LocationPickerContent::populateModel( Qt::Orientation aOrientation )
 LocationPickerContent::~LocationPickerContent()
 {
     delete mListModel;
-    delete mGridModel;
+    delete mStandardModel;
 }
 
 // -----------------------------------------------------------------------------
@@ -93,11 +93,11 @@ QStandardItemModel* LocationPickerContent::getStandardListModel()
 }
 
 // -----------------------------------------------------------------------------
-// LocationPickerContent::getStandardGridModel()
+// LocationPickerContent::getStandardModel()
 // -----------------------------------------------------------------------------
-QStandardItemModel* LocationPickerContent::getStandardGridModel()
+QStandardItemModel* LocationPickerContent::getStandardModel()
 {
-    return mGridModel;
+    return mStandardModel;
 }
 
 // ----------------------------------------------------------------------------

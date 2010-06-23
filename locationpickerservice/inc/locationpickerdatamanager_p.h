@@ -48,7 +48,7 @@ private:
     // populates landmarks
     bool populateLandmarks( QList<QLookupItem> &aItemArray );
     // populates collections
-    void populateCollections();
+    void populateCollections( QList<int>& aCount );
 
 private:
     Qt::Orientations mOrientation;

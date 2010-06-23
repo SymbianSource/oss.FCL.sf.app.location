@@ -36,28 +36,31 @@ LocationPickerCollectionContent::LocationPickerCollectionContent( Qt::Orientatio
 {
     // Create a standard model for the view list
     mModel = new QStandardItemModel( this );
-    // create data manager to manage data in the model
-    mDataManager = LocationPickerDataManager::getInstance();
-    if( mDataManager->populateModel( *mModel, ELocationPickerCollectionContent, mOrientation , aCollectionId ) )
+    if(mModel)
     {
-        // Create the proxy model.
-        mProxyModel = new LocationPickerProxyModel(mOrientation);
-        mProxyModel->setSourceModel(mModel);
-        mProxyModel->setDynamicSortFilter(TRUE);
-        mProxyModel->setSortRole(Qt::DisplayRole);
-        mProxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
-        // sort
-        mProxyModel->sort(0, Qt::AscendingOrder);
-        mLocationFound = true;
+        // create data manager to manage data in the model
+        mDataManager = LocationPickerDataManager::getInstance();
+        if( mDataManager->populateModel( *mModel, ELocationPickerCollectionContent, mOrientation , aCollectionId ) )
+        {
+            // Create the proxy model.
+            mProxyModel = new LocationPickerProxyModel(mOrientation);
+            mProxyModel->setSourceModel(mModel);
+            mProxyModel->setDynamicSortFilter(TRUE);
+            mProxyModel->setSortRole(Qt::DisplayRole);
+            mProxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
+            // sort
+            mProxyModel->sort(0, Qt::AscendingOrder);
+            mLocationFound = true;
+        }
+        else
+        {
+            // no locations to display.
+            QStandardItem *modelItem = new QStandardItem();
+            modelItem->setData(QVariant(hbTrId("txt_lint_list_no_location_entries_present")), Qt::DisplayRole);
+            mModel->appendRow( modelItem );
+            mLocationFound = false;
+        }
     }
-    else
-    {
-        // no locations to display.
-        QStandardItem *modelItem = new QStandardItem();
-        modelItem->setData(QVariant(hbTrId("txt_lint_list_no_location_entries_present")), Qt::DisplayRole);
-        mModel->appendRow( modelItem );
-        mLocationFound = false;
-     }
 }
 
 // ----------------------------------------------------------------

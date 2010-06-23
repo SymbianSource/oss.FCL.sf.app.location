@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
     HbTranslator translator("lilpicker");    
     app.setApplicationName( hbTrId("txt_lint_title_select_location") );
     LocationPickerAppWindow mainWindow;
+    mainWindow.viewport()->grabGesture(Qt::TapGesture);
     mainWindow.show();
     return app.exec();
 }

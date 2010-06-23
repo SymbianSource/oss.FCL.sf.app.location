@@ -27,12 +27,20 @@
 //forward declarations
 class HbListView;
 class QStandardItemModel;
+class HbAction;
+class QGraphicsLinearLayout;
+class HbLabel;
+class HgWidgetDataModel;
+class HbTextItem;
+class HgMediawall;
+class QPoint;
+class HbMenu;
+
 class LocationPickerProxyModel;
 class LocationPickerCollectionContent;
 class LocatipnPickerProxyModel;
-class HbGridViewItem;
-class HbGridView;
-class HbAction;
+
+
 
 /**  
  * Class defines the location picker view
@@ -49,8 +57,8 @@ public:
 public:
     //get the items from docml and connect to respective slots
     void init( Qt::Orientation aOrientation, QStandardItemModel *aModel );
-    //Set the appropriate model on grid view
-    void manageGridView();
+    //Set the appropriate model on hgwidget
+    void manageHgWidget();
     //Create collection list and sets to list view
     void setCollectionData( quint32 aCategoryId );
     //Set Ctegory ID
@@ -70,6 +78,10 @@ private slots:
     void backButtonTriggered();
     //slot to handle search tab
     void searchTabTriggered();
+	//launch context menu
+    void launchPopUpMenu(const QModelIndex &aIndex, const QPointF &aPoint);
+	//handle long press
+    void handleLongPress();
 public slots:
     //slot to handle all tab
     void allTabTriggered();
@@ -87,7 +99,7 @@ private:
     HbDocumentLoader* mDocumentLoader;
     //locationPickerProxyModel
     LocationPickerProxyModel *mProxyModel;
-    QStandardItemModel *mModel;
+    QStandardItemModel *mStandardModel;
     //actions
     HbAction *mAllAction;
     HbAction *mCollectionAction;
@@ -96,15 +108,23 @@ private:
     HbAction *mDescendingAction;
     //secondary back action
     HbAction *mLandscapeBackAction;
-    HbGridView *mGridView;
     //collection content 
     LocationPickerCollectionContent *mCollectionContent;
-    HbGridViewItem *mGridViewItem;
     //view type
     TViewType mViewType ;
     //get the collection/category id
     quint32 mCategoryId;
-
+	//model for hurriganes
+    HgWidgetDataModel       *mModel;
+	//hurriganes 
+    HgMediawall                *mWidget;
+	//Linear layout
+    QGraphicsLinearLayout   *mLayout;
+	//text Item to display No Entry
+    HbTextItem*             mEmptyLabel;
+    QModelIndex mIndex;
+    //context menu
+    HbMenu* mLongPressMenu;
 };
 
 #endif /* LOCATIONPICKERLANDSCAPEVIEW_H_ */

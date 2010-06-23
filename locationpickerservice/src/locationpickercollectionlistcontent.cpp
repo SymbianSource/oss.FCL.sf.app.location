@@ -32,9 +32,16 @@ LocationPickerCollectionListContent::LocationPickerCollectionListContent( Qt::Or
 {
     // Create a standard model for the view list
     mModel = new QStandardItemModel( this );
-    // create data manager to manage data in the model
-    mDataManager = LocationPickerDataManager::getInstance();
-    mDataManager->populateModel( *mModel, ELocationPickerCollectionListContent, mOrientation );
+    if(mModel)
+    {
+        // create data manager to manage data in the model
+        mDataManager = LocationPickerDataManager::getInstance();
+        bool populated = mDataManager->populateModel( *mModel, ELocationPickerCollectionListContent, mOrientation );
+        if(!populated)
+        {
+        qFatal("Error creating collection");
+        }
+    }
 }
 
 // ----------------------------------------------------------------------

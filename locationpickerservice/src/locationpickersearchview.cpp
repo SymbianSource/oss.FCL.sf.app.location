@@ -22,6 +22,8 @@
 #include <HbTextItem>
 #include <HbDocumentLoader>
 #include <QGraphicsLinearLayout>
+#include <HbMenu>
+#include <HbAction>
 
 #include "locationpickerproxymodel.h"
 #include "locationpickersearchview.h"
@@ -39,7 +41,8 @@ LocationPickerSearchView::LocationPickerSearchView( HbDocumentLoader &aLoader )
     mSearchPanel(NULL),
     mEmptyLabel(NULL),
     mVerticalLayout(NULL),
-    mDocumentLoader(aLoader)
+    mDocumentLoader(aLoader),
+	mLongPressMenu(NULL)
 {
 
 }
@@ -50,6 +53,7 @@ LocationPickerSearchView::~LocationPickerSearchView()
 {
     delete mProxyModel;
     delete mEmptyLabel;
+    delete mLongPressMenu;
 }
 
 // ----------------------------------------------------
@@ -61,20 +65,18 @@ void LocationPickerSearchView::init( QStandardItemModel *aModel )
     //get listview from docml
     mListView = qobject_cast<HbListView*>(
             mDocumentLoader.findObject(QString("SearchListView")));
-    if(mListView == NULL)
+    if(!mListView)
     {
         qFatal("Error Reading Docml");   
     }
     //get search panel from docml
     mSearchPanel = qobject_cast<HbSearchPanel*>(
             mDocumentLoader.findObject(QString("searchPanel")));
-    if(mListView == NULL)
-    {
-        qFatal("Error Reading Docml");
-    }
     //conect to respective slots
     connect(mListView, SIGNAL(activated(const QModelIndex &)), this, SLOT(handleActivated
     (const QModelIndex &)));
+    connect(mListView,SIGNAL(longPressed(HbAbstractViewItem*, const QPointF &)),this,
+                SLOT(launchPopUpMenu(HbAbstractViewItem*, const QPointF &)));
     connect(mSearchPanel, SIGNAL(exitClicked()),this, SLOT(handleExit()));
     connect(mSearchPanel,SIGNAL(criteriaChanged(QString)),this,SLOT(doSearch(QString)));
     
@@ -120,12 +122,8 @@ void LocationPickerSearchView::doSearch( QString aCriteria )
         {    
             QGraphicsWidget *widget = NULL;
             widget = mDocumentLoader.findWidget(QString("container"));
-            if(widget == NULL)
-            {
-                qFatal("Error Reading Docml"); 
-            }
             mVerticalLayout = static_cast<QGraphicsLinearLayout*>(widget->layout());
-            if(mVerticalLayout == NULL)
+            if(!widget || !mVerticalLayout)
             {
                 qFatal("Error Reading Docml"); 
             }
@@ -172,4 +170,27 @@ void LocationPickerSearchView::getData( QModelIndex aIndex, quint32& aValue )
     QStandardItem* item = mModel->item( aIndex.row(), aIndex.column() );
     QVariant var = item->data( Qt::UserRole );
     aValue = var.toUInt();
+}
+
+
+// -----------------------------------------------------------------------------
+// LocationPickerSearchView::launchPopUpMenu()
+// -----------------------------------------------------------------------------
+void LocationPickerSearchView::launchPopUpMenu(HbAbstractViewItem *aItem, const QPointF &aPoint)
+{
+    mLongPressMenu = new HbMenu();
+    mLongPressMenu->setTimeout(HbMenu::NoTimeout);
+    HbAction* selectAction  = mLongPressMenu->addAction(hbTrId("Select"));
+    mIndex = aItem->modelIndex();
+    connect(selectAction, SIGNAL(triggered()),this, SLOT(handleLongPress()));
+    mLongPressMenu->setPreferredPos(aPoint);
+    mLongPressMenu->open();
+}
+
+// -----------------------------------------------------------------------------
+// LocationPickerSearchView::handleLongPress()
+// -----------------------------------------------------------------------------
+void LocationPickerSearchView::handleLongPress()
+{
+    handleActivated(mIndex);
 }
