@@ -318,7 +318,7 @@ void CLmkUiUtils::SwapNewContextIconL( CEikImage* aNewImage )
 //
 void CLmkUiUtils::SetOldContextIcon()
     {
-    if ( iContextPane && iOldImage )
+    if ( iContextPane && iOldImage && iOldImage->Bitmap())
         {
         iContextPane->SetPicture( iOldImage );
         iOldImage = NULL;
