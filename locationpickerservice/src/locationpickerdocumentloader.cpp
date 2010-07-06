@@ -16,9 +16,8 @@
 */
 
 #include "locationpickerdocumentloader.h"
-#include "locationpickerpotraitview.h"
+#include "locationpickerview.h"
 #include "locationpickersearchview.h"
-#include "locationpickerlandscapeview.h"
 
 // ---------------------------------------------------------------------------
 // LocationPickerDocumentLoader::LocationPickerDocumentLoader()
@@ -42,17 +41,10 @@ LocationPickerDocumentLoader::~LocationPickerDocumentLoader()
 //
 QObject *LocationPickerDocumentLoader::createObject( const QString& type, const QString &name )
 {   
-    //for locationpickerpotraitview
-    if ( name == LocationPickerPotraitView::staticMetaObject.className() )
+    //for locationpickerview
+    if ( name == LocationPickerView::staticMetaObject.className() )
     {
-        QObject *object = new LocationPickerPotraitView(this);
-        object->setObjectName( name );
-        return object;
-    }
-    //for locationpickerlandscapeview
-    if ( name == LocationPickerLandscapeView::staticMetaObject.className() )
-    {
-        QObject *object = new LocationPickerLandscapeView(this);
+        QObject *object = new LocationPickerView(this);
         object->setObjectName( name );
         return object;
     }

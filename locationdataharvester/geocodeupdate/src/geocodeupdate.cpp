@@ -1,19 +1,19 @@
 /*
-* Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of "Eclipse Public License v1.0"
-* which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
-*
-* Initial Contributors:
-* Nokia Corporation - initial contribution.
-*
-* Contributors:
-*
-* Description: 
-*
-*/
+ * Copyright (c) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
+ *
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description: 
+ *
+ */
 
 #include <qcontactgeolocation.h>
 #include <qcontactmanager.h>
@@ -34,9 +34,12 @@ using namespace QTM_NAMESPACE;
 // ----------------------------------------------------------------------------
 // GeocodeUpdate::GeocodeUpdate()
 // ----------------------------------------------------------------------------
-GeocodeUpdate::GeocodeUpdate()
+GeocodeUpdate::GeocodeUpdate() :
+    mAgendaUtil(NULL), mUtilInstanceCreated(false)
 {
-    
+    mAgendaUtil = new AgendaUtil();
+    connect(mAgendaUtil, SIGNAL(instanceViewCreationCompleted(int)), this,
+        SLOT(agendautilInstanceCreated(int)));
 }
 
 // ----------------------------------------------------------------------------
@@ -45,7 +48,9 @@ GeocodeUpdate::GeocodeUpdate()
 GeocodeUpdate::~GeocodeUpdate()
 {
     __TRACE_CALLSTACK;
-    
+    if (mUtilInstanceCreated) {
+        delete mAgendaUtil;
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -63,9 +68,8 @@ void GeocodeUpdate::createContactdb()
 // CGeocodeUpdate::updateGeocodeToContactDB()
 // Geo-cordinate updation to contact db  
 // ----------------------------------------------------------------------------
-bool GeocodeUpdate::updateGeocodeToContactDB(const quint32 contactId,
-        const int addressType, const double latitude,
-        const double longitude)
+bool GeocodeUpdate::updateGeocodeToContactDB(const quint32 contactId, const int addressType,
+    const double latitude, const double longitude)
 
 {
     __TRACE_CALLSTACK;
@@ -75,11 +79,10 @@ bool GeocodeUpdate::updateGeocodeToContactDB(const quint32 contactId,
     MYLOCLOGSTRING("contactManger object created .");
 
     MYLOCLOGSTRING("contactManger object is not null .");
-    QContact contact = contactManger->contact( contactId );
+    QContact contact = contactManger->contact(contactId);
     QContactGeoLocation location;
 
-    switch (addressType)
-    {
+    switch (addressType) {
         case ESourceContactsPref:
         {
             break;
@@ -96,14 +99,14 @@ bool GeocodeUpdate::updateGeocodeToContactDB(const quint32 contactId,
         }
         default:
         {
-            return false;       
+            return false;
         }
     }
     location.setLongitude(longitude);
     location.setLatitude(latitude);
     contact.saveDetail(&location);
-    bool ret=false;
-    ret=contactManger->saveContact(&contact);
+    bool ret = false;
+    ret = contactManger->saveContact(&contact);
     delete contactManger;
     return ret;
 }
@@ -112,30 +115,49 @@ bool GeocodeUpdate::updateGeocodeToContactDB(const quint32 contactId,
 // CGeocodeUpdate::updateGeocodeToCalenderDB()
 // Geo-cordinate updation to contact db  
 // ----------------------------------------------------------------------------
-bool GeocodeUpdate::updateGeocodeToCalenderDB(const ulong calEntryId,
-        const double latitude, const double longitude)
+bool GeocodeUpdate::updateGeocodeToCalenderDB(const ulong& calEntryId, const double& latitude,
+    const double& longitude)
 
 {
     __TRACE_CALLSTACK;
-    AgendaUtil agendaUtil ;    
-    connect(&agendaUtil , SIGNAL(instanceViewCreationCompleted(int)) ,this ,SLOT(agendautilInstanceCreated(int)));
-    QEventLoop loop;
-    connect(this,SIGNAL(eventCompleted()),&loop,SLOT(quit()));
-    loop.exec();
-    AgendaEntry agendaEntry (agendaUtil.fetchById(calEntryId));
-    MYLOCLOGSTRING("agenda entry created from calender id .");
-    AgendaGeoValue geoValue;
-    geoValue.setLatLong(latitude,longitude);
-    MYLOCLOGSTRING("latitude and longitude set to  AgendaGeoValue object.");
-    agendaEntry.setGeoValue(geoValue);
-    bool ret=false;
-    ret=agendaUtil.updateEntry(agendaEntry) ;
+    bool ret = false;
+    if (mUtilInstanceCreated) {
+        AgendaEntry agendaEntry(mAgendaUtil->fetchById(calEntryId));
+        MYLOCLOGSTRING("agenda entry created from calender id .");
+        AgendaGeoValue geoValue;
+        geoValue.setLatLong(latitude, longitude);
+        MYLOCLOGSTRING("latitude and longitude set to  AgendaGeoValue object.");
+        agendaEntry.setGeoValue(geoValue);
+        ret = mAgendaUtil->updateEntry(agendaEntry);
+    }    
     return ret;
 }
 
+// ----------------------------------------------------------------------------
+// CGeocodeUpdate::isGeocodeNotAvailable()
+// check if geo-cordinate are available for this specific entry id.
+// return true , for available otherwise false.
+// ----------------------------------------------------------------------------
+bool GeocodeUpdate::isGeocodeNotAvailable(const ulong& calEntryId)
+{
+    __TRACE_CALLSTACK;
+    bool ret = false;
+    if (mUtilInstanceCreated) {
+        AgendaEntry agendaEntry(mAgendaUtil->fetchById(calEntryId));
+        const AgendaGeoValue &geoValue = agendaEntry.geoValue();
+        ret = geoValue.isNull();
+    }
+    return ret;
+}
+
+// ----------------------------------------------------------------------------
+// CGeocodeUpdate::agendautilInstanceCreated()
+// call back on agendautil instance creation  
+// ----------------------------------------------------------------------------
 void GeocodeUpdate::agendautilInstanceCreated(int status)
 {
-    if (AgendaUtil::NoError == status){
+    if (AgendaUtil::NoError == status) {
+        mUtilInstanceCreated = true;
         emit eventCompleted();
     }
 }

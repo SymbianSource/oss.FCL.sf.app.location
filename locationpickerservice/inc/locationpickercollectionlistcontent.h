@@ -29,7 +29,7 @@ class LocationPickerCollectionListContent : public QObject
 public:
 
     // constructor
-    LocationPickerCollectionListContent( Qt::Orientation aOrientation );
+    LocationPickerCollectionListContent();
 
     // destructor
     ~LocationPickerCollectionListContent();
@@ -39,7 +39,6 @@ public:
     void getData( QModelIndex aIndex, quint32& aValue );
 
 private:
-    Qt::Orientation mOrientation;
     //standard Item Model
     QStandardItemModel *mModel;
     //datamanager

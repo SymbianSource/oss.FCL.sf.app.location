@@ -23,55 +23,7 @@
 #include <f32file.h> //RFs
 #include <d32dbms.h>  //RDbNamedDatabase,RDbView 
 
-// maptile database column names
-_LIT( NCntColUid, "cntuid" );
-_LIT( NAppColFilePath, "filepath" );
-_LIT( NColSource, "source" );
-_LIT( NColMaptileStatus, "fetchingstatus" );
-
-// maptile lookup database name
-_LIT( KMapTileLookupDatabaseName, "mylocationsmaptilelookup.db" );
-
-// maptile database table name
-_LIT( KMapTileLookupTable, "cntmaptilelookuptable" );
-
-_LIT( KLookupDbPath, "c:\\mylocations\\" );
-
-// uid column number
-const TInt KColumnUid = 1;
-// source type column number
-const TInt KColumnSource = 2;
-// maptile image path column number
-const TInt KColumnFilePath = 3;
-// maptile status column number
-const TInt KColumnMapTileFetchingStatus = 4;
-
-
-/**
- *  Maptile database lookup entry
- */
-class TLookupItem                            
-{
-public:
-    // Uid of the source entry
-    TUint32 iUid; 
-    
-    // Source type
-    TUint32 iSource;
-    
-    // Landmark uid in the landmarks database
-    TUint32 iLmId;
-    
-    // Uid of the Application
-    TUint32 iAppUid; 
-    
-    // File Path
-    TFileName iFilePath;
-    
-    //MK  map tile fetching status
-    TUint32 iFetchingStatus;    
-};
-
+#include "mylocationsdefines.h"
 /**
  * CLookupMapTileDatabase class.
  * This class handles all the operations related to maptile lookup database.

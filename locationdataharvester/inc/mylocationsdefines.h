@@ -121,6 +121,25 @@ const TInt KColumnMapTileFetchingStatus = 4;
 
 const TInt KBufSize=256;
 
+//Different Maptile sizes for different applications
+const int MapTileWidth = 614;
+const int MapTileHeight = 250;
+const int MaptilePortraitWidth = 334;
+const int MaptilePortraitHeight = 250;
+const int MaptileContactLandscapeWidth =  382;
+const int MaptileContactLandscapeHeight = 128;
+const int MaptileCalendarLandscapeWidth = 614;
+const int MaptileCalendarLandscapeHeight = 202;    
+const int MaptileHurriganesWidth = 228;    
+const int MaptileHurriganesHeight = 170;
+
+static const char*  MAPTILE_IMAGE_PORTRAIT = "_Vertical";
+static const char*  MAPTILE_IMAGE_LANDSCAPE = "_Horizontal";
+static const char*  MAPTILE_IMAGE_CALENDAR = "_Calendar";
+static const char*  MAPTILE_IMAGE_CONTACT  = "_Contact"; 
+static const char*  MAPTILE_IMAGE_HURRIGANES = "_Hurriganes";
+static const char*  MAPTILE_IMAGE_TYPE = "PNG";
+       
 #endif  // __MYLOCATIONSDEFINES_H__
 // End of file
 

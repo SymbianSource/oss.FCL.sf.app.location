@@ -31,7 +31,7 @@ class LocationPickerProxyModel : public QSortFilterProxyModel
 
 public:
     // constructor
-    LocationPickerProxyModel( Qt::Orientations aOrientation , QObject *parent = 0 );
+    LocationPickerProxyModel( QObject *parent = 0 );
 
     // used to
     void filterParameterChanged( QString aSearchText );
@@ -45,7 +45,6 @@ protected:
 private:
     // search string
     QString mSearchText;
-    Qt::Orientations mOrientation;
 };
  
  

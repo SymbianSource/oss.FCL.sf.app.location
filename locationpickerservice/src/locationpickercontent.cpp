@@ -29,7 +29,6 @@
 // -----------------------------------------------------------------------------
 LocationPickerContent::LocationPickerContent()
 	:mDataManager(NULL),
-	mListModel(NULL),
 	mStandardModel(NULL)
 {
     // create data manager to manage data in the model
@@ -40,37 +39,19 @@ LocationPickerContent::LocationPickerContent()
 // -----------------------------------------------------------------------------
 // LocationPickerContent::populateModel()
 // -----------------------------------------------------------------------------
-bool LocationPickerContent::populateModel( Qt::Orientation aOrientation )
+bool LocationPickerContent::populateModel()
 {
     bool locationsFound;
-    if(aOrientation == Qt::Vertical)
+    // Create a standard model for the list view
+    mStandardModel = new QStandardItemModel( this );
+    if( mDataManager->populateModel( *mStandardModel, ELocationPickerContent ) )
     {
-        // Create a standard model for the list view
-        mListModel = new QStandardItemModel( this );
-        if( mDataManager->populateModel( *mListModel, ELocationPickerContent, aOrientation) )
-        {
-            locationsFound = true;
-        }
-        else
-        {
-            createNoEntryDisplay(mListModel);
-            locationsFound = false;
-        }
+        locationsFound = true;
     }
-    //for landscape view
     else
     {
-        // Create a standard model for the landscape view
-        mStandardModel = new QStandardItemModel( this );
-        if( mDataManager->populateModel(*mStandardModel, ELocationPickerContent, aOrientation) )
-        {
-            locationsFound = true;
-        }
-        else
-        {
-            createNoEntryDisplay(mStandardModel);
-            locationsFound = false;
-        }
+        createNoEntryDisplay(mStandardModel);
+        locationsFound = false;
     }
     return locationsFound;
 }
@@ -80,17 +61,9 @@ bool LocationPickerContent::populateModel( Qt::Orientation aOrientation )
 // -----------------------------------------------------------------------------
 LocationPickerContent::~LocationPickerContent()
 {
-    delete mListModel;
     delete mStandardModel;
 }
 
-// -----------------------------------------------------------------------------
-// LocationPickerContent::getStandardListModel()
-// -----------------------------------------------------------------------------
-QStandardItemModel* LocationPickerContent::getStandardListModel()
-{
-    return mListModel;
-}
 
 // -----------------------------------------------------------------------------
 // LocationPickerContent::getStandardModel()

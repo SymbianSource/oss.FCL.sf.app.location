@@ -6,7 +6,7 @@ EXPORTS
 	??1GeocodeUpdate@@UAE@XZ @ 5 NONAME ; GeocodeUpdate::~GeocodeUpdate(void)
 	?getStaticMetaObject@GeocodeUpdate@@SAABUQMetaObject@@XZ @ 6 NONAME ; struct QMetaObject const & GeocodeUpdate::getStaticMetaObject(void)
 	?updateGeocodeToContactDB@GeocodeUpdate@@QAE_NIHNN@Z @ 7 NONAME ; bool GeocodeUpdate::updateGeocodeToContactDB(unsigned int, int, double, double)
-	?updateGeocodeToCalenderDB@GeocodeUpdate@@QAE_NKNN@Z @ 8 NONAME ; bool GeocodeUpdate::updateGeocodeToCalenderDB(unsigned long, double, double)
+	?updateGeocodeToCalenderDB@GeocodeUpdate@@QAE_NABKABN1@Z @ 8 NONAME ; bool GeocodeUpdate::updateGeocodeToCalenderDB(unsigned long const &, double const &, double const &)
 	??0GeocodeUpdate@@QAE@XZ @ 9 NONAME ; GeocodeUpdate::GeocodeUpdate(void)
 	?qt_metacall@GeocodeUpdate@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 10 NONAME ; int GeocodeUpdate::qt_metacall(enum QMetaObject::Call, int, void * *)
 	?eventCompleted@GeocodeUpdate@@IAEXXZ @ 11 NONAME ; void GeocodeUpdate::eventCompleted(void)
@@ -16,4 +16,5 @@ EXPORTS
 	?metaObject@GeocodeUpdate@@UBEPBUQMetaObject@@XZ @ 15 NONAME ; struct QMetaObject const * GeocodeUpdate::metaObject(void) const
 	?agendautilInstanceCreated@GeocodeUpdate@@AAEXH@Z @ 16 NONAME ; void GeocodeUpdate::agendautilInstanceCreated(int)
 	?qt_metacast@GeocodeUpdate@@UAEPAXPBD@Z @ 17 NONAME ; void * GeocodeUpdate::qt_metacast(char const *)
+	?isGeocodeNotAvailable@GeocodeUpdate@@QAE_NABK@Z @ 18 NONAME ; bool GeocodeUpdate::isGeocodeNotAvailable(unsigned long const &)
 

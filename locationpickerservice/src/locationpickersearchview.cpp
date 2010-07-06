@@ -42,7 +42,8 @@ LocationPickerSearchView::LocationPickerSearchView( HbDocumentLoader &aLoader )
     mEmptyLabel(NULL),
     mVerticalLayout(NULL),
     mDocumentLoader(aLoader),
-	mLongPressMenu(NULL)
+	mLongPressMenu(NULL),
+	mSelectAction(NULL)
 {
 
 }
@@ -53,7 +54,6 @@ LocationPickerSearchView::~LocationPickerSearchView()
 {
     delete mProxyModel;
     delete mEmptyLabel;
-    delete mLongPressMenu;
 }
 
 // ----------------------------------------------------
@@ -86,7 +86,7 @@ void LocationPickerSearchView::init( QStandardItemModel *aModel )
     mListView->setItemPrototype( hbListItem );
 
     // Create the proxy model.
-    mProxyModel = new LocationPickerProxyModel( Qt ::Vertical );
+    mProxyModel = new LocationPickerProxyModel();
     mProxyModel->setSourceModel(mModel);
     mListView->setModel(mProxyModel);
 
@@ -172,7 +172,6 @@ void LocationPickerSearchView::getData( QModelIndex aIndex, quint32& aValue )
     aValue = var.toUInt();
 }
 
-
 // -----------------------------------------------------------------------------
 // LocationPickerSearchView::launchPopUpMenu()
 // -----------------------------------------------------------------------------
@@ -180,10 +179,11 @@ void LocationPickerSearchView::launchPopUpMenu(HbAbstractViewItem *aItem, const 
 {
     mLongPressMenu = new HbMenu();
     mLongPressMenu->setTimeout(HbMenu::NoTimeout);
-    HbAction* selectAction  = mLongPressMenu->addAction(hbTrId("Select"));
+    mSelectAction  = mLongPressMenu->addAction(hbTrId("Select"));
     mIndex = aItem->modelIndex();
-    connect(selectAction, SIGNAL(triggered()),this, SLOT(handleLongPress()));
+    connect(mSelectAction, SIGNAL(triggered()),this, SLOT(handleLongPress()));
     mLongPressMenu->setPreferredPos(aPoint);
+    connect(mLongPressMenu,SIGNAL(aboutToClose ()),this,SLOT(deleteMenu()));
     mLongPressMenu->open();
 }
 
@@ -193,4 +193,15 @@ void LocationPickerSearchView::launchPopUpMenu(HbAbstractViewItem *aItem, const 
 void LocationPickerSearchView::handleLongPress()
 {
     handleActivated(mIndex);
+}
+
+// -----------------------------------------------------------------------------
+// LocationPickerSearchView::deleteMenu()
+// -----------------------------------------------------------------------------
+void LocationPickerSearchView::deleteMenu()
+{
+    mLongPressMenu->deleteLater();
+    mLongPressMenu = NULL;
+    mSelectAction->deleteLater();
+    mSelectAction = NULL;
 }

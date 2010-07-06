@@ -17,6 +17,7 @@
 */
 
 // INCLUDE FILES
+#include <QFile>
 #include <f32file.h>
 #include <calchangecallback.h> 
 #include <cntitem.h>
@@ -30,7 +31,6 @@
 #include "contactsubscriber.h"
 #include "calendarsubscriber.h"
 #include "mylocationsengine.h"
-#include "mylocationsdefines.h"
 #include "geocodeupdate.h" //header for GeocodeUpdate class
 //handle for CMyLocationsHistoryDbObserver class
 #include "mylocationlogger.h"
@@ -91,6 +91,7 @@ void CMyLocationsEngine::ConstructL()
 
     MYLOCLOGSTRING("Maptile Db instance created ");
 	
+    iGeocodeUpdate = new GeocodeUpdate();
     iMyLocationThreeAMTimer = CLocationGeoTagTimerAO::NewL(*this);
   
     iMyLocationThreeAMTimer->StartTimer();
@@ -233,6 +234,7 @@ CMyLocationsEngine::CMyLocationsEngine() :
             iContactManager(NULL),
             iContactSubscriber(NULL),
             iCalendarSubscriber(NULL),
+            iGeocodeUpdate(NULL),
             iLastContactId( -1 ) ,
             iLastCalendarId( 0 )
 {
@@ -276,7 +278,8 @@ CMyLocationsEngine::~CMyLocationsEngine()
 
     delete iCalendarSubscriber;
     
-	//free the allocated memory
+    delete iGeocodeUpdate;
+    
     for( TInt index = 0; index < iAddressInfo.Count(); index++ )
     {
         delete iAddressInfo[index];
@@ -499,8 +502,7 @@ void CMyLocationsEngine::StartContactsChangeNotifierL()
 {
     __TRACE_CALLSTACK;
    
-    GeocodeUpdate geocodeUpdate;
-    geocodeUpdate.createContactdb();
+    iGeocodeUpdate->createContactdb();
     iContactsDb = CContactDatabase::OpenL();
     // Create CContactChangeNotifier object with 'this' object. 
     iContactChangeNotifier = CContactChangeNotifier::NewL(*iContactsDb,this);
@@ -620,27 +622,30 @@ void CMyLocationsEngine::CalenderEntryModifyL(TCalChangeEntry aCalChangeEntry)
     CCalEntry* calEntry = NULL;
     calEntry = iCalView->FetchL(entryId);
     CleanupStack::PushL(calEntry);
-    TPtrC address(calEntry->LocationL());
-    if (iMyLocationsDatabaseManager->CheckIfAddressChanged(address, entryId,
-            ESourceCalendar))
-    {
-        lookupItem.iFilePath.Zero();
-        lookupItem.iFetchingStatus = EMapTileFetchingInProgress;
-        TRAP_IGNORE( iMaptileDatabase->ReSetEntryL(lookupItem) );
-        if (address.Length() > 0)
+    if(iGeocodeUpdate->isGeocodeNotAvailable(entryId))
+    {        
+        TPtrC address(calEntry->LocationL());
+        if (iMyLocationsDatabaseManager->CheckIfAddressChanged(address, entryId,
+                ESourceCalendar))
         {
-            RequestMapTileImageL(address, ESourceCalendar, entryId , EChangeModify);
-        }
-        else
-        {
-            UpdateDatabaseL(NULL, entryId, ESourceCalendar, EEntryDeleted);
-        }
-        if ( lookupItem.iFilePath.Length() > 0 )
-        {
-            iMaptileDatabase->DeleteMapTileL(lookupItem);
-        }
-
-    }
+            lookupItem.iFilePath.Zero();
+            lookupItem.iFetchingStatus = EMapTileFetchingInProgress;
+            TRAP_IGNORE( iMaptileDatabase->ReSetEntryL(lookupItem) );
+            if (address.Length() > 0)
+            {
+                RequestMapTileImageL(address, ESourceCalendar, entryId , EChangeModify);
+            }
+            else
+            {
+                UpdateDatabaseL(NULL, entryId, ESourceCalendar, EEntryDeleted);
+            }
+            if ( lookupItem.iFilePath.Length() > 0 )
+            {
+                iMaptileDatabase->DeleteMapTileL(lookupItem);
+            }
+    
+        }        
+    }   
     CleanupStack::PopAndDestroy(calEntry);
 }
 
@@ -658,169 +663,8 @@ void CMyLocationsEngine::HandleDatabaseEventL(TContactDbObserverEvent aEvent)
     {
         TriggerMaptileRequestL(aEvent);
     }
-    
-    HandlelandmarkDatabaseL(aEvent);
 }
 
-// -----------------------------------------------------------------------------
-// CMyLocationsEngine::HandlelandmarkDatabaseL()
-// Process the contact database event and updates the landmark database
-// -----------------------------------------------------------------------------
-//
-void CMyLocationsEngine::HandlelandmarkDatabaseL(
-        TContactDbObserverEvent& aEvent)
-{
-    __TRACE_CALLSTACK;// If contact is modified or added, update the mylocations db
-    if (aEvent.iType == EContactDbObserverEventContactChanged || aEvent.iType
-            == EContactDbObserverEventContactAdded)
-    {
-       
-        CPosLandmark *preferedAddressLm = NULL;
-        CPosLandmark *workAddressLm = NULL;
-        CPosLandmark *homeAddressLm = NULL;
-        
-        QContact contactInfo = iContactManager->contact( aEvent.iContactId );
-         
-        //Get the contact name details
-        QContactName name = contactInfo.detail( QContactName::DefinitionName );
-        QString firstName = name.firstName();
-        QString lastName = name.lastName();
-        TPtrC16 tempPtr1(reinterpret_cast<const TUint16*>(firstName.utf16()));
-        TPtrC16 tempPtr2( reinterpret_cast <const TUint16*>(lastName.utf16()));
-        
-        TBuf<KBufSize> landmarkName;
-        landmarkName.Append( tempPtr1 );
-        landmarkName.Append( tempPtr2 );
-        
-        TInt itemCount = 0;
-        
-  
-        double longitude, latitude;
-        
-        foreach ( QContactAddress address, contactInfo.details<QContactAddress>() )
-        {
-          QStringList context = address.contexts();
-          if ( context.isEmpty() ) // no context
-          {
-              //check whether geocordinate available
-              TBool geoField = IsGeoCoordinateAvailable( 
-                       contactInfo, NULL , latitude, longitude );
-              if( geoField )
-              {
-                  // Get the default/prefered address details
-                  preferedAddressLm = GetContactAddressDetailsLC( address );
-                  TLocality loc( TCoordinate( latitude, longitude ), 0 );
-                  // Fill the location details into the landmark object
-                  preferedAddressLm->SetPositionL(loc);
-                  preferedAddressLm->SetLandmarkNameL( landmarkName );
-                  itemCount++;
-
-              }
-          }
-          else if (context.first() == QContactAddress::ContextHome  )
-          {
-              //check whether geocordinate available
-              TBool geoField = IsGeoCoordinateAvailable( 
-                               contactInfo, QContactAddress::ContextHome, latitude, longitude );
-              if( geoField )
-              {
-                  // Get the home address details
-                  homeAddressLm = GetContactAddressDetailsLC( address );
-                  TLocality loc(TCoordinate( latitude,longitude ), 0);
-                  homeAddressLm->SetPositionL(loc);
-                  homeAddressLm->SetLandmarkNameL( landmarkName );
-                  itemCount++;
-              }
-          }
-          else if (context.first() == QContactAddress::ContextWork )
-          {
-              //check whether geocordinate available
-              TBool geoField = IsGeoCoordinateAvailable( 
-                        contactInfo, QContactAddress::ContextWork, latitude, longitude );
-              if( geoField )
-              {
-                  // Get the work address details
-                  workAddressLm = GetContactAddressDetailsLC( address );
-                  TLocality loc(TCoordinate( latitude, longitude ), 0);
-                  // Fill the location details into the landmark object
-                  workAddressLm->SetPositionL(loc);
-                  workAddressLm->SetLandmarkNameL( landmarkName );
-                  itemCount++;
-              }
-        
-          }
-        }
-
-        // if the contact item has no validated address (preferef, home or work)
-        if (!preferedAddressLm && !workAddressLm && !homeAddressLm)
-        {
-            if (aEvent.iType == EContactDbObserverEventContactChanged)
-            {
-                // If the contact is a modified one and it might already exist in
-                // mylocations db, so delete it
-                UpdateDatabaseL(NULL,
-                        aEvent.iContactId, ESourceContactsPref,
-                        EEntryDeleted);
-                
-                UpdateDatabaseL(NULL,
-                                 aEvent.iContactId, ESourceContactsHome,
-                                 EEntryDeleted);
-                  
-                UpdateDatabaseL(NULL,
-                        aEvent.iContactId, ESourceContactsWork,
-                        EEntryDeleted);
-            }
-        }
-        else
-        {
-            // There is atleast one valid address present.       
-
-            // Get the TEntryChangeType for contacts.
-            TEntryChangeType changeType = MapChangeType(
-                    ESourceContactsPref, aEvent.iType);
-
-            // if prefered address available, update Mylocations.  
-            if (preferedAddressLm)
-            {
-                UpdateDatabaseL(
-                        preferedAddressLm, aEvent.iContactId,
-                        ESourceContactsPref, changeType);
-            }
-            // if home address available, update Mylocations.  
-            if (homeAddressLm)
-            {
-                UpdateDatabaseL(homeAddressLm,
-                        aEvent.iContactId, ESourceContactsHome, changeType);
-            }
-
-            // if work address available, update Mylocations.  
-            if (workAddressLm)
-            {
-                UpdateDatabaseL(workAddressLm,
-                        aEvent.iContactId, ESourceContactsWork, changeType);
-            }
-
-            CleanupStack::PopAndDestroy( itemCount );
-        }  
-
-    }
-    else if (aEvent.iType == EContactDbObserverEventContactDeleted)
-    {
-        // the contact is deleted, so delete the corresponding entries from database.
-
-        // delete prefered address in database
-        UpdateDatabaseL(NULL, aEvent.iContactId,
-                ESourceContactsPref, EEntryDeleted);
-
-        // delete work address in database
-        UpdateDatabaseL(NULL, aEvent.iContactId,
-                ESourceContactsWork, EEntryDeleted);
-
-        // delete home address in database
-        UpdateDatabaseL(NULL, aEvent.iContactId,
-                ESourceContactsHome, EEntryDeleted);
-    }
-}
 
 // -----------------------------------------------------------------------------
 // CMyLocationsEngine::TriggerMaptileRequestL()
@@ -835,6 +679,7 @@ void CMyLocationsEngine::TriggerMaptileRequestL(TContactDbObserverEvent& aEvent)
     // If contact is deleted delete from mylocations db
     if (aEvent.iType == EContactDbObserverEventContactDeleted)
     {        
+        //Delete the entries from maptile database
         lookupItem.iSource = ESourceContactsPref;
         TRAP_IGNORE( ManipulateMapTileDataBaseL(lookupItem));
 
@@ -844,6 +689,16 @@ void CMyLocationsEngine::TriggerMaptileRequestL(TContactDbObserverEvent& aEvent)
         lookupItem.iSource = ESourceContactsHome;
         TRAP_IGNORE( ManipulateMapTileDataBaseL(lookupItem));
               
+        // Delete entries from  mylocation database
+        TRAP_IGNORE( UpdateDatabaseL( NULL, aEvent.iContactId,
+                     ESourceContactsPref, EEntryDeleted ));
+       
+        TRAP_IGNORE( UpdateDatabaseL( NULL, aEvent.iContactId,
+               ESourceContactsHome, EEntryDeleted ));
+
+        TRAP_IGNORE( UpdateDatabaseL( NULL, aEvent.iContactId,
+                               ESourceContactsWork, EEntryDeleted ) );  
+        
         MYLOCLOGSTRING("EContactDbObserverEventContactDeleted ");
         return;
     }
@@ -852,7 +707,17 @@ void CMyLocationsEngine::TriggerMaptileRequestL(TContactDbObserverEvent& aEvent)
     iEventType = aEvent.iType;
     QContact contactInfo = iContactManager->contact( aEvent.iContactId );
     
-  
+    //Get the contact name details
+    QContactName name = contactInfo.detail( QContactName::DefinitionName );
+    QString firstName = name.firstName();
+    QString lastName = name.lastName();
+    TPtrC16 tempPtr1(reinterpret_cast<const TUint16*>(firstName.utf16()));
+    TPtrC16 tempPtr2( reinterpret_cast <const TUint16*>(lastName.utf16()));
+    
+    TBuf<KBufSize> landmarkName;
+    landmarkName.Append( tempPtr1 );
+    landmarkName.Append( tempPtr2 );
+            
     CPosLandmark *preferedAddressLm = NULL;
     CPosLandmark *workAddressLm = NULL;
     CPosLandmark *homeAddressLm = NULL;
@@ -900,6 +765,7 @@ void CMyLocationsEngine::TriggerMaptileRequestL(TContactDbObserverEvent& aEvent)
             lookupItem.iSource = ESourceContactsPref;
             if (preferedAddressLm)
             {
+                preferedAddressLm->SetLandmarkNameL( landmarkName );
                 MYLOCLOGSTRING("preferedAddressLm address changed" );
 
                 if ( iMyLocationsDatabaseManager->CheckIfAddressChanged(*preferedAddressLm,
@@ -931,6 +797,7 @@ void CMyLocationsEngine::TriggerMaptileRequestL(TContactDbObserverEvent& aEvent)
             lookupItem.iSource = ESourceContactsHome;
             if (homeAddressLm)
             {
+                homeAddressLm->SetLandmarkNameL( landmarkName );
                 MYLOCLOGSTRING("homeAddressLm address changed" );
                 if ( iMyLocationsDatabaseManager->CheckIfAddressChanged(*homeAddressLm,
                         aEvent.iContactId, ESourceContactsHome) )
@@ -959,6 +826,7 @@ void CMyLocationsEngine::TriggerMaptileRequestL(TContactDbObserverEvent& aEvent)
             lookupItem.iSource = ESourceContactsWork;
             if (workAddressLm)
             {
+                workAddressLm->SetLandmarkNameL( landmarkName );
                 MYLOCLOGSTRING("workAddressLm address changed" );
                 if ( iMyLocationsDatabaseManager->CheckIfAddressChanged(*workAddressLm,
                         aEvent.iContactId, ESourceContactsWork) )
@@ -995,6 +863,7 @@ void CMyLocationsEngine::TriggerMaptileRequestL(TContactDbObserverEvent& aEvent)
             MYLOCLOGSTRING("EContactDbObserverEventContactAdded" );
             if (preferedAddressLm)
             {
+                preferedAddressLm->SetLandmarkNameL( landmarkName );
                 //create entry in the data base and maintain a fetching state.
                 lookupItem.iSource = ESourceContactsPref;
                 iMaptileDatabase->CreateEntryL(lookupItem);
@@ -1003,6 +872,7 @@ void CMyLocationsEngine::TriggerMaptileRequestL(TContactDbObserverEvent& aEvent)
             }
             if (homeAddressLm)
             {
+                homeAddressLm->SetLandmarkNameL( landmarkName );
                 lookupItem.iSource = ESourceContactsHome;
                 iMaptileDatabase->CreateEntryL(lookupItem);
                 RequestMapTileImageL(*homeAddressLm, ESourceContactsHome,
@@ -1010,6 +880,7 @@ void CMyLocationsEngine::TriggerMaptileRequestL(TContactDbObserverEvent& aEvent)
             }
             if (workAddressLm)
             {
+                workAddressLm->SetLandmarkNameL( landmarkName );
                 lookupItem.iSource = ESourceContactsWork;
                 iMaptileDatabase->CreateEntryL(lookupItem);
                 RequestMapTileImageL(*workAddressLm, ESourceContactsWork,
@@ -1475,6 +1346,14 @@ void CMyLocationsEngine::GeoCodefetchingCompleted( TInt aErrCode, const TReal& a
     }    
 }
 
+
+
+
+// -----------------------------------------------------------------------------
+// CMyLocationsEngine::MyLocationThreeAMTimerExpiredL()
+// Triggers the maptile fetching at 3.00 for the network failure cases.
+// -----------------------------------------------------------------------------
+//
 void CMyLocationsEngine::MyLocationThreeAMTimerExpiredL()
 {
     //Forward the event for maptile fetching only if maptile plugin available
@@ -1494,6 +1373,18 @@ void CMyLocationsEngine::MyLocationThreeAMTimerExpiredL()
                 case ESourceContactsPref:
                      { 
                         QContact contactInfo = iContactManager->contact( iItem.iUid );
+                        
+                        //Get the contact name details
+                        QContactName name = contactInfo.detail( QContactName::DefinitionName );
+                        QString firstName = name.firstName();
+                        QString lastName = name.lastName();
+                        TPtrC16 tempPtr1(reinterpret_cast<const TUint16*>(firstName.utf16()));
+                        TPtrC16 tempPtr2( reinterpret_cast <const TUint16*>(lastName.utf16()));
+                       
+                        TBuf<KBufSize> landmarkName;
+                        landmarkName.Append( tempPtr1 );
+                        landmarkName.Append( tempPtr2 );
+                        
                         CPosLandmark *addressLm = NULL;
     
                         foreach ( QContactAddress address, contactInfo.details<QContactAddress>() )
@@ -1509,6 +1400,7 @@ void CMyLocationsEngine::MyLocationThreeAMTimerExpiredL()
                                 addressLm = GetContactAddressDetailsLC( address );
                                 if( addressLm ) 
                                 {
+                                    addressLm->SetLandmarkNameL( landmarkName );
                                     RequestMapTileImageL( *addressLm,
                                            ( TUidSourceType )iItem.iSource, iItem.iUid, EContactDbObserverEventContactChanged );
                                     CleanupStack::PopAndDestroy( addressLm );
@@ -1571,6 +1463,7 @@ void CMyLocationsEngine::MapTilefetchingCompleted(TInt aErrCode,
        
         if ( aErrCode == KErrNone )
         {           
+            CreateMultipleMaptiles( aMapTilePath );
             lookupItem.iFilePath.Copy(aMapTilePath);
             lookupItem.iFetchingStatus = EMapTileFectchingCompleted;
  
@@ -1669,8 +1562,27 @@ void CMyLocationsEngine::UpdateMaptileDatabaseL(
             iMaptileDatabase->CreateEntryL(aLookupItem);
         }
     }
-    iMyLocationsDatabaseManager->UpdateMapTilePath( aLookupItem.iUid, aLookupItem.iSource, 
-                                            aLookupItem.iFilePath );    
+    if (aLookupItem.iFetchingStatus == EMapTileFetchingUnknownError
+            || aLookupItem.iFetchingStatus == EMapTileFetchingNetworkError)
+    {
+        TRAP_IGNORE( UpdateDatabaseL( NULL,
+                        aLookupItem.iUid, aLookupItem.iSource, EEntryDeleted ) );
+
+    }
+    else
+    {      
+        TPtrC8 ptr(reinterpret_cast<const TUint8*>(MAPTILE_IMAGE_HURRIGANES));   
+        HBufC* buffer = NULL;
+        buffer=HBufC::NewLC(ptr.Length());
+        buffer->Des().Copy(ptr);
+        if(buffer)
+        {
+            aLookupItem.iFilePath.Append(*buffer);
+        }
+        CleanupStack::PopAndDestroy(buffer);
+        iMyLocationsDatabaseManager->UpdateMapTilePath(aLookupItem.iUid,
+                aLookupItem.iSource, aLookupItem.iFilePath);
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -1690,7 +1602,9 @@ void CMyLocationsEngine::UpdateGeoCodeToAppDataBase( TReal aLatitude, TReal aLon
         {
         //TODO:
         case ESourceCalendar:
-        {                   
+        {           
+            iGeocodeUpdate->updateGeocodeToCalenderDB(iMapTileRequestQueue[0]->iUId,
+                    aLatitude,aLongitude);                    
             CPosLandmark *landmark = NULL;
             landmark = iMapTileInterface->GetLandMarkDetails();
             if (NULL != landmark)
@@ -1708,17 +1622,23 @@ void CMyLocationsEngine::UpdateGeoCodeToAppDataBase( TReal aLatitude, TReal aLon
         case ESourceContactsWork:
         case ESourceContactsHome:
         {
-            GeocodeUpdate geocodeUpdate;
-            geocodeUpdate.updateGeocodeToContactDB(
+            iGeocodeUpdate->updateGeocodeToContactDB(
                     iMapTileRequestQueue[0]->iUId,
                     iMapTileRequestQueue[0]->iAddressType, aLatitude,
                     aLongitude);
+            //Update mylocation database 
+            TRAP_IGNORE( UpdateDatabaseL( 
+                    iMapTileRequestQueue[0]->iLandmarkInfo, 
+                    iMapTileRequestQueue[0]->iUId,
+                    iMapTileRequestQueue[0]->iAddressType,
+                    MapChangeType( 
+                        static_cast<TUidSourceType>( iMapTileRequestQueue[0]->iAddressType ), 
+                                                  iMapTileRequestQueue[0]->iEventType )));
+            
             MYLOCLOGSTRING("Geo-codinate updated to contact db");
             break;
         }
         };
-
-        
     }
 
 }
@@ -1755,6 +1675,72 @@ void CMyLocationsEngine::ManipulateMapTileDataBaseL(TLookupItem& aLookupItem)
     {
         iMaptileDatabase->DeleteMapTileL(aLookupItem);
     }            
+}
+
+
+// -----------------------------------------------------------------------------
+// CMyLocationsEngine::CreateMultipleMaptiles()
+// -----------------------------------------------------------------------------
+//
+void CMyLocationsEngine::CreateMultipleMaptiles( const TDesC& aMaptilePath )
+{
+    __TRACE_CALLSTACK;
+    QString filePath =  QString::fromUtf16( aMaptilePath.Ptr(), aMaptilePath.Length() );
+    
+    //Portrait image , common for contacts/calendar/context menu
+    CropAndSaveImage( filePath, 
+                      MaptilePortraitWidth, 
+                      MaptilePortraitHeight, 
+                      QString(),
+                      QString( MAPTILE_IMAGE_PORTRAIT ) );
+    
+    //Landscape image for contacts
+    CropAndSaveImage( filePath, 
+                      MaptileContactLandscapeWidth, 
+                      MaptileContactLandscapeHeight,
+                      QString( MAPTILE_IMAGE_CONTACT ),
+                      QString( MAPTILE_IMAGE_LANDSCAPE ) );
+    
+    //Ladscape image for calendar
+    CropAndSaveImage( filePath, 
+                      MaptileCalendarLandscapeWidth, 
+                      MaptileCalendarLandscapeHeight,
+                      QString( MAPTILE_IMAGE_CALENDAR ),
+                      QString( MAPTILE_IMAGE_LANDSCAPE ) );
+    
+    //Image for hurriganes
+    CropAndSaveImage( filePath, 
+                      MaptileHurriganesWidth, 
+                      MaptileHurriganesHeight,
+                      QString( MAPTILE_IMAGE_HURRIGANES ),
+                      QString() );
+    QFile file(filePath);
+    file.remove();   
+}
+
+
+// -----------------------------------------------------------------------------
+// CMyLocationsEngine::CropAndSaveImage()
+// -----------------------------------------------------------------------------
+//
+void CMyLocationsEngine::CropAndSaveImage( QString filePath, int width, 
+                                   int height, QString appType, QString orientationType )
+{    
+     __TRACE_CALLSTACK;
+     QImage SourcePNG( filePath );
+     QImage sourcePixmap( SourcePNG.convertToFormat(QImage::Format_Indexed8));     
+     QImage targetPixmap( sourcePixmap.copy( 
+                               ( MapTileWidth - width )/2, 
+                               ( MapTileHeight - height )/2 , 
+                               width, 
+                               height ) );
+         
+     QString targetImage;
+     targetImage.append( filePath );
+     targetImage.append( appType );
+     targetImage.append( orientationType );
+     targetPixmap.save( targetImage, MAPTILE_IMAGE_TYPE  );
+             
 }
 
 //End of file

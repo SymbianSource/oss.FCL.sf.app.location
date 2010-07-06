@@ -21,10 +21,10 @@
     <meshitem src="content" srcEdge="LEFT" dst="" dstEdge="LEFT" />
     <meshitem src="description" srcEdge="BOTTOM" dst="content" dstEdge="BOTTOM" />
     <meshitem src="description" srcEdge="CENTERH" dst="content" dstEdge="CENTERH" />
-    <meshitem src="title" srcEdge="BOTTOM" dst="description" dstEdge="TOP" />
+    <meshitem src="title" srcEdge="TOP" dst="content" dstEdge="TOP" />
     <meshitem src="title" srcEdge="CENTERH" dst="content" dstEdge="CENTERH" />
-    <meshitem src="centeritem" srcEdge="BOTTOM" dst="title" dstEdge="TOP" />
-    <meshitem src="centeritem" srcEdge="TOP" dst="content" dstEdge="TOP" />
+    <meshitem src="centeritem" srcEdge="BOTTOM" dst="content" dstEdge="BOTTOM" />
+    <meshitem src="centeritem" srcEdge="TOP" dst="title" dstEdge="BOTTOM" />
 	<meshitem src="centeritem" srcEdge="RIGHT" dst="content" dstEdge="RIGHT" />
     <meshitem src="centeritem" srcEdge="LEFT" dst="content" dstEdge="LEFT" />
   </layout>

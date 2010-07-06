@@ -21,6 +21,7 @@
 #include <locationservicedefines.h>
 #include <qvaluespacepublisher.h>
 #include <qvaluespacesubscriber.h>
+#include <qfile.h>
 #include "mylocationlogger.h"
 
 #include "maptileservice.h"
@@ -123,7 +124,8 @@ bool MapTileService::isLocationFeatureEnabled(AppType appType)
 // Gets the maptile image path associated with a contact.
 // -----------------------------------------------------------------------------
 //
-int MapTileService::getMapTileImage( int id, AddressType sourceType, QString& imagePath )    
+int MapTileService::getMapTileImage( int id, AddressType sourceType, 
+             QString& imagePath, Qt::Orientations orientation )    
 {
     __TRACE_CALLSTACK;
     
@@ -138,15 +140,42 @@ int MapTileService::getMapTileImage( int id, AddressType sourceType, QString& im
     if ( KErrNone == error  )
     {
      
-        //Get the image path
-        QString imageFile((QChar*)lookupItem.iFilePath.Ptr(),
-                    lookupItem.iFilePath.Length());
-        imagePath = imageFile;
-            
         maptileStatus = lookupItem.iFetchingStatus;
         MYLOCLOGSTRING1("getMapTileImage maptileStatus  - %d ", maptileStatus );
-
-        if( maptileStatus == MapTileFetchingNetworkError ||
+        
+        if( maptileStatus == MapTileFetchingCompleted )
+        {
+            //Get the image path
+	          QString imageFile((QChar*)lookupItem.iFilePath.Ptr(),
+	                    lookupItem.iFilePath.Length());
+	          imagePath = imageFile;
+	        
+	          if( orientation == Qt::Vertical )
+	          {
+	              imagePath.append( MAPTILE_IMAGE_PORTRAIT ); 
+	          }
+	          else
+	          {
+	              if( sourceType == AddressPlain )
+	              {
+	                  imagePath.append( MAPTILE_IMAGE_CALENDAR );
+	              }
+	              else if ( sourceType == AddressHome || 
+	                   sourceType == AddressPreference || sourceType == AddressWork )
+	              {
+	                  imagePath.append( MAPTILE_IMAGE_CONTACT );
+	              }
+	              imagePath.append( MAPTILE_IMAGE_LANDSCAPE );
+	          }
+	          
+	          //Check if file exist
+	          if( !QFile::exists( imagePath ) )
+	          {
+	              imagePath.clear();
+	           		maptileStatus = MapTileFetchingUnknownError;
+	          }
+	      }
+        else if( maptileStatus == MapTileFetchingNetworkError ||
                     maptileStatus == MapTileFetchingInProgress )
         {
             switch(sourceType)

@@ -2,7 +2,7 @@ EXPORTS
 	_ZN14MapTileService11qt_metacallEN11QMetaObject4CallEiPPv @ 1 NONAME
 	_ZN14MapTileService11qt_metacastEPKc @ 2 NONAME
 	_ZN14MapTileService12publishValueEiNS_11AddressTypeEi @ 3 NONAME
-	_ZN14MapTileService15getMapTileImageEiNS_11AddressTypeER7QString @ 4 NONAME
+	_ZN14MapTileService15getMapTileImageEiNS_11AddressTypeER7QString6QFlagsIN2Qt11OrientationEE @ 4 NONAME
 	_ZN14MapTileService15publishCalEntryEi @ 5 NONAME
 	_ZN14MapTileService16setMaptileStatusEv @ 6 NONAME
 	_ZN14MapTileService16staticMetaObjectE @ 7 NONAME DATA 16

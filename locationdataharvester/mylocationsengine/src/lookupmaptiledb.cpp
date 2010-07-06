@@ -14,6 +14,8 @@
 * Description: Maptile database lookup table source implementation.
 *
 */
+#include <QString>
+#include <QFile>
 
 #include <bautils.h>
 #include "mylocationlogger.h"
@@ -380,7 +382,28 @@ void CLookupMapTileDatabase::DeleteMapTileL( const TLookupItem& aLookupItem)
     // Delete if no reference to maptile
     if (!myView.AtRow())
     {
-        ret = iFsSession.Delete(aLookupItem.iFilePath);     
+        QString filePath =  QString::fromUtf16( aLookupItem.iFilePath.Ptr(), aLookupItem.iFilePath.Length() );
+        //delete all releted  maptile 
+        QString temp=filePath;
+        temp.append(MAPTILE_IMAGE_PORTRAIT);       
+        QFile file;
+        file.remove(temp);
+        
+        temp=filePath;
+        temp.append(MAPTILE_IMAGE_CONTACT);
+        temp.append(MAPTILE_IMAGE_LANDSCAPE);
+        file.remove(temp);
+        
+        temp=filePath;
+        temp.append(MAPTILE_IMAGE_CALENDAR);
+        temp.append(MAPTILE_IMAGE_LANDSCAPE);
+        file.remove(temp);
+        
+        temp=filePath;
+        temp.append(MAPTILE_IMAGE_HURRIGANES);         
+        file.remove(temp);
+         
+       // ret = iFsSession.Delete(aLookupItem.iFilePath);     
     }
         
     CleanupStack::PopAndDestroy(&myView); // myView

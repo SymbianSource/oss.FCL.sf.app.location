@@ -32,8 +32,6 @@
 const TReal KInvalidLatitudeLongitude =  200.0f;
 const TInt KStreetLvelZoom = 16;
 const TInt KCityLevelZoom = 11;
-const TInt KMapTileWidth= 330;
-const TInt KMapTileHeight= 128;
 const TInt KImagePathSize=36;
 const TInt KMapTileWidthHeight = 256 ;
 _LIT(KFileExtn, ".png");
@@ -155,7 +153,7 @@ void CMapTileInterface::GetMapTileL( const TReal& aLatitude, const TReal& aLongi
         zoom = KStreetLvelZoom;
     }
     iStreetAvailable = EFalse;
-    TMapTileParam mapTileparam(aLatitude, aLongitude, zoom, KMapTileWidth, KMapTileHeight );
+    TMapTileParam mapTileparam(aLatitude, aLongitude, zoom, MapTileWidth,MapTileHeight );
     iMaptileGeocoder->GetMapTileByGeoCodeL( mapTileparam, *iFilePath );
 }
 

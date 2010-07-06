@@ -1,18 +1,18 @@
 HgMediawall#location[scrollBarPolicy="ScrollBarAlwaysOff"]
 {
     layout:layout-noscrollbar;
-    front-cover-elevation-factor:0.7;
+    front-cover-elevation-factor:0.5;
 }
 
 HgMediawall#location[!scrollBarPolicy="ScrollBarAlwaysOff"]
 {
     layout:layout-scrollbar;
-    front-cover-elevation-factor:0.7;
+    front-cover-elevation-factor:0.5;
 }
 
 HgMediawall#location::title
 {
-	font-variant:primary;
+	font-variant:secondary;
     text-align: center center;
 	left:-var(hb-param-margin-gene-screen);
 	right:var(hb-param-margin-gene-screen);

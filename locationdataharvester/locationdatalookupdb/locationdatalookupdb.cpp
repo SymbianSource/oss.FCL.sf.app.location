@@ -25,7 +25,12 @@
 #include<locationservicedefines.h>
 
 // database name
+#ifdef LOCPICKER_UNIT_TEST
+const QString KLocationDataLookupDbName = "c:\\locationdatalookuptestdb.db"; 
+#else    
 const QString KLocationDataLookupDbName = "c:\\locationdatalookupdb.db"; 
+#endif
+
 
 // ================= MEMBER FUNCTIONS =======================
 //

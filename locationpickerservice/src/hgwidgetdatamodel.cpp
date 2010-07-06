@@ -76,7 +76,6 @@ int HgWidgetDataModel::rowCount( const QModelIndex &aParent ) const
 // ----------------------------------------------------------------------------
 QVariant HgWidgetDataModel::data(const QModelIndex &aIndex, int aRole) const
 {   
-    Q_ASSERT(aIndex.row()>=0);
     int row= aIndex.row();
     int col = aIndex.column();
     //get proxy model index
@@ -102,23 +101,24 @@ QVariant HgWidgetDataModel::data(const QModelIndex &aIndex, int aRole) const
         case Qt::DisplayRole:
         {
             QStringList displayText;
-            QString adressDetail = mProxyModel->data(proxyModelIndex,Qt::DisplayRole).toString();
+            QStringList adressDetail = mProxyModel->data(proxyModelIndex,Qt::DisplayRole).toStringList();
+            QString displayString = adressDetail[0]+KSeparator+KSpace+adressDetail[1];
             QString text("");
-            displayText <<adressDetail<<text;
+            displayText <<displayString<<text;
             returnValue = displayText;
             break;
         }
         case Qt::DecorationRole:
         {
             //get icon name from data model
-            QString iconName =  mProxyModel->data(proxyModelIndex,Qt::DecorationRole).toString();
-            if (iconName.isNull()) 
+            QString iconName =  mProxyModel->data(proxyModelIndex,Qt::UserRole+1).toString();
+            if (iconName.isEmpty()) 
             {
                 returnValue = mDefaultImage;
             }
             else 
             {   
-                QString adressType =  mProxyModel->data(proxyModelIndex,Qt::UserRole+1).toString();
+                QString adressType =  mProxyModel->data(proxyModelIndex,Qt::UserRole+2).toString();
                 QPixmap mapPixmap(iconName);
                 int mapWidth = mapPixmap.width();
                 int mapHeight = mapPixmap.height();

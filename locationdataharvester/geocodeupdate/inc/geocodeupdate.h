@@ -28,6 +28,7 @@
 #define GEOCODEUPDATE_EXPORT Q_DECL_IMPORT
 #endif
 
+class AgendaUtil;
 // CLASS DECLARATION
 
 /**
@@ -53,25 +54,41 @@ public:
      * @param addressType contact address type.
      * @param latitude Latitude to be updated.
      * @param longitude longitude to be updated.
+	 * 
+	 * @return Returns true if successfule otherwise false.
      */
 
-      bool updateGeocodeToContactDB(const quint32 contactId,
-            const int addressType, const double latitude,
-            const double longitude);
+    bool updateGeocodeToContactDB(const quint32 contactId, const int addressType,
+        const double latitude, const double longitude);
     /**
      * Request to update latitude and longitude into calender db.    
      * @param calEntryId calender entry unique id
      * @param latitude Latitude to be updated.
      * @param longitude longitude to be updated.
+	 * 
+	 * @return Returns true if successfule otherwise false.
      */
 
-     bool updateGeocodeToCalenderDB(const ulong calEntryId,
-            const double latitude, const double longitude);
+    bool updateGeocodeToCalenderDB(const ulong& calEntryId, const double& latitude,
+        const double& longitude);
+
+    /**
+     * Request to check if geo-cordinate available or not.  
+     * @param calEntryId calender entry unique id
+     * @return true, if available otherwise false.
+     */
+    bool isGeocodeNotAvailable(const ulong& calEntryId);
+
 private slots:
     void agendautilInstanceCreated(int);
+	
 signals:
     void eventCompleted();
+	
+private:
 
+    AgendaUtil *mAgendaUtil;
+    bool mUtilInstanceCreated;
 };
 
 #endif // __GEOCODEUPDATE_H__ 

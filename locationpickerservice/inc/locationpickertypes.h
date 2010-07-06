@@ -41,8 +41,6 @@ const QString KCollectionsCalendar("qtg_small_calendar");
 //Places collection icon
 const QString KCollectionsPlaces("qtg_small_favorite");
 
-//Contacts type prefered icon
-const QString KContactPrefIcon("qtg_mono_favourites");
 //Contacts type home icon
 const QString KContactHomeIcon("qtg_mono_home");
 //Contacts type work icon

@@ -8,7 +8,7 @@ EXPORTS
 	?trUtf8@MapTileService@@SA?AVQString@@PBD0H@Z @ 7 NONAME ; class QString MapTileService::trUtf8(char const *, char const *, int)
 	??1MapTileService@@UAE@XZ @ 8 NONAME ; MapTileService::~MapTileService(void)
 	??0MapTileService@@QAE@XZ @ 9 NONAME ; MapTileService::MapTileService(void)
-	?getMapTileImage@MapTileService@@QAEHHW4AddressType@1@AAVQString@@@Z @ 10 NONAME ; int MapTileService::getMapTileImage(int, enum MapTileService::AddressType, class QString &)
+	?getMapTileImage@MapTileService@@QAEHHW4AddressType@1@AAVQString@@V?$QFlags@W4Orientation@Qt@@@@@Z @ 10 NONAME ; int MapTileService::getMapTileImage(int, enum MapTileService::AddressType, class QString &, class QFlags<enum Qt::Orientation>)
 	?metaObject@MapTileService@@UBEPBUQMetaObject@@XZ @ 11 NONAME ; struct QMetaObject const * MapTileService::metaObject(void) const
 	?setMaptileStatus@MapTileService@@QAEXXZ @ 12 NONAME ; void MapTileService::setMaptileStatus(void)
 	?tr@MapTileService@@SA?AVQString@@PBD0H@Z @ 13 NONAME ; class QString MapTileService::tr(char const *, char const *, int)

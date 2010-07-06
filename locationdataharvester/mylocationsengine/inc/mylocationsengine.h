@@ -40,6 +40,7 @@
 #include "lookupmaptiledb.h"
 #include "calendernotification.h"
 #include "mylocationgeotagtimerao.h"
+class GeocodeUpdate;
 class CContactSubscriber;
 class CCalendarSubscriber;
 using namespace QTM_NAMESPACE;
@@ -61,7 +62,7 @@ public:
     CPosLandmark* iLandmarkInfo;
     //single row address.
     HBufC* iAddressDetails;
-    //Contact id
+    //entry id
     TInt32 iUId;
     //Address type 
     TInt32 iAddressType;
@@ -192,11 +193,6 @@ private:
 	void TriggerMaptileRequestL(  TContactDbObserverEvent& aEvent  );
 			
     /** 
-     * Process the contact database event and updates the landmark database
-     * @param aEvent  Provides information about the change event.   
-     */      
-	void HandlelandmarkDatabaseL( TContactDbObserverEvent& aEvent );
-    /** 
     * Process the maptile database event and updates the maptile database
     * @param aEventType  Provides information about the type of request address.
     * @param aLookupItem Provides information about single address of contact.  
@@ -284,6 +280,17 @@ private:
      * maptile database manipulation.
      */
     void ManipulateMapTileDataBaseL(TLookupItem& aLookupItem);
+    
+    /**
+     * Crop and create multiple maptile images for different applications requirements.
+     */
+    void CreateMultipleMaptiles( const TDesC& aMaptilePath );
+    
+    /**
+     * Crop the maptile image and save the different files.
+     */
+    void CropAndSaveImage( QString filePath, int width, 
+                               int height, QString appType, QString orientationType );
      
 public:  //From MMapTileObserver
     
@@ -371,6 +378,9 @@ private:
     //Subscribe from calendar
     CCalendarSubscriber *iCalendarSubscriber;
     
+    //Geo-code class instance
+    GeocodeUpdate *iGeocodeUpdate;
+       
     //Last viewed contact id
     TInt iLastContactId;
     

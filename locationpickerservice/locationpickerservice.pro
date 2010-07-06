@@ -66,8 +66,7 @@ SOURCES += src/main.cpp \
     src/locationpickerservice.cpp \
     src/locationpickerdatamanager.cpp \
     src/locationpickerdatamanager_p.cpp \
-    src/locationpickerpotraitview.cpp \
-    src/locationpickerlandscapeview.cpp \
+    src/locationpickerview.cpp \
     src/locationpickerdocumentloader.cpp \
     src/hgwidgetdatamodel.cpp
     
@@ -84,8 +83,7 @@ HEADERS += inc/locationpickercontent.h \
     inc/locationpickerservice.h \
     inc/locationpickerdatamanager.h \
     inc/locationpickerdatamanager_p.h \
-    inc/locationpickerpotraitview.h \
-    inc/locationpickerlandscapeview.h \
+    inc/locationpickerview.h \
     inc/locationpickerdocumentloader.h \
     inc/hgwidgetdatamodel.h
 

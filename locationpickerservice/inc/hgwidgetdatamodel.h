@@ -51,7 +51,11 @@ public:
     //reset the model with new data
     void resetModel( LocationPickerProxyModel *aProxyModel );
 
+#ifdef LOCPICKER_UNIT_TEST
+public:
+#else    
 private:
+#endif
 	//Image Type
     TImageType                       mImageType;
     //default Image type

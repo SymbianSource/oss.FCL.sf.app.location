@@ -51,11 +51,6 @@ void LocationPickerService::complete( QLocationPickerItem aLm )
         bool ok = completeRequest(mAsyncReqId,mReturn);
 		mAsyncReqId = 0;
     }
-    else
-    {
-        qApp->quit();
-        
-    }
 }
 // ----------------------------------------------------------------------------
 // isActive()

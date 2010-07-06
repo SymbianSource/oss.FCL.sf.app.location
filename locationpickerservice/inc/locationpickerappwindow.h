@@ -24,10 +24,9 @@
 // Forward declarations
 class LocationPickerSearchView;
 class LocationPickerDocumentLoader;
-class LocationPickerPotraitView;
+class LocationPickerView;
 class LocationPickerService;
 class LocationPickerProxyModel;
-class LocationPickerLandscapeView;
 class LocationPickerContent;
 
 class LocationPickerAppWindow: public HbMainWindow
@@ -41,19 +40,22 @@ public:
     // destructor
     ~LocationPickerAppWindow();
 
-private:
-    //Loads the Potrait View
-    void loadPotrait();
-    //Loads landscape View
-    void loadLandscape();
+#ifdef LOCPICKER_UNIT_TEST
+public slots:
+#else    
+private slots:
+#endif
     //Connect the slots for Potrait view
-    void connectPotraitSlots();
-    //Connect the slots for Landscape view
-    void connectLandscapeSlots();
+    void connectSlots();
 public slots:
     // a list item is selected
     void itemSelected( quint32 aLm );
+#ifdef LOCPICKER_UNIT_TEST
+public slots:
+#else    
 private slots:
+#endif
+
     //activate search view
     void activateSearchView();
     //activate locationpicker view
@@ -62,28 +64,23 @@ private slots:
     void changeOrientation( Qt::Orientation );
     //complete the service
     void serviceComplete();
-    //sets the category ID during orientation change in collection content
-    void setCategoryId( quint32 acategoryId );
-    //handles orientation change in collection list
-    void handleCollectionList();
-    //handle all List
-    void allListHandle();
-    //clear content models
-    void clearContentModels();
+    //slot to close details dialog (if open)
+    void closeDetailsDialog();
+
+#ifdef LOCPICKER_UNIT_TEST
+public:
+#else    
 private:
+#endif
     // search view
     LocationPickerSearchView* mLocationPickerSearchView;
     //document loader
     LocationPickerDocumentLoader* mLocationPickerDocumentLoader;
     //location picker potrait view
-    LocationPickerPotraitView* mLocationPickerPotraitView;
-    //location picker landscape view
-    LocationPickerLandscapeView* mLocationPickerLandscapeView;
+    LocationPickerView* mLocationPickerView;
 	//locationpicker content
     LocationPickerContent* mLocationPickerContent;
     //location picker service;
     LocationPickerService *mService;
-    //View Type
-    TViewType mviewType;
 };
 #endif // LOCATIONPICKERAPPWINDOW_H
