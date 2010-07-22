@@ -1,9 +1,9 @@
 <RCC>
     <qresource>
-        <file>locationpickerpotrait.docml</file>
-        <file>locationpickerlandscape.docml</file>
+        <file>locationpickerview.docml</file>
         <file>locationpickersearchview.docml</file>
-        <file>locationgrid.css</file>
-        <file>locationgrid.hbgridviewitem.widgetml</file>
+        <file>popupdialog.docml</file>
+        <file>location.hgmediawall.widgetml</file>
+        <file>location.hgmediawall.css</file>
     </qresource>
 </RCC>

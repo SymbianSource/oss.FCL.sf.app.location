@@ -24,12 +24,13 @@ TARGET = maptileservice
 
 CONFIG += dll
 CONFIG += hb
-    
+CONFIG += mobility
+MOBILITY = publishsubscribe
 
 DEPENDPATH += .
 INCLUDEPATH += .
 INCLUDEPATH += ../inc
-
+INCLUDEPATH += ../mylocationlogger/inc
 
 MOC_DIR = moc
 
@@ -55,13 +56,23 @@ symbian:
     TARGET.EPOCALLOWDLLDATA = 1
     TARGET.CAPABILITY = All -Tcb
     TARGET.UID3 = 0x2002E6E8
+    INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
 
     
    LIBS += -ledbms  \
            -lbafl \
            -lcentralrepository \
-           -leuser
+           -leuser \
+           -lflogger \
+           -lefsrv
    
+        myCrml.sources = ./conf/maptilepublisher.qcrml
+        myCrml.path = c:/resource/qt/crml
+        DEPLOYMENT += myCrml
+        
+        myCrml1.sources = ./conf/maptilecalpublisher.qcrml
+        myCrml1.path = c:/resource/qt/crml
+        DEPLOYMENT += myCrml1
 
 }  
 
@@ -72,3 +83,12 @@ DEPLOYMENT += exportheaders
 
 # This is for new exporting system coming in garden
 for(header, headers.sources):BLD_INF_RULES.prj_exports += "$$header $$deploy.path$$headers.path/$$basename(header)"
+
+defBlock = \      
+	"$${LITERAL_HASH}if defined(EABI)" \
+		"DEFFILE  ../eabi/maptileservice.def" \
+    "$${LITERAL_HASH}else" \
+        "DEFFILE  ../bwins/maptileservice.def" \
+	"$${LITERAL_HASH}endif"
+MMP_RULES += defBlock
+

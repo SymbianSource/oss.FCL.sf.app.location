@@ -39,7 +39,7 @@ public:
     
     // populates the model with data
     bool populateModel( QStandardItemModel &aModel, TViewType aViewType, 
-            const Qt::Orientations aOrientation, quint32 aCollectionId = 0 );
+            quint32 aCollectionId = 0 );
     
     // gets the location item
     void getLocationItem( quint32 aLmId, QLocationPickerItem &aItem );
@@ -48,10 +48,9 @@ private:
     // populates landmarks
     bool populateLandmarks( QList<QLookupItem> &aItemArray );
     // populates collections
-    void populateCollections();
+    void populateCollections( QList<int>& aCount );
 
 private:
-    Qt::Orientations mOrientation;
     QStandardItemModel *mModel;
     TViewType mViewType;
     LocationDataLookupDb *mDb; 

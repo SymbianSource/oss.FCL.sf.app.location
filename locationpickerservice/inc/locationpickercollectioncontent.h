@@ -29,19 +29,16 @@ class LocationPickerCollectionContent : public QObject
 {
 public:
     // constructor
-    LocationPickerCollectionContent( Qt::Orientations aOrientation , quint32 aCollectionid );
+    LocationPickerCollectionContent( quint32 aCollectionid );
     //Destructor
     ~LocationPickerCollectionContent();
     //get proxy model
     LocationPickerProxyModel* getProxyModel();
-    //get standard model
-    QStandardItemModel* getStandardModel();
     // gets the data pointed to by index and copies to the aValue
     void getData( QModelIndex aIndex, quint32& aValue );
     //return true if location entry is found
     bool locationFound();
 private:
-    Qt::Orientations mOrientation;
     LocationPickerProxyModel *mProxyModel;
     QStandardItemModel *mModel;
     LocationPickerDataManager *mDataManager;

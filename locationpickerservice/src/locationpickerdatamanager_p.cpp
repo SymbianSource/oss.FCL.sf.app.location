@@ -16,16 +16,9 @@
 */
 
 #include <HbIcon>
-#include <QPixmap>  
-#include <QPainter>
-#include <QIcon>
 #include <locationdatalookupdb.h>
 #include <QFile>
 #include "locationpickerdatamanager_p.h"
-
-//constant value used
-const int ASPECTRATIOHEIGHT(3);
-const int ASPECTRATIOWIDTH (4);
 
 
 // ----------------------------------------------------------------------------
@@ -60,11 +53,10 @@ LocationPickerDataManagerPrivate::~LocationPickerDataManagerPrivate()
 // LocationPickerDataManagerPrivate::populateModel()
 // ----------------------------------------------------------------------------
 bool LocationPickerDataManagerPrivate::populateModel(  QStandardItemModel &aModel, 
-        TViewType aViewType, const Qt::Orientations aOrientation, quint32 aCollectionId )
+        TViewType aViewType, quint32 aCollectionId )
 {
     mModel = &aModel;
     mViewType = aViewType;
-    mOrientation = aOrientation;
 
     if( !mDb )
     {
@@ -84,10 +76,11 @@ bool LocationPickerDataManagerPrivate::populateModel(  QStandardItemModel &aMode
              
         case ELocationPickerCollectionListContent:
              {
-                 populateCollections();
+                 QList<int> aCount;
+                 mDb->getCount(aCount, aCollectionId);
+                 populateCollections(aCount);
+                 return true;
              }
-             break;
-
         case ELocationPickerCollectionContent:
              {
                  QList<QLookupItem> itemArray;
@@ -115,50 +108,76 @@ bool LocationPickerDataManagerPrivate::populateLandmarks( QList<QLookupItem> &aI
     }
     QString lmAddressLine1;
     QString lmAddressLine2;
+    QString contextAddress;
+    QString contextAddressCountry;
     
     for( int i = 0; i < aItemArray.count(); i++ )
     {
+        contextAddress.clear();
+        contextAddressCountry.clear();
+        lmAddressLine1.clear();
+        lmAddressLine2.clear();
     
         if( !aItemArray[i].mIsDuplicate )
         {
             lmAddressLine1 = aItemArray[i].mName;
-            if( lmAddressLine1.isEmpty() )
-                lmAddressLine1 = KSpace;
             
             bool addressEmtpy = true; // used to check if address line 2 is empty
             if( !aItemArray[i].mStreet.isEmpty() )
             {
-                lmAddressLine2 = aItemArray[i].mStreet;
-                addressEmtpy = EFalse;
-            }
-            if( !aItemArray[i].mCity.isEmpty() )
-            {
-                if( !addressEmtpy )
+                if( lmAddressLine1.isEmpty() )
                 {
-                    lmAddressLine2 = lmAddressLine2 + KSeparator;
-                    lmAddressLine2 = lmAddressLine2 + KSpace;
-                    lmAddressLine2 = lmAddressLine2 + aItemArray[i].mCity;
+                    lmAddressLine1 = aItemArray[i].mStreet;
                 }
                 else
                 {
-                    lmAddressLine2 = aItemArray[i].mCity;
+                    lmAddressLine2 = aItemArray[i].mStreet;
                     addressEmtpy = EFalse;
+            	  }
+            }
+            if( !aItemArray[i].mCity.isEmpty() )
+            {
+                if( lmAddressLine1.isEmpty() )
+                {
+                    lmAddressLine1 = aItemArray[i].mCity;
+                }
+                else
+                {
+                    if( !addressEmtpy )
+                    {
+                        lmAddressLine2 = lmAddressLine2 + KSeparator;
+                        lmAddressLine2 = lmAddressLine2 + KSpace;
+                        lmAddressLine2 = lmAddressLine2 + aItemArray[i].mCity;
+                    }
+                    else
+                    {
+                        lmAddressLine2 = aItemArray[i].mCity;
+                        addressEmtpy = EFalse;
+                    }
                 }
             }
             if( !aItemArray[i].mState.isEmpty() )
             {
-                if( !addressEmtpy )
+                if( lmAddressLine1.isEmpty() )
                 {
-                    lmAddressLine2 = lmAddressLine2 + KSeparator;
-                    lmAddressLine2 = lmAddressLine2 + KSpace;
-                    lmAddressLine2 = lmAddressLine2 + aItemArray[i].mState;
+                    lmAddressLine1 = aItemArray[i].mState;
                 }
                 else
                 {
-                    lmAddressLine2 = aItemArray[i].mState;
-                    addressEmtpy = EFalse;
+                    if( !addressEmtpy )
+                    {
+                        lmAddressLine2 = lmAddressLine2 + KSeparator;
+                        lmAddressLine2 = lmAddressLine2 + KSpace;
+                        lmAddressLine2 = lmAddressLine2 + aItemArray[i].mState;
+                    }
+                    else
+                    {
+                        lmAddressLine2 = aItemArray[i].mState;
+                        addressEmtpy = EFalse;
+                    }
                 }
             }
+            contextAddress = lmAddressLine2;
             if( !aItemArray[i].mCountry.isEmpty() )
             {
                 if( !addressEmtpy )
@@ -172,95 +191,61 @@ bool LocationPickerDataManagerPrivate::populateLandmarks( QList<QLookupItem> &aI
                     lmAddressLine2 = aItemArray[i].mCountry;
                     addressEmtpy = EFalse;
                 }
+                contextAddressCountry = aItemArray[i].mCountry;
             }
             // set icons based on contact address type
             QVariantList icons;
-            
             HbIcon adressTypeIcon;
-        bool adressIconPresent = false;
-        if( aItemArray[i].mSourceType == ESourceContactsHome )
-        {
-            adressTypeIcon = HbIcon(KContactHomeIcon);
-            adressIconPresent = true;
-        }
-        else if( aItemArray[i].mSourceType == ESourceContactsWork )
-        {
-            adressTypeIcon =HbIcon(KContactWorkIcon);
-            adressIconPresent = true;
-        }
-        else if( aItemArray[i].mSourceType == ESourceContactsPref )
-        {
-            adressTypeIcon =HbIcon(KContactPrefIcon);
-            adressIconPresent = true;
-        }
-        
-        // create a list item and set to model
-        QStringList addressData;
-        //create model for grid view in landscape mode
-        if( mOrientation == Qt::Horizontal && ( mViewType == ELocationPickerCollectionContent || 
-                mViewType == ELocationPickerContent ) )
-        {   
-            addressData.clear();
-            
-            HbIcon landscapeIcon;
-            
-            if( QFile::exists( aItemArray[i].mMapTilePath ) )
+            QString adressType;
+            bool adressIconPresent = false;
+            if( aItemArray[i].mSourceType == ESourceContactsHome )
             {
-                //draw maptile Icon
-                QPainter painter;
-                QPixmap sourcePixmap;
-                sourcePixmap = QPixmap( QString(aItemArray[i].mMapTilePath) );
-                int mapHeight = (sourcePixmap.height()/ASPECTRATIOHEIGHT)*ASPECTRATIOHEIGHT;
-                int mapWidth = mapHeight*ASPECTRATIOWIDTH/ASPECTRATIOHEIGHT;
-                QPixmap mapPixmap(mapWidth, mapHeight);
-                painter.begin( &mapPixmap );
-                painter.drawPixmap( 0,0,sourcePixmap,(((sourcePixmap.width()-mapWidth))/2),
-                        ((sourcePixmap.height()-mapHeight)/2),mapWidth,mapHeight );
-                painter.end();
-                if(adressIconPresent)
-                {
-                //draw the adressType Icon over mapTile Icon
-                QPixmap adressTypePixmap = adressTypeIcon.pixmap();
-                painter.begin( &mapPixmap );
-                painter.drawPixmap( (mapPixmap.width()-adressTypePixmap.width()),0,adressTypePixmap );
-                painter.end();
-                }
-                QIcon landscape( mapPixmap );
-                landscapeIcon = HbIcon( landscape );
+                adressTypeIcon = HbIcon(KContactHomeIcon);
+                adressType = KContactHomeIcon;
+                adressIconPresent = true;
+            }
+            else if( aItemArray[i].mSourceType == ESourceContactsWork )
+            {
+                adressTypeIcon = HbIcon(KContactWorkIcon);
+                adressType = KContactWorkIcon;
+                adressIconPresent = true;
+            }
+        
+            // create a list item and set to model
+            QStringList addressData;
+            QString landscapeIconPath;
+
+            if( QFile::exists( aItemArray[i].mMapTilePath ) )
+            { 
+                //draw maptile Icon            
+                landscapeIconPath = QString( aItemArray[i].mMapTilePath );
             }
             else
             {
                 //draw dummy icon
-                landscapeIcon = HbIcon( KDummyImage );
+                landscapeIconPath = QString("");
             }
-
-                icons<<landscapeIcon;
-                QStandardItem *modelItem = new QStandardItem();
-                addressData << lmAddressLine1;
-                modelItem->setData(QVariant(addressData), Qt::DisplayRole);
-                modelItem->setData( icons[0], Qt::DecorationRole );
-                modelItem->setData( aItemArray[i].mId, Qt::UserRole );
-                mModel->appendRow( modelItem );
-            }
-            else
-            {   
-                //create model for list view in potrait mode
-                addressData.clear();
-                HbIcon potraitIcon( KDummyImage );
+            addressData.clear();
+            HbIcon potraitIcon( KDummyImage );
             icons<<potraitIcon;
             if(adressIconPresent)
             {
                 icons<<adressTypeIcon;
             }
-                QStandardItem *modelItem = new QStandardItem();
-                addressData << lmAddressLine1 << lmAddressLine2;
-                modelItem->setData(QVariant(addressData), Qt::DisplayRole);
-                modelItem->setData( icons, Qt::DecorationRole );
-                modelItem->setData( aItemArray[i].mId, Qt::UserRole );
-                mModel->appendRow( modelItem );
-            }
-        }
-    }
+            QStringList contextList;
+            contextList<<lmAddressLine1<<contextAddress<<contextAddressCountry;
+            QStandardItem *modelItem = new QStandardItem();
+            addressData << lmAddressLine1 << lmAddressLine2;
+            modelItem->setData(QVariant(addressData), Qt::DisplayRole);
+            modelItem->setData( icons, Qt::DecorationRole );
+            modelItem->setData( aItemArray[i].mId, Qt::UserRole );
+            modelItem->setData(landscapeIconPath,Qt::UserRole+1);
+            modelItem->setData(adressType,Qt::UserRole+2);
+            modelItem->setData(QVariant(contextList), Qt::UserRole+3);
+            
+            mModel->appendRow( modelItem );
+         }
+   }
     
     return true;
 }
@@ -269,26 +254,48 @@ bool LocationPickerDataManagerPrivate::populateLandmarks( QList<QLookupItem> &aI
 // LocationPickerDataManagerPrivate::populateCollections()
 // ----------------------------------------------------------------------------
 
-void LocationPickerDataManagerPrivate::populateCollections()
+void LocationPickerDataManagerPrivate::populateCollections(QList<int>& aCount)
 {
     // add contact collection
     QStandardItem *modelItemContact = new QStandardItem();
+    int conNum = aCount.value(0);
+    QString contactCollectionNum;
+    contactCollectionNum.setNum(conNum);
+    contactCollectionNum.append(" items");
     QString contactCollectionName( hbTrId("txt_lint_list_contact_addresses") );
-    modelItemContact->setData( QVariant( contactCollectionName ), Qt::DisplayRole );
+ 
+
+    QStringList contact = (QStringList()<<contactCollectionName<<contactCollectionNum);
+    modelItemContact->setData( QVariant( contact ), Qt::DisplayRole );
+      
     modelItemContact->setData( HbIcon ( KCollectionsContacts ), Qt::DecorationRole );
     modelItemContact->setData( ESourceLandmarksContactsCat, Qt::UserRole );
     mModel->appendRow( modelItemContact );
-
-    QStandardItem *modelItemCalendar = new QStandardItem();
+   
+    //txt_lint_list_calender_addresses
+    int calNum = aCount.value(1);
+    QString calendarCollectionNum;
+    calendarCollectionNum.setNum(calNum);
+    calendarCollectionNum.append(" items");
     QString calendarCollectionName( hbTrId("txt_lint_list_calendar_event_locations") );
-    modelItemCalendar->setData( QVariant( calendarCollectionName ), Qt::DisplayRole );
+    QStringList calender = (QStringList()<<calendarCollectionName<<calendarCollectionNum);
+    
+    QStandardItem *modelItemCalendar = new QStandardItem();
+    modelItemCalendar->setData( QVariant( calender ), Qt::DisplayRole );
     modelItemCalendar->setData( HbIcon ( KCollectionsCalendar ), Qt::DecorationRole );
     modelItemCalendar->setData( ESourceLandmarksCalendarCat, Qt::UserRole );
     mModel->appendRow( modelItemCalendar );
-    
-    QStandardItem *modelItemPlaces = new QStandardItem();
+     
+    //txt_lint_list_places_addresses
+    int placNum = aCount.value(2);
+    QString placesCollectionNum;
+    placesCollectionNum.setNum(placNum);
+    placesCollectionNum.append(" items");
     QString placesCollectionName( hbTrId("txt_lint_list_places") );
-    modelItemPlaces->setData( QVariant( placesCollectionName ), Qt::DisplayRole );
+    QStringList places = (QStringList()<<placesCollectionName<<placesCollectionNum);
+
+    QStandardItem *modelItemPlaces = new QStandardItem();
+    modelItemPlaces->setData( QVariant( places ), Qt::DisplayRole );
     modelItemPlaces->setData( HbIcon (KCollectionsPlaces), Qt::DecorationRole );
     modelItemPlaces->setData( ESourceLandmarks, Qt::UserRole );
     mModel->appendRow( modelItemPlaces );

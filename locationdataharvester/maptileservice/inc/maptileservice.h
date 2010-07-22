@@ -22,7 +22,15 @@
 
 #include <QString>
 #include <QtGlobal>
+#include <QObject>
+#include <qmobilityglobal.h>
 
+QTM_BEGIN_NAMESPACE
+class QValueSpacePublisher;
+class QValueSpaceSubscriber;
+QTM_END_NAMESPACE
+
+QTM_USE_NAMESPACE
 
 #ifdef  MAPTILESERVICEDLL
 #define MAPTILESERVICE_EXPORT Q_DECL_EXPORT
@@ -30,7 +38,7 @@
 #define MAPTILESERVICE_EXPORT Q_DECL_IMPORT
 #endif
 
-
+class TLookupItem;
 
 // CLASS DECLARATION
 
@@ -40,10 +48,27 @@
 *
 *  Note: Location feature can be enabled or disabled by modifying conf\cntmaptileservice.confml file.
 */
-class MAPTILESERVICE_EXPORT MapTileService 
+class MAPTILESERVICE_EXPORT MapTileService : public QObject
 {
-
+    Q_OBJECT
 public:
+
+    /** 
+     * Maptile fetching status
+     */
+    enum MapTileStatus
+    {
+        /** Map tile fetching completed */
+        MapTileFetchingCompleted = 0,
+        /** Map tile fetching in progress */
+        MapTileFetchingInProgress,
+        /** Map  tile fetching n/w error */
+        MapTileFetchingNetworkError,
+        /** Map tile fetching invalid address */
+        MapTileFetchingInvalidAddress,
+        /** Map tile fetching unknown erro */
+        MapTileFetchingUnknownError
+    };
 
     /**
      * Application types      
@@ -55,6 +80,7 @@ public:
         /** Calendar application */
         AppTypeCalendar
     };
+	
     /** 
      * Address types
      */
@@ -67,27 +93,91 @@ public:
         /** Address type Work */
         AddressWork,
         /** Address type Home */
-        AddressHome
+        AddressHome,
+        /** Address type Unknown */
+        AddressUnknown
     };
-      
+        
+    MapTileService();
+    
+    ~MapTileService();
+    
    /**
     * Checks whether location feature enabled or disabled for specific application.
     * 
     * @return Returns true or false based on location feature setting.
     */
-    static bool isLocationFeatureEnabled(AppType appType);
+    bool isLocationFeatureEnabled(AppType appType);
             
    /**
     * Gets a maptile image associated with a id(contact id/calendar id). 
     * Returns a maptile image path if it is available otherwise returns NULL.
     * 
-    * @param contactId  Contact id     
+    * @param contactId  app id     
     * @param sourceType Source address type( Preferred, Home , Work address )
+    * @param imagePath  Maptile image path associated with the app id
+    * @param orientation Application current orientation.   
     *      
-    * @return Returns maptile image path if it is available, else NULL.
+    * @return Returns the maptile fetching status.
     */
-    static QString getMapTileImage( int Id, AddressType sourceType  );  
-     	
+    int getMapTileImage( int Id, AddressType sourceType, 
+             QString& imagePath, Qt::Orientations orientation = Qt::Vertical  );  
+    
+public slots: 
+    /**
+     * Receives maptile status information and emits the maptilFetchingStatusUpdate
+     * signal.
+     */
+    void setMaptileStatus();
+
+signals:
+    /**
+     * Signal to update the maptile fetchings status to contact/calendar application.
+     * @param id  app id     
+     * @param addressType Source address type( Preferred, Home , Work address )
+     * @param status Maptile status for the associated address
+     */
+     void maptileFetchingStatusUpdate( int id, int addressType, int status );
+    
+
+private:
+
+    /**
+     * Publish the contact entry id , AddressType and number of address
+     * @param id, Contact id .
+     * @param sourceType, address type( Preferred, Home , Work address )
+     * @param addressCount ,number of address to be published. 
+     */
+    void publishValue(int id, AddressType sourceType, int addressCount );
+    /**
+    * Publish the calendar entry id , AddressType and number of address
+    * @param id, calendar entry id .
+    * @param sourceType, address type( plain) 
+    * @param addressCount ,number of address to be published. 
+    */
+    void publishCalEntry(int id);
+    
+    /**
+    * Read entry from database
+    * @param id, Contact/calendar id .
+    * @param sourceType, address type( plain ,Preferred, Home , Work address )
+    * @param aLookupItem ,entry information
+    * @param aNoOfAddress ,number of address read from databse 
+    */
+    int readEntryFromMaptileDataBase( int id, AddressType sourceType,
+                TLookupItem& aLookupItem, int& aNoOfAddress  );
+
+private:
+    
+    //The contact/calendar id for which maptile requested
+    int mLastViewedEntryId;
+	
+    //Maptile request publisher
+    QValueSpacePublisher *mPublisher;
+    //Maptile status request subscriber
+    QValueSpaceSubscriber *mSubscriber;
+	//Calendar Maptile request publisher
+    QValueSpacePublisher *mCalPublisher;
 };
 
 #endif //MAPTILESERVICE_H_

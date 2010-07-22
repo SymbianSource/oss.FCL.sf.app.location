@@ -27,9 +27,8 @@
 // ----------------------------------------------------------------
 // LocationPickerCollectionContent::LocationPickerCollectionContent()
 // -----------------------------------------------------------------
-LocationPickerCollectionContent::LocationPickerCollectionContent( Qt::Orientations aOrientation , quint32 aCollectionId )
-    :mOrientation(aOrientation),
-	 mProxyModel(NULL),
+LocationPickerCollectionContent::LocationPickerCollectionContent( quint32 aCollectionId )
+    :mProxyModel(NULL),
     mModel(NULL),
     mDataManager(NULL),
 	mLocationFound(false)
@@ -38,10 +37,10 @@ LocationPickerCollectionContent::LocationPickerCollectionContent( Qt::Orientatio
     mModel = new QStandardItemModel( this );
     // create data manager to manage data in the model
     mDataManager = LocationPickerDataManager::getInstance();
-    if( mDataManager->populateModel( *mModel, ELocationPickerCollectionContent, mOrientation , aCollectionId ) )
+    if( mDataManager->populateModel( *mModel, ELocationPickerCollectionContent, aCollectionId ) )
     {
         // Create the proxy model.
-        mProxyModel = new LocationPickerProxyModel(mOrientation);
+        mProxyModel = new LocationPickerProxyModel();
         mProxyModel->setSourceModel(mModel);
         mProxyModel->setDynamicSortFilter(TRUE);
         mProxyModel->setSortRole(Qt::DisplayRole);
@@ -75,14 +74,6 @@ LocationPickerCollectionContent::~LocationPickerCollectionContent()
 LocationPickerProxyModel* LocationPickerCollectionContent::getProxyModel()
 {
     return mProxyModel;
-}
-
-// ----------------------------------------------------------------
-// LocationPickerCollectionContent::getStandardModel
-// -----------------------------------------------------------------
-QStandardItemModel* LocationPickerCollectionContent::getStandardModel()
-{
-    return mModel;
 }
 
 // ----------------------------------------------------------------------------

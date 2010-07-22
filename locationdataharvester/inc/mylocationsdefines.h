@@ -38,9 +38,27 @@ public:
    
     // File Path
     TFileName iFilePath;
+    
+    //MK  map tile fetching status
+    TUint32 iFetchingStatus;
 };
 
+/** Defines map tile fetching states.
+ */
 
+enum TMapTileFetchingState
+    {
+    /** Map tile fetching completed */
+    EMapTileFectchingCompleted,
+    /** Map tile fetching in progress */
+    EMapTileFetchingInProgress,
+    /** Map  tile fetching n/w error */
+    EMapTileFetchingNetworkError,
+    /** Map tile fetching invalid address */
+    EMapTileFetchingInvalidAddress,
+    /** Map tile fetching unknown erro */
+    EMapTileFetchingUnknownError
+    };
 // contacts category in landmarks db
 _LIT( KContactsCategory, "Contacts" );
 
@@ -79,6 +97,7 @@ _LIT( NColLmUid, "lmuid" );
 // maptile database column names
 _LIT( NCntColUid, "cntuid" );
 _LIT( NCntColFilePath, "filepath" );
+_LIT( MapTileFetchingStatus, "fetchingstatus" );
 
 // database table name
 _LIT( KLookupTable, "lookuptable" );
@@ -97,9 +116,30 @@ const TInt KColumnLmkUid = 3;
 const TInt KColumncntUid = 1;
 // source type column number
 const TInt KColumnFilePath = 3;
+// fetching state  column number
+const TInt KColumnMapTileFetchingStatus = 4;
 
 const TInt KBufSize=256;
 
+//Different Maptile sizes for different applications
+const int MapTileWidth = 614;
+const int MapTileHeight = 250;
+const int MaptilePortraitWidth = 334;
+const int MaptilePortraitHeight = 250;
+const int MaptileContactLandscapeWidth =  382;
+const int MaptileContactLandscapeHeight = 128;
+const int MaptileCalendarLandscapeWidth = 614;
+const int MaptileCalendarLandscapeHeight = 202;    
+const int MaptileHurriganesWidth = 228;    
+const int MaptileHurriganesHeight = 170;
+
+static const char*  MAPTILE_IMAGE_PORTRAIT = "_Vertical";
+static const char*  MAPTILE_IMAGE_LANDSCAPE = "_Horizontal";
+static const char*  MAPTILE_IMAGE_CALENDAR = "_Calendar";
+static const char*  MAPTILE_IMAGE_CONTACT  = "_Contact"; 
+static const char*  MAPTILE_IMAGE_HURRIGANES = "_Hurriganes";
+static const char*  MAPTILE_IMAGE_TYPE = "PNG";
+       
 #endif  // __MYLOCATIONSDEFINES_H__
 // End of file
 

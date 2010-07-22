@@ -22,16 +22,11 @@
 
 #include <e32base.h>
 #include <f32file.h>
-
+#include "notification.h" 
 /**  
  * The observer class gives notification to derive class .
  * When calender db creates in specific path.
  */
-class MNotifyChange
-{
-public:
-    virtual void NotifyChangeL(TInt &aStatus)=0;
-};
 
 class CCalenderNotification : public CActive
 {

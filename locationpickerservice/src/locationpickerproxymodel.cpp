@@ -22,9 +22,8 @@
 // LocationPickerProxyModel::LocationPickerProxyModel()
 // ----------------------------------------------------
 
-LocationPickerProxyModel::LocationPickerProxyModel( Qt::Orientations aOrientation , QObject *parent )
-     :QSortFilterProxyModel(parent),
-     mOrientation( aOrientation )
+LocationPickerProxyModel::LocationPickerProxyModel( QObject *parent )
+     :QSortFilterProxyModel(parent)
 {
 }
 
@@ -36,26 +35,16 @@ LocationPickerProxyModel::LocationPickerProxyModel( Qt::Orientations aOrientatio
 {
      // get left and right items data and implement sort logic
      // return true if left is less than right
-	 QVariant leftData = sourceModel()->data(left);
+     QVariant leftData = sourceModel()->data(left);
      QVariant rightData = sourceModel()->data(right);
 
-    if( mOrientation == Qt::Vertical )
-    {
-        QStringList leftStringList = leftData.toStringList();
+     QStringList leftStringList = leftData.toStringList();
 
-        QStringList rightStringList = rightData.toStringList();
+     QStringList rightStringList = rightData.toStringList();
 
-        return QString::compare( QString( leftStringList[0] + " " + leftStringList[1] ),
-                                            QString( rightStringList[0] + " " + rightStringList[1] ), Qt::CaseInsensitive ) < 0;
-    }
-    else
-    {
-        QString leftString = leftData.toString();
+     return QString::compare( QString( leftStringList[0] + " " + leftStringList[1] ),
+             QString( rightStringList[0] + " " + rightStringList[1] ), Qt::CaseInsensitive ) < 0;
 
-        QString rightString = rightData.toString();
-
-        return QString::compare( leftString, rightString, Qt::CaseInsensitive ) < 0;
-    }
 }
 
  // ----------------------------------------------------
@@ -65,8 +54,7 @@ LocationPickerProxyModel::LocationPickerProxyModel( Qt::Orientations aOrientatio
 bool LocationPickerProxyModel::filterAcceptsRow( int sourceRow,
         const QModelIndex &sourceParent ) const
 {
-    if( mOrientation == Qt::Vertical)
-    {
+
     // implement logic for search.
     QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
 
@@ -74,9 +62,7 @@ bool LocationPickerProxyModel::filterAcceptsRow( int sourceRow,
     QString fullString = " " + stringList[0] + " " + stringList[1];
 
     return (fullString.contains(mSearchText, Qt::CaseInsensitive));
-    }
-    else
-    return true;
+
 }
 
  // ----------------------------------------------------

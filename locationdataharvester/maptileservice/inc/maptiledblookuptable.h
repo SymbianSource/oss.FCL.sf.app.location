@@ -23,65 +23,7 @@
 #include <f32file.h> //RFs
 #include <d32dbms.h>  //RDbNamedDatabase,RDbView 
 
-// maptile database column names
-_LIT( NCntColUid, "cntuid" );
-_LIT( NAppColFilePath, "filepath" );
-_LIT( NColSource, "source" );
-
-// maptile lookup database name
-_LIT( KMapTileLookupDatabaseName, "mylocationsmaptilelookup.db" );
-
-// maptile database table name
-_LIT( KMapTileLookupTable, "cntmaptilelookuptable" );
-
-_LIT( KLookupDbPath, "c:\\mylocations\\" );
-
-// uid column number
-const TInt KColumnUid = 1;
-// source type column number
-const TInt KColumnSource = 2;
-// source type column number
-const TInt KColumnFilePath = 3;
-
-
-/**
- *  Maptile database lookup entry
- */
-class TLookupItem                            
-{
-public:
-    // Uid of the source entry
-    TUint32 iUid; 
-    
-    // Source type
-    TUint32 iSource;
-    
-    // Landmark uid in the landmarks database
-    TUint32 iLmId;
-    
-    // Uid of the Application
-    TUint32 iAppUid; 
-    
-    // File Path
-    TFileName iFilePath;
-};
-
-/**
- *  Defines uid source type
- */
-enum TUidSourceType
-{    
-    /** Uid Source type calendar plain address */
-    ESourceCalendar = 0,
-    /** Uid Source type contacts default/prefered address */
-    ESourceContactsPref = 3,
-    /** Uid Source type contacts work address */
-    ESourceContactsWork,
-    /** Uid Source type contacts home address */
-    ESourceContactsHome,
-    
-};
-
+#include "mylocationsdefines.h"
 /**
  * CLookupMapTileDatabase class.
  * This class handles all the operations related to maptile lookup database.
@@ -115,6 +57,13 @@ public:
     * The source iUid is passed in the lookup item
     */
     void FindEntryL( TLookupItem& aLookupItem );
+    
+    /**
+     * Finds the number of address present in db associated with the aId. 
+     * @param id, entry (calendar/contact) uid.
+     * @return Number of address a contact has.
+     */
+    int FindNumberOfAddressL( int& aId );
 
 private:
     

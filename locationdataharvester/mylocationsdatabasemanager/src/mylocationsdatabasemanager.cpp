@@ -11,20 +11,19 @@
 *
 * Contributors:
 *
-* Description: Database manager implementation for location picker and
-*              maptile service.
+* Description: Database manager implementation 
 *
 */
 
-#include <EPos_CPosLandmark.h>
 #include <EPos_CPosLandmarkCategory.h>
 #include <EPos_CPosLmTextCriteria.h>
 #include <EPos_CPosLandmarkSearch.h>
 #include <EPos_CPosLmDatabaseManager.h>
 #include <EPos_CPosLmNearestCriteria.h>
+#include <EPos_CPosLandmarkDatabase.h>
+#include <EPos_CPosLmCategoryManager.h>
 
 #include <lbsposition.h>
-//#include <mylocations.rsg>
 #include <barsread.h>
 #include <barsc.h>
 #include <locationservicedefines.h>
@@ -32,6 +31,8 @@
 #include "mylocationlogger.h"
 #include "mylocationsdefines.h"
 
+#include <locationdatalookupdb.h>
+#include <QString>
 // separator
 _LIT( KSeparator, ",");
 // space
@@ -45,20 +46,19 @@ const QString KQStringSpace = " ";
 // Used to set nearest landmarks search distance criteria
 const TUint32 KSearchCriteriaDistance = 100; 
 
+// Maximum string length of landmark address.
+const TUint32 KMaxAddressLength = 255; 
+
 // -----------------------------------------------------------------------------
 // CMyLocationsDatabaseManager::ConstructL()
 // 2nd phase constructor.
 // -----------------------------------------------------------------------------
 //
-void CMyLocationsDatabaseManager::ConstructL()
+EXPORT_C void CMyLocationsDatabaseManager::ConstructL()
 {
     __TRACE_CALLSTACK;//Open and intialize Landmark DB
     iLandmarkDb = CPosLandmarkDatabase::OpenL();
     ExecuteAndDeleteLD(iLandmarkDb->InitializeL());
-
-    // create landmarks lookup database.
-    iLandmarksLookupDb = CLookupDatabase::NewL(KLandmarksLookupDatabaseName);
-    User::LeaveIfError( iLandmarksLookupDb->Open() );
  
     iLocationAppLookupDb = new LocationDataLookupDb();
     if( !iLocationAppLookupDb->open() )
@@ -83,8 +83,8 @@ void CMyLocationsDatabaseManager::ConstructL()
 // Default constructor.
 // -----------------------------------------------------------------------------
 //
-CMyLocationsDatabaseManager::CMyLocationsDatabaseManager() : iLandmarkDb( NULL ),
-                iLmContactsCatId( 0 ), iLandmarksLookupDb( NULL ), 
+EXPORT_C  CMyLocationsDatabaseManager::CMyLocationsDatabaseManager() : iLandmarkDb( NULL ),
+                iLmContactsCatId( 0 ), //iLandmarksLookupDb( NULL ), 
                 iLocationAppLookupDb( NULL ),
                 iLandmarksCatManager( NULL )
 {
@@ -98,11 +98,7 @@ CMyLocationsDatabaseManager::CMyLocationsDatabaseManager() : iLandmarkDb( NULL )
 CMyLocationsDatabaseManager::~CMyLocationsDatabaseManager()
 {
     __TRACE_CALLSTACK;// delete member variables.
-    if (iLandmarksLookupDb)
-    {
-        iLandmarksLookupDb->Close();
-        delete iLandmarksLookupDb;
-    }
+
     if (iLocationAppLookupDb)
     {
         iLocationAppLookupDb->close();
@@ -153,8 +149,8 @@ TUint32 CMyLocationsDatabaseManager::AddMylocationsCategoryL( const TDesC&  aCat
 // addition/modification/deletion.
 // -----------------------------------------------------------------------------
 //
-void CMyLocationsDatabaseManager::UpdateDatabaseL(CPosLandmark* aLandmark,
-        const TUint32 aUid, const TUint32 aSourceType, const TEntryChangeType aChangeType)
+EXPORT_C void CMyLocationsDatabaseManager::UpdateDatabaseL(CPosLandmark* aLandmark,
+        const TUint32 aUid, const TUint32 aSourceType, const TUint32 aChangeType)
 {
     __TRACE_CALLSTACK;//open the lookup database
     switch (aChangeType)
@@ -292,7 +288,11 @@ void CMyLocationsDatabaseManager::HandleEntryAdditionL(CPosLandmark* aLandmark,
     lookupItem.mIsDuplicate = 0;
     lookupItem.mIconPath = "";
     lookupItem.mMapTilePath = "";
-    
+    lookupItem.mSingleLineAddress="";
+    TPtrC16 dataPtr;
+    aLandmark->GetPositionField(EPositionFieldComment ,dataPtr);
+    lookupItem.mSingleLineAddress=QString::fromUtf16(dataPtr.Ptr(),
+            dataPtr.Length());
     //fill address into lookup item.
     FillLookupItemAddressDetails( aLandmark, lookupItem );
 
@@ -392,6 +392,10 @@ void CMyLocationsDatabaseManager::HandleEntryModificationL(
     lookupItem.mSourceUid = aUid;
     lookupItem.mSourceType = aSourceType;
     lookupItem.mIconType = QLookupItem::EIconTypeDefault;
+    TPtrC16 dataPtr;
+    aLandmark->GetPositionField(EPositionFieldComment ,dataPtr);
+    lookupItem.mSingleLineAddress=QString::fromUtf16(dataPtr.Ptr(),
+            dataPtr.Length());
 
     // Behavior: If an entry is modified, 
     // If this entry is not present in lookup table. add the entry and update the landmarks db.
@@ -744,6 +748,7 @@ void CMyLocationsDatabaseManager::HandleEntryDeletionL(const TUint32 aUid,
 void CMyLocationsDatabaseManager::HandleLandmarkModificationL(
         CPosLandmark* aLandmark, const TUint32 aUid )
 {
+    __TRACE_CALLSTACK;
     // logic: if a landmark is modified, 
     // first update the corresponding landmark lookup entry if present, else create a new entry.
     // Check for any contact/calendar entries refering this landmark entry,
@@ -846,10 +851,11 @@ void CMyLocationsDatabaseManager::HandleLandmarkModificationL(
 // Gets the comma separated full address of the given landmark.
 // -----------------------------------------------------------------------------
 //
-void CMyLocationsDatabaseManager::GetLandmarkFullAddress(
+EXPORT_C void CMyLocationsDatabaseManager::GetLandmarkFullAddress(
         TBuf<KMaxAddressLength>& aLandmarkAddress,
         const CPosLandmark* aLandmark)
 {
+    __TRACE_CALLSTACK;
     TPtrC tempStr;
     TInt retStatus;
     TBool addressEmtpy = ETrue;
@@ -999,6 +1005,7 @@ void CMyLocationsDatabaseManager::FillLookupItemAddressDetails( CPosLandmark* aL
 //
 void CMyLocationsDatabaseManager::UnsetDuplicateNextCalEntry( quint32 aLandmarkId )
 {
+    __TRACE_CALLSTACK;
     // get next duplicate item
     QList<QLookupItem> itemArray;
     iLocationAppLookupDb->findEntriesByLandmarkId( aLandmarkId, itemArray );
@@ -1019,6 +1026,7 @@ void CMyLocationsDatabaseManager::UnsetDuplicateNextCalEntry( quint32 aLandmarkI
 //
 bool CMyLocationsDatabaseManager::IsDuplicateEntry( quint32 aLandmarkId )
 {
+    __TRACE_CALLSTACK;
     // get next duplicate item
     QList<QLookupItem> itemArray;
     iLocationAppLookupDb->findEntriesByLandmarkId( aLandmarkId, itemArray );
@@ -1080,11 +1088,50 @@ CPosLandmark* CMyLocationsDatabaseManager::CreateLandmarkItemLC( const QLookupIt
 // CMyLocationsDatabaseManager::UpdateMapTilePath()
 // -----------------------------------------------------------------------------
 //
-void CMyLocationsDatabaseManager::UpdateMapTilePath( TUint32 aSourceId, TUint32 aSourceType, 
-                                            TFileName aFilePath )
+EXPORT_C void CMyLocationsDatabaseManager::UpdateMapTilePath( TUint32 aSourceId, TUint32 aSourceType, 
+                                            TFileName& aFilePath )
 {
+    __TRACE_CALLSTACK;
     QString filePath = QString( (QChar*)aFilePath.Ptr(), aFilePath.Length() );
     iLocationAppLookupDb->updateMaptileBySourceIdAndType( aSourceId, aSourceType, filePath );
+}
+
+// -----------------------------------------------------------------------------
+// CMyLocationsDatabaseManager::CheckIfAddressChanged()
+// -----------------------------------------------------------------------------
+//
+EXPORT_C TBool CMyLocationsDatabaseManager::CheckIfAddressChanged(const CPosLandmark& aLandmarks,
+        const TUint32 aId, const TUidSourceType aAddressType)
+{
+    __TRACE_CALLSTACK;
+    QString target = iLocationAppLookupDb->getAddressDetails(aId, aAddressType);
+    TBuf<KMaxAddressLength> lmAddress;
+    GetLandmarkFullAddress(lmAddress, &aLandmarks);
+    QString source = QString((QChar*) lmAddress.Ptr(), lmAddress.Length());
+    if (source == target)
+    {
+        return EFalse;
+    }
+    return ETrue;
+
+}
+
+// -----------------------------------------------------------------------------
+// CMyLocationsDatabaseManager::CheckIfAddressChanged()
+// -----------------------------------------------------------------------------
+//
+EXPORT_C TBool CMyLocationsDatabaseManager::CheckIfAddressChanged(const TDesC& aAddress,
+        const TUint32 aId, const TUidSourceType aAddressType)
+{   
+    __TRACE_CALLSTACK;
+    TBool compareStatus = ETrue;
+    QString target=iLocationAppLookupDb->getAddressDetails( aId , aAddressType );
+    QString source = QString( (QChar*)aAddress.Ptr(), aAddress.Length());
+    if( source == target )
+    {
+        compareStatus= EFalse;
+    }
+    return compareStatus;
 }
 
 // End of file

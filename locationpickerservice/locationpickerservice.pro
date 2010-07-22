@@ -34,6 +34,8 @@ symbian: {
         16943040
     TARGET.CAPABILITY = ALL \
         -TCB
+
+    INCLUDEPATH += $$APP_LAYER_SYSTEMINCLUDE
     
 }
 
@@ -41,6 +43,8 @@ symbian: {
 CONFIG += service
 LIBS += -lxqservice \
     -lxqserviceutil \
+    -lganeswidgets.dll \
+    -lthumbnailmanagerqt.dll \
     -llocationdatalookupdb
 SERVICE.FILE = service_conf.xml
 SERVICE.OPTIONS = embeddable
@@ -62,9 +66,10 @@ SOURCES += src/main.cpp \
     src/locationpickerservice.cpp \
     src/locationpickerdatamanager.cpp \
     src/locationpickerdatamanager_p.cpp \
-    src/locationpickerpotraitview.cpp \
-    src/locationpickerlandscapeview.cpp \
-    src/locationpickerdocumentloader.cpp
+    src/locationpickerview.cpp \
+    src/locationpickerdocumentloader.cpp \
+    src/hgwidgetdatamodel.cpp
+    
     
     
 
@@ -78,7 +83,7 @@ HEADERS += inc/locationpickercontent.h \
     inc/locationpickerservice.h \
     inc/locationpickerdatamanager.h \
     inc/locationpickerdatamanager_p.h \
-    inc/locationpickerpotraitview.h \
-    inc/locationpickerlandscapeview.h \
-    inc/locationpickerdocumentloader.h
+    inc/locationpickerview.h \
+    inc/locationpickerdocumentloader.h \
+    inc/hgwidgetdatamodel.h
 

@@ -11,42 +11,23 @@
 *
 * Contributors:
 *
-* Description: Database manager implementation for location picker and
-*              maptile service.
+* Description: Database manager implementation 
 *
 */
 
 #ifndef __MYLOCATIONSDATABASEMANAGER_H__
 #define __MYLOCATIONSDATABASEMANAGER_H__
 
-// Landmarks
-#include<EPos_CPosLandmarkDatabase.h>
-#include <EPos_CPosLmCategoryManager.h>
+
+#include <EPos_CPosLandmark.h>
 
 #include <locationservicedefines.h>
-
 // lookup database
 #include <locationdatalookupdb.h>
 
-// mylocations lookup db
-#include "mylocationslookupdb.h"
 
-// Maximum string length of landmark address.
-const TUint32 KMaxAddressLength = 255; 
-
-/** Defines entry change type
-*/
-enum TEntryChangeType
-    {
-    /** Entry added */
-    EEntryAdded,
-    /** Entry modified */
-    EEntryModified,
-    /** Entry deleted */
-    EEntryDeleted,
-    /** Entry change unknown */
-    EEntryUnknown
-    };
+class CPosLandmarkDatabase;
+class CPosLmCategoryManager;
 
 
 /**
@@ -54,23 +35,24 @@ enum TEntryChangeType
  *  This class handles all the operations related to mylocations landmark database.
  *
  */
-class CMyLocationsDatabaseManager : public CBase
+class  CMyLocationsDatabaseManager : public CBase
     {
     public:
+
         // Constructors and destructor
-    
-        /**
-         * ConstructL.
-         * 2nd phase constructor.
-         */
-        void ConstructL();
     
         /**
          * CMyLocationsDatabaseManager.
          * C++ default constructor. 
          */
-        CMyLocationsDatabaseManager();
-    
+        IMPORT_C CMyLocationsDatabaseManager();
+
+        /**
+         * ConstructL.
+         * 2nd phase constructor.
+         */
+        IMPORT_C void ConstructL();
+        
         /**
          * ~CMyLocationsDatabaseManager.
          * Virtual Destructor.
@@ -89,15 +71,15 @@ class CMyLocationsDatabaseManager : public CBase
          * @param[in] aSourceType Source type of the aUid.
          * @param[in] aChangeType Type of change to the entry ( added/modified/deleted )
          */
-        void UpdateDatabaseL( CPosLandmark* aLandmark, const TUint32 aUid, 
-                              const TUint32 aSourceType, const TEntryChangeType aChangeType );
+        IMPORT_C void UpdateDatabaseL( CPosLandmark* aLandmark, const TUint32 aUid, 
+                              const TUint32 aSourceType, const TUint32 aChangeType );
         
         /** Gets the full address from a given landmark object
          *
          * @param[out] aLandmarkAddress comma separated landmark's full address
          * @param[in] aLandmark landmark object whose address needs to be found.
          */      
-        void GetLandmarkFullAddress( TBuf<KMaxAddressLength>& aLandmarkAddress, 
+        IMPORT_C void GetLandmarkFullAddress( TBuf<255>& aLandmarkAddress, 
                                      const CPosLandmark* aLandmark );
        
 	    /** Update the maptile path to mylocation lookup table
@@ -106,9 +88,35 @@ class CMyLocationsDatabaseManager : public CBase
 		 * @param[in] aSourceType Source type of the aSourceId.
          * @param[in] aFilePath Maptile file path.
          */                               
-        void UpdateMapTilePath( TUint32 aSourceId, TUint32 aSourceType, 
-                                            TFileName aFilePath );
-    private:
+        IMPORT_C void UpdateMapTilePath( TUint32 aSourceId, TUint32 aSourceType, 
+                                            TFileName& aFilePath );
+        
+        /** Compare the address details to lplookupaddres  table
+         *
+         * @param aLandmarks , address formed as landmark object
+         * @parama Id , id of entry to be checked in db table
+         * @param aAddressType , type of entry.
+         * @return , true for match case .
+         */  
+        IMPORT_C TBool CheckIfAddressChanged(const CPosLandmark& aLandmarks,
+                const TUint32 aId, const TUidSourceType aAddressType);
+        
+        /** Compare the address details to lplookupaddres  table
+         *
+         * @param aAddress , one line address .
+         * @parama Id , id of entry to be checked in db table
+         * @param aAddressType , type of entry.
+         * @return , true for match case .
+         */
+        IMPORT_C TBool CheckIfAddressChanged(const TDesC& aAddress,
+                const TUint32 aId, const TUidSourceType aAddressType);
+        
+
+#ifdef LOCATION_DATA_HARVESTER_UNIT_TEST
+public:
+#else
+private:
+#endif
         
         /**
          * AddMylocationsCategory.
@@ -216,7 +224,11 @@ class CMyLocationsDatabaseManager : public CBase
          */
        CPosLandmark* CreateLandmarkItemLC( const QLookupItem &aLookupItem );
        
-    private:
+#ifdef LOCATION_DATA_HARVESTER_UNIT_TEST
+public:
+#else
+private:
+#endif
         // Handle to the landmark database
         CPosLandmarkDatabase* iLandmarkDb;
 
@@ -224,9 +236,7 @@ class CMyLocationsDatabaseManager : public CBase
         TPosLmItemId iLmCalendarCatId;  
         // Contacts category to be created for contacts related location entries in landmark database
         TPosLmItemId iLmContactsCatId;  
-        // handle to landmarks lookup database.
-        CLookupDatabase*  iLandmarksLookupDb;
-
+       
         // handle to the location app lookup database.
         LocationDataLookupDb*  iLocationAppLookupDb;
 

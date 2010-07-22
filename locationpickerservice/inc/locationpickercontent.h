@@ -39,21 +39,17 @@ public:
     // destructor
     ~LocationPickerContent();
     
-    //get standard List Model
-    QStandardItemModel* getStandardListModel();
-    
     //get standard Grid Model
-    QStandardItemModel* getStandardGridModel();
+    QStandardItemModel* getStandardModel();
     
     void createNoEntryDisplay( QStandardItemModel *aModel );
     
-    bool populateModel( Qt::Orientation aOrientation );
+    bool populateModel();
 
 private:
     Qt::Orientations mOrientation;
     LocationPickerDataManager *mDataManager;
-    QStandardItemModel *mListModel;
-    QStandardItemModel *mGridModel;
+    QStandardItemModel *mStandardModel;
     
 };
 

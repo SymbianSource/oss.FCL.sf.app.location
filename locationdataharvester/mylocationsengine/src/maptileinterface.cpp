@@ -24,12 +24,17 @@
 #include <bautils.h>
 #include "maptileinterface.h"
 #include "mylocationlogger.h"
+#include "mylocationsdefines.h"
+#include "lookupmaptiledb.h"
+#include <math.h>
 
 //Invalid latitude & longitude value
-const TReal KInvalidLatitudeLongitude = 200.00;
-const TInt KStreetLvelZoom = 14;
-const TInt KCityLevelZoom = 7;
-const TInt KMapTileSize= 256;
+const TReal KInvalidLatitudeLongitude =  200.0f;
+const TInt KStreetLvelZoom = 16;
+const TInt KCityLevelZoom = 11;
+const TInt KImagePathSize=36;
+const TInt KMapTileWidthHeight = 256 ;
+_LIT(KFileExtn, ".png");
 
 // -----------------------------------------------------------------------------
 // CMapTileInterface::NewL()
@@ -89,11 +94,11 @@ void CMapTileInterface::ConstructL()
     iMaptileGeocoder->SetMaptileGeocoderObserver( *this );
 }
 // -----------------------------------------------------------------------------
-// CMapTileInterface::GetMapTileImageL()
-// Interface for requesting maptile image for a landmark object
+// CMapTileInterface::GetGeoCodeFromAddressL()
+// Interface for requesting GEO fields for the given address
 // -----------------------------------------------------------------------------
 //
-void CMapTileInterface::GetMapTileImageL(const TDesC& aAddressDetails,
+void CMapTileInterface::GetGeoCodeFromAddressL(const TDesC& aAddressDetails,
         const TDesC& aFilePath, MMapTileObserver* aObserver)
 {
     __TRACE_CALLSTACK;
@@ -103,15 +108,15 @@ void CMapTileInterface::GetMapTileImageL(const TDesC& aAddressDetails,
     iFilePath = HBufC::NewL(aFilePath.Length());
     iFilePath->Des().Copy(aFilePath);
     iStreetAvailable = EFalse;
-    TConnectionOption conn = ESilent;
-    iMaptileGeocoder->GetCoordinateByAddressL(aAddressDetails, conn);
+    iMaptileGeocoder->GetCoordinateByAddressL(aAddressDetails, ESilent);
+     
 }
 // -----------------------------------------------------------------------------
-// CMapTileInterface::GetMapTileImageL()
-// Interface for requesting maptile image for a landmark object
+// CMapTileInterface::GetGeoCodeFromAddressL()
+// Interface for requesting GEO fields for the given landmark adress
 // -----------------------------------------------------------------------------
 //
-void CMapTileInterface::GetMapTileImageL(CPosLandmark* aLandmark,
+void CMapTileInterface::GetGeoCodeFromAddressL(CPosLandmark* aLandmark,
         const TDesC& aFilePath, MMapTileObserver* aObserver)
 {
     __TRACE_CALLSTACK;
@@ -121,34 +126,34 @@ void CMapTileInterface::GetMapTileImageL(CPosLandmark* aLandmark,
     iFilePath = HBufC::NewL(aFilePath.Length());
     iFilePath->Des().Copy(aFilePath);
 
+    //Reset the street level available flag
+	iStreetAvailable = EFalse;
+	
     TPtrC getStreet;
     aLandmark->GetPositionField(EPositionFieldStreet, getStreet);
 
     if (getStreet.Length() > 0)
-    {
+   {
         iStreetAvailable = ETrue;
     }
-    TConnectionOption conn = ESilent;
-    iMaptileGeocoder->GetCoordinateByAddressL(*aLandmark, conn);
+    iMaptileGeocoder->GetCoordinateByAddressL(*aLandmark, ESilent);
 }
 
 // -----------------------------------------------------------------------------
-// CMapTileInterface::GetMapTileImageL()
+// CMapTileInterface::GetMapTileL()
 // Function for Retrieving latitude & longitude information
 // -----------------------------------------------------------------------------
 //
-void CMapTileInterface::GetMapTileL(TReal aLatitude, TReal aLongitude)
+void CMapTileInterface::GetMapTileL( const TReal& aLatitude, const TReal& aLongitude)
 {
     __TRACE_CALLSTACK;//Notification to observer , to update contact db,
-    iObserver->RestGeoCodeCompleted(aLatitude, aLongitude);
     TInt zoom = KCityLevelZoom;
-    TInt size = KMapTileSize;
     if (iStreetAvailable)
     {
         zoom = KStreetLvelZoom;
     }
     iStreetAvailable = EFalse;
-    TMapTileParam mapTileparam(aLatitude, aLongitude, zoom, size);
+    TMapTileParam mapTileparam(aLatitude, aLongitude, zoom, MapTileWidth,MapTileHeight );
     iMaptileGeocoder->GetMapTileByGeoCodeL( mapTileparam, *iFilePath );
 }
 
@@ -162,7 +167,46 @@ void CMapTileInterface::MapTileFetchingCompleted( TInt aErrCode, const TDesC& aM
     __TRACE_CALLSTACK;
     MYLOCLOGSTRING1("MapComplete() status-%d ",aErrCode );
     iObserver->MapTilefetchingCompleted( aErrCode, aMapTilePath );
+}
 
+// ----------------------------------------------------------------------------
+// CMapTileInterface::UpdateFilePathL()
+// Converts the geocoordinate to maptile pixel coordinate and updates the
+// file path to Maptilefolder\RowCol.png
+// ----------------------------------------------------------------------------
+//
+void CMapTileInterface::UpdateFilePathL( const TReal& aLatitude, const TReal& aLongitude )
+{
+    TInt iZoomLvl = KCityLevelZoom;
+    if ( iStreetAvailable )
+        iZoomLvl = KStreetLvelZoom;
+    
+    TInt totalTilesHorizontal = 1 << iZoomLvl;
+    TInt totalTilesVertical = 1 << iZoomLvl;
+
+    TInt totalMapWidth = totalTilesHorizontal * KMapTileWidthHeight;
+    TInt totalMapHeight = totalTilesVertical * KMapTileWidthHeight;
+    
+    TReal pi = 3.14159265;
+
+    TInt convertedx = (( aLongitude + 180.0) * totalMapWidth)
+            / 360.0;
+    TReal convertedtemp = log(tan(( aLatitude + 90) * pi
+            / 360.0));
+    int convertedy = (1 - convertedtemp / pi) * totalMapHeight / 2.0;
+
+    //Get the image row,col
+    TInt iMapTileImageRow = convertedy / 256.0;
+    TInt iMapTileImageCol = convertedx / 256.0;
+    
+    TBuf<KImagePathSize> mImagePath;
+
+    mImagePath.AppendNum(iMapTileImageRow);
+    mImagePath.AppendNum(iMapTileImageCol);
+    mImagePath.Append(KFileExtn);   
+    
+    iFilePath = iFilePath->ReAllocL(iFilePath->Length() + mImagePath.Length() );
+    iFilePath->Des().Append(mImagePath);
 }
 
 // -----------------------------------------------------------------------------
@@ -187,24 +231,22 @@ void CMapTileInterface::GeocodingCompleted(TInt aErrorcode,
         if ( latitude != KInvalidLatitudeLongitude
                 && longitude != KInvalidLatitudeLongitude)
         {           
-            TRAP_IGNORE( SetLandMarkDetailsL(aAddressInfo) );            
-            TRAPD( error, GetMapTileL(latitude, longitude) );
-            if ( error != KErrNone )
-            {
-                //Log error message
-				 MYLOCLOGSTRING1("GetMapTileL() status-%d",error);
-				 iObserver->MapTilefetchingCompleted(error, KNullDesC);
-            }
+            TRAP_IGNORE( SetLandMarkDetailsL(aAddressInfo) );
+			      TRAP_IGNORE( UpdateFilePathL( latitude, longitude ) );
+	      
+            iObserver->GeoCodefetchingCompleted(KErrNone,  latitude, longitude, iFilePath->Des());
+
         }
         else
         {
-            iObserver->MapTilefetchingCompleted(KErrGeneral, KNullDesC);
-        }
+            iObserver->GeoCodefetchingCompleted(KErrGeneral,
+		      KInvalidLatitudeLongitude, KInvalidLatitudeLongitude, KNullDesC);
+        }        
     }
     else
     {
-        iObserver->MapTilefetchingCompleted(aErrorcode, KNullDesC);
-
+        iObserver->GeoCodefetchingCompleted(aErrorcode,
+		       KInvalidLatitudeLongitude, KInvalidLatitudeLongitude, KNullDesC );
     }
 }
 

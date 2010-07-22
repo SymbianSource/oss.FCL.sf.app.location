@@ -1,4 +1,21 @@
 EXPORTS
-	?getMapTileImage@MapTileService@@SA?AVQString@@HW4AddressType@1@@Z @ 1 NONAME ; class QString MapTileService::getMapTileImage(int, enum MapTileService::AddressType)
-	?isLocationFeatureEnabled@MapTileService@@SA_NW4AppType@1@@Z @ 2 NONAME ; bool MapTileService::isLocationFeatureEnabled(enum MapTileService::AppType)
+	?qt_metacast@MapTileService@@UAEPAXPBD@Z @ 1 NONAME ; void * MapTileService::qt_metacast(char const *)
+	?publishCalEntry@MapTileService@@AAEXH@Z @ 2 NONAME ; void MapTileService::publishCalEntry(int)
+	?isLocationFeatureEnabled@MapTileService@@QAE_NW4AppType@1@@Z @ 3 NONAME ; bool MapTileService::isLocationFeatureEnabled(enum MapTileService::AppType)
+	??_EMapTileService@@UAE@I@Z @ 4 NONAME ; MapTileService::~MapTileService(unsigned int)
+	?tr@MapTileService@@SA?AVQString@@PBD0@Z @ 5 NONAME ; class QString MapTileService::tr(char const *, char const *)
+	?getStaticMetaObject@MapTileService@@SAABUQMetaObject@@XZ @ 6 NONAME ; struct QMetaObject const & MapTileService::getStaticMetaObject(void)
+	?trUtf8@MapTileService@@SA?AVQString@@PBD0H@Z @ 7 NONAME ; class QString MapTileService::trUtf8(char const *, char const *, int)
+	??1MapTileService@@UAE@XZ @ 8 NONAME ; MapTileService::~MapTileService(void)
+	??0MapTileService@@QAE@XZ @ 9 NONAME ; MapTileService::MapTileService(void)
+	?getMapTileImage@MapTileService@@QAEHHW4AddressType@1@AAVQString@@V?$QFlags@W4Orientation@Qt@@@@@Z @ 10 NONAME ; int MapTileService::getMapTileImage(int, enum MapTileService::AddressType, class QString &, class QFlags<enum Qt::Orientation>)
+	?metaObject@MapTileService@@UBEPBUQMetaObject@@XZ @ 11 NONAME ; struct QMetaObject const * MapTileService::metaObject(void) const
+	?setMaptileStatus@MapTileService@@QAEXXZ @ 12 NONAME ; void MapTileService::setMaptileStatus(void)
+	?tr@MapTileService@@SA?AVQString@@PBD0H@Z @ 13 NONAME ; class QString MapTileService::tr(char const *, char const *, int)
+	?qt_metacall@MapTileService@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 14 NONAME ; int MapTileService::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?readEntryFromMaptileDataBase@MapTileService@@AAEHHW4AddressType@1@AAVTLookupItem@@AAH@Z @ 15 NONAME ; int MapTileService::readEntryFromMaptileDataBase(int, enum MapTileService::AddressType, class TLookupItem &, int &)
+	?trUtf8@MapTileService@@SA?AVQString@@PBD0@Z @ 16 NONAME ; class QString MapTileService::trUtf8(char const *, char const *)
+	?staticMetaObject@MapTileService@@2UQMetaObject@@B @ 17 NONAME ; struct QMetaObject const MapTileService::staticMetaObject
+	?maptileFetchingStatusUpdate@MapTileService@@IAEXHHH@Z @ 18 NONAME ; void MapTileService::maptileFetchingStatusUpdate(int, int, int)
+	?publishValue@MapTileService@@AAEXHW4AddressType@1@H@Z @ 19 NONAME ; void MapTileService::publishValue(int, enum MapTileService::AddressType, int)
 

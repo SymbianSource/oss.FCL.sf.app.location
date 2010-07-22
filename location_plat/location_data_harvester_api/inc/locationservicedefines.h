@@ -31,10 +31,10 @@ enum TUidSourceType
     ESourceMapsHistory,
     /** Uid Source type contacts default/prefered address */
     ESourceContactsPref,
-    /** Uid Source type contacts work address */
-    ESourceContactsWork,
     /** Uid Source type contacts home address */
     ESourceContactsHome,
+    /** Uid Source type contacts work address */
+    ESourceContactsWork,
     /** Uid Source type landmarks category */
     ESourceLandmarksCategory,
     /** Uid Source type landmarks user created category */
@@ -48,5 +48,20 @@ enum TUidSourceType
     /** Source type invalid */
     ESourceInvalid
 };
+
+/** Defines entry change type
+*/
+enum TEntryChangeType
+    {
+    /** Entry added */
+    EEntryAdded,
+    /** Entry modified */
+    EEntryModified,
+    /** Entry deleted */
+    EEntryDeleted,
+    /** Entry change unknown */
+    EEntryUnknown
+    };
+
 
 #endif // QLOCATIONPICKERITEM_H

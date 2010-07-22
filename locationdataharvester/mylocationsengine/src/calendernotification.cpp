@@ -89,10 +89,7 @@ CCalenderNotification::CCalenderNotification(MNotifyChange* aNotifyChange) :
 //
 CCalenderNotification::~CCalenderNotification()
 {
-    if (IsActive())
-    {
-        Cancel();
-    }
+    Cancel();
     iFsession.Close();
 }
 // -----------------------------------------------------------------------------
@@ -104,10 +101,6 @@ void CCalenderNotification::RunL()
 {
     TInt status;
     iNotifyChange.NotifyChangeL( status );
-    if ( KErrNone == status )
-    {
-        iFsession.NotifyChangeCancel();
-    }
 }
 // -----------------------------------------------------------------------------
 // CMyLocationsEngine::DoCancel()
@@ -116,6 +109,7 @@ void CCalenderNotification::RunL()
 //
 void CCalenderNotification::DoCancel()
 {
+    iFsession.NotifyChangeCancel();
 }
 
 //End of file

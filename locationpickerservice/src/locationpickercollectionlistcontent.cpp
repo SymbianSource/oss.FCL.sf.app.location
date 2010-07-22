@@ -25,16 +25,22 @@
 // ----------------------------------------------------------------------
 // LocationPickerCollectionListContent::LocationPickerCollectionListContent()
 // ----------------------------------------------------------------------
-LocationPickerCollectionListContent::LocationPickerCollectionListContent( Qt::Orientation aOrientation )
-    :mOrientation(aOrientation),
-    mModel(NULL),
+LocationPickerCollectionListContent::LocationPickerCollectionListContent()
+    :mModel(NULL),
     mDataManager(NULL)
 {
     // Create a standard model for the view list
     mModel = new QStandardItemModel( this );
-    // create data manager to manage data in the model
-    mDataManager = LocationPickerDataManager::getInstance();
-    mDataManager->populateModel( *mModel, ELocationPickerCollectionListContent, mOrientation );
+    if(mModel)
+    {
+        // create data manager to manage data in the model
+        mDataManager = LocationPickerDataManager::getInstance();
+        bool populated = mDataManager->populateModel( *mModel, ELocationPickerCollectionListContent);
+        if(!populated)
+        {
+        qFatal("Error creating collection");
+        }
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -49,9 +55,9 @@ LocationPickerCollectionListContent::~LocationPickerCollectionListContent()
 // LocationPickerCollectionListContent::getStandardModel
 // -----------------------------------------------------------------
 QStandardItemModel* LocationPickerCollectionListContent::getStandardModel()
-    {
+{
     return mModel;
-    }
+}
 
 // ----------------------------------------------------------------------------
 // LocationPickerCollectionListContent::getData()

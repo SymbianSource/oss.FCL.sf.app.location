@@ -50,10 +50,6 @@ void LocationPickerService::complete( QLocationPickerItem aLm )
         connect( this, SIGNAL( returnValueDelivered() ), qApp, SLOT( quit() ) );
         bool ok = completeRequest(mAsyncReqId,mReturn);
 		mAsyncReqId = 0;
-        if(ok == false)
-        {
-        qApp->quit();
-        }
     }
 }
 // ----------------------------------------------------------------------------
