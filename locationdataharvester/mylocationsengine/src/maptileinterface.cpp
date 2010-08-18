@@ -196,8 +196,8 @@ void CMapTileInterface::UpdateFilePathL( const TReal& aLatitude, const TReal& aL
     int convertedy = (1 - convertedtemp / pi) * totalMapHeight / 2.0;
 
     //Get the image row,col
-    TInt iMapTileImageRow = convertedy / 256.0;
-    TInt iMapTileImageCol = convertedx / 256.0;
+    TInt iMapTileImageRow = ( convertedy / 256.0 ) * 1000;
+    TInt iMapTileImageCol = ( convertedx / 256.0 ) * 1000;
     
     TBuf<KImagePathSize> mImagePath;
 
@@ -205,8 +205,11 @@ void CMapTileInterface::UpdateFilePathL( const TReal& aLatitude, const TReal& aL
     mImagePath.AppendNum(iMapTileImageCol);
     mImagePath.Append(KFileExtn);   
     
-    iFilePath = iFilePath->ReAllocL(iFilePath->Length() + mImagePath.Length() );
-    iFilePath->Des().Append(mImagePath);
+    if( iFilePath )
+    {
+        iFilePath = iFilePath->ReAllocL(iFilePath->Length() + mImagePath.Length() );
+        iFilePath->Des().Append(mImagePath);    
+    }
 }
 
 // -----------------------------------------------------------------------------

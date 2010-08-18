@@ -18,11 +18,13 @@
 #include <QFile>
 
 #include <bautils.h>
+#include <locationservicedefines.h>
 #include "mylocationlogger.h"
 #include "lookupmaptiledb.h"
 
 _LIT( KSelectAllFrom, "SELECT * FROM " );
 _LIT(KQueryToDB,"SELECT * FROM cntmaptilelookuptable WHERE cntuid = %d AND source = %d");
+_LIT(KQueryGetCalendaIds,"SELECT cntuid FROM cntmaptilelookuptable WHERE source = %d");
 _LIT( KSelectfilepathFrom, "SELECT filepath FROM " );
 _LIT(KQueryMaptile, "SELECT filepath FROM cntmaptilelookuptable WHERE filepath = '%S'");
 // string 'where'
@@ -453,6 +455,47 @@ void CLookupMapTileDatabase::FindEntriesByMapTileFetchingStateL(const TUint32 aF
     }
 
     CleanupStack::PopAndDestroy(&myView); // myView
+}
+
+// -----------------------------------------------------------------------------
+// CLookupMapTileDatabase::GetAllCalendarIdsL()
+// Gets the list of calendar ids .
+// -----------------------------------------------------------------------------
+//
+void CLookupMapTileDatabase::GetAllCalendarIdsL( RArray<TUint32>& aIdArray )
+{
+    __TRACE_CALLSTACK;// Create a query to find the item.
+    TFileName queryBuffer;
+    queryBuffer.Format( KQueryGetCalendaIds, ESourceCalendar );
+    
+    TInt ret = Open();
+        if (ret != KErrNone)
+        {
+           Close();
+           ret= Open();
+           
+        }
+    iItemsDatabase.Begin();
+
+    
+    // Create a view of the table with the above query.
+    RDbView myView;
+    myView.Prepare( iItemsDatabase, TDbQuery( queryBuffer ) );
+    CleanupClosePushL( myView );
+    myView.EvaluateAll();
+    myView.FirstL();
+
+    while( myView.AtRow() )
+    {
+        // Item found. get the details.
+        myView.GetL();
+        TUint32 id;
+        id = myView.ColUint( KColumnUid );
+        aIdArray.Append( id );
+        myView.NextL();
+    }
+
+    CleanupStack::PopAndDestroy( &myView ); // myView
 }
 
 // -----------------------------------------------------------------------------

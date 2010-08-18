@@ -35,7 +35,7 @@ const TUid KUidMapTileInterface = { 0x2002E6E8 };
 const TInt KEnableLocationFeature  = 0x1;
 
 const char *MAPTILE_STATUS_RECEIVER = "/maptilestatuspublisher/name";
-const char *MAPTILE_STATUS_PUBLISHER = "/maptilepublisher";
+const char *MAPTILE_STATUS_PUBLISHER = "/maptilecontactpublisher";
 const char *MAPTILE_STATUS_CALENDAR_PUBLISHER = "/maptilecalpublisher";
 
 
@@ -86,7 +86,7 @@ MapTileService::~MapTileService()
 bool MapTileService::isLocationFeatureEnabled(AppType appType)
 {    
     //Create the centrep with uid 0x2002C3A8
-    bool iLocationFeatureEnabled = false;
+    bool enableLocationFeature = false;
     
     CRepository* centralRepository = NULL;  
      
@@ -108,13 +108,13 @@ bool MapTileService::isLocationFeatureEnabled(AppType appType)
       
         if ( ret == KErrNone && repValue == 1 )
         {
-            iLocationFeatureEnabled  = true;
+            enableLocationFeature  = true;
         }
            
          delete centralRepository;
     }
            
-    return iLocationFeatureEnabled;
+    return   enableLocationFeature;
     
 }
 

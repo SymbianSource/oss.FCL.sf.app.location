@@ -339,6 +339,28 @@ void LocationDataLookupDb::updateEntryById( const QLookupItem& aLookupItem )
     }
 }
 
+
+// ---------------------------------------------------------
+// LocationDataLookupDb::updateEntryNameById()
+// ---------------------------------------------------------
+void LocationDataLookupDb::updateEntryNameByIdAndType(quint32 aSourceId, quint32 aSourceType , QString aName)
+{
+	if( mDbOpen )
+		{
+			QSqlQuery query(*mDb);
+			query.prepare("UPDATE lplookup SET "							
+							"name = ? "							
+						    "WHERE sourceid = ? AND sourcetype = ?");
+		
+			query.addBindValue( aName );
+			
+			query.addBindValue( aSourceId );
+			query.addBindValue( aSourceType );				
+			
+			query.exec();
+		}
+}
+
 // ---------------------------------------------------------
 // LocationDataLookupDb::deleteEntryBySourceIdAndType()
 // ---------------------------------------------------------
@@ -518,19 +540,19 @@ void LocationDataLookupDb::fillLookupEntry( QSqlQuery &aQuery, QLookupItem &aLoo
 // ---------------------------------------------------------
 // LocationDataLookupDb::getAddressDetails()
 // ---------------------------------------------------------
-QString LocationDataLookupDb::getAddressDetails( quint32 mId , quint32 mSourceType )
+QString LocationDataLookupDb::getAddressDetails( quint32 aId , quint32 aSourceType )
 {
     QString addressDetails;
     if (mDbOpen)
     {
         QSqlQuery query(*mDb);
-        if (mSourceType == ESourceContactsPref || mSourceType
-                == ESourceContactsWork || mSourceType == ESourceContactsHome)
+        if ( aSourceType == ESourceContactsPref || aSourceType
+                == ESourceContactsWork || aSourceType == ESourceContactsHome)
         {
             query.prepare("SELECT * FROM lplookup "
                 "WHERE sourceid = ? AND sourcetype = ?");
-            query.addBindValue(mId);
-            query.addBindValue(mSourceType);
+            query.addBindValue( aId );
+            query.addBindValue( aSourceType );
             query.exec();
             if (query.first()) {
                 QSqlRecord rec = query.record();
@@ -579,11 +601,11 @@ QString LocationDataLookupDb::getAddressDetails( quint32 mId , quint32 mSourceTy
             }
 
         }
-        else if (mSourceType == ESourceCalendar)
+        else if (aSourceType == ESourceCalendar)
         {
             query.prepare("SELECT * FROM lplookupaddress "
                 "WHERE sourceid = ? ");
-            query.addBindValue(mId);
+            query.addBindValue( aId );
             query.exec();
             if ( query.first() )
             {
@@ -626,8 +648,9 @@ void LocationDataLookupDb::getCount( QList<int>& aCount, const quint32 /*aCollec
          {
              QSqlQuery query(*mDb);
              query.prepare( "SELECT * FROM lplookup " 
-                     "WHERE sourcetype = ?" );
+                     "WHERE sourcetype = ? AND duplicate = ?" );
              query.addBindValue( ESourceCalendar );
+             query.addBindValue( 0 );
              query.exec();
              
              qDebug("size %d",query.size());             
@@ -656,7 +679,9 @@ void LocationDataLookupDb::getCount( QList<int>& aCount, const quint32 /*aCollec
     //     else // all contents
          {
              QSqlQuery query(*mDb);
-             query.prepare( "SELECT * FROM lplookup" );
+             query.prepare( "SELECT * FROM lplookup"
+                     "WHERE duplicate = ?" );
+             query.addBindValue( 0 );
              query.exec();
              int count=0;
              while( query.next() )  count++;

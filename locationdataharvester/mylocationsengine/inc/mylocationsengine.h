@@ -251,6 +251,18 @@ private:
     * Sets the maptile storing path.
     */
     void SetFolderPathL();
+
+    /**
+    * Refreshes calendar entries in mylocation databases. This is typically called when there is an undefined 
+    * change in calendar db.
+    */
+    void RefreshCalendarEntryListL();    
+
+    /**
+    * Returns True if a calendar entry is available for a given id.
+    */
+    TBool IsCalendarEntryValidL( TUint32 aId );    
+
     /**
     * Calender entry added.
     */
@@ -291,6 +303,10 @@ private:
      */
     void CropAndSaveImage( QString filePath, int width, 
                                int height, QString appType, QString orientationType );
+
+	/**Get the contact name for this perticular id.
+     */
+	void GetContactName( TInt32 iUId , TDes& aName );
      
 public:  //From MMapTileObserver
     

@@ -196,6 +196,7 @@ bool LocationPickerDataManagerPrivate::populateLandmarks( QList<QLookupItem> &aI
             // set icons based on contact address type
             QVariantList icons;
             HbIcon adressTypeIcon;
+            HbIcon potraitIcon;
             QString adressType;
             bool adressIconPresent = false;
             if( aItemArray[i].mSourceType == ESourceContactsHome )
@@ -209,6 +210,20 @@ bool LocationPickerDataManagerPrivate::populateLandmarks( QList<QLookupItem> &aI
                 adressTypeIcon = HbIcon(KContactWorkIcon);
                 adressType = KContactWorkIcon;
                 adressIconPresent = true;
+            }
+            
+            if( aItemArray[i].mSourceType == ESourceCalendar )
+            {
+                potraitIcon = HbIcon( KCalendarImage );
+            }
+            else if( aItemArray[i].mSourceType == ESourceContactsWork ||  aItemArray[i].mSourceType 
+                    == ESourceContactsHome || aItemArray[i].mSourceType == ESourceContactsPref )
+            {
+                potraitIcon = HbIcon( KContactsImage );
+            }    
+            else
+            {
+                potraitIcon = HbIcon( KDummyImage );
             }
         
             // create a list item and set to model
@@ -226,7 +241,6 @@ bool LocationPickerDataManagerPrivate::populateLandmarks( QList<QLookupItem> &aI
                 landscapeIconPath = QString("");
             }
             addressData.clear();
-            HbIcon potraitIcon( KDummyImage );
             icons<<potraitIcon;
             if(adressIconPresent)
             {
@@ -277,7 +291,7 @@ void LocationPickerDataManagerPrivate::populateCollections(QList<int>& aCount)
     QString calendarCollectionNum;
     calendarCollectionNum.setNum(calNum);
     calendarCollectionNum.append(" items");
-    QString calendarCollectionName( hbTrId("txt_lint_list_calendar_event_locations") );
+    QString calendarCollectionName( hbTrId("txt_lint_list_calendar_locations") );
     QStringList calender = (QStringList()<<calendarCollectionName<<calendarCollectionNum);
     
     QStandardItem *modelItemCalendar = new QStandardItem();

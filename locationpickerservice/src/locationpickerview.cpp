@@ -121,8 +121,14 @@ void LocationPickerView::backTriggered()
     //if current model is collection content, go back to collectionlist content  
     if(mViewType == ELocationPickerCollectionContent)
     {
-        removeDetailsLabel();
-        colectionTabTriggered();
+        mListItem->setGraphicsSize(HbListViewItem::MediumIcon);
+		removeDetailsLabel();
+        mAscendingAction->setDisabled(true);
+        mDescendingAction->setDisabled(true);
+        mAllAction->setChecked(false);
+        mViewType = ELocationPickerCollectionListContent;
+        manageListView();
+
         clearContentModel();
     }
     else
@@ -193,8 +199,12 @@ void LocationPickerView::createHurriganesWidget()
     //create MediaWall Object
     mWidget = new HgMediawall();
     HbIcon defaultIcon(KDummyImage);
-    QImage defaultImage = defaultIcon.pixmap().toImage().convertToFormat(QImage::Format_ARGB32_Premultiplied);
-    mWidget->setDefaultImage(defaultImage);
+    QPainter painter;
+    QPixmap defaultImage(defaultIcon.width(),defaultIcon.height());
+    painter.begin(&defaultImage);
+    defaultIcon.paint(&painter,QRectF(0,0,defaultIcon.width(),defaultIcon.height()));
+    painter.end();
+    mWidget->setDefaultImage( defaultImage.toImage() );
     HgMediawall* mediawall = qobject_cast<HgMediawall*>( mWidget );
     mediawall->setObjectName("location");
     HbStyleLoader::registerFilePath(":/location.hgmediawall.widgetml");
@@ -463,6 +473,12 @@ void LocationPickerView::allTabTriggered()
 // -----------------------------------------------------------------------------
 void LocationPickerView::colectionTabTriggered()
 {
+	  if( mViewType == ELocationPickerCollectionListContent ||
+	      mViewType == ELocationPickerCollectionContent )
+	  {
+	  	  mCollectionAction->setChecked(true);
+	      return;
+	  }
     mListItem->setGraphicsSize(HbListViewItem::MediumIcon);
     removeDetailsLabel();
     //execute only if tab is not pressed
@@ -486,6 +502,7 @@ void LocationPickerView::colectionTabTriggered()
 // -----------------------------------------------------------------------------
 void LocationPickerView::searchTabTriggered()
 {
+    mWidget->hide();
     emit switchToSearchView();
 }
 
@@ -507,11 +524,11 @@ void LocationPickerView::setCollectionData( quint32 acategoryId )
         switch(acategoryId)
         {
 
-            case 1: categoryname = "Landmarks";
+            case 1: categoryname = QString(hbTrId("txt_lint_subhead_places"));
             break;
-            case 8: categoryname = "Contacts";     
+            case 8: categoryname = QString(hbTrId("txt_lint_subhead_contact_addresses"));     
             break;
-            case 9: categoryname = "Calender";
+            case 9: categoryname = QString(hbTrId("txt_lint_subhead_calendar_event_locations"));
             break;
         }
         if(mCollectionContent->locationFound())
@@ -594,10 +611,10 @@ void LocationPickerView::launchPopUpMenu( HbAbstractViewItem *aItem, const QPoin
     mLongPressMenu = new HbMenu();
     mLongPressMenu->setTimeout(HbMenu::NoTimeout);
     connect(mLongPressMenu,SIGNAL(aboutToClose ()),this,SLOT(deleteMenu()));
-    mSelectAction  = mLongPressMenu->addAction(hbTrId("Select"));
+    mSelectAction  = mLongPressMenu->addAction(hbTrId("txt_lint_list_select"));
     if( mViewType == ELocationPickerCollectionContent || mViewType == ELocationPickerContent )
     {
-        mDetailsAction  = mLongPressMenu->addAction(hbTrId("txt_lint_list_details"));
+        mDetailsAction  = mLongPressMenu->addAction(hbTrId("txt_lint_menu_details"));
         connect(mDetailsAction, SIGNAL(triggered()), this, SLOT(handleDetails()));
     }
     mIndex = aItem->modelIndex();
@@ -614,7 +631,7 @@ void LocationPickerView::launchPopUpMenu( const QModelIndex &aIndex, const QPoin
     mLongPressMenu = new HbMenu();
     mLongPressMenu->setTimeout(HbMenu::NoTimeout);
     connect(mLongPressMenu,SIGNAL(aboutToClose ()),this,SLOT(deleteMenu()));
-    mSelectAction  = mLongPressMenu->addAction(hbTrId("Select"));
+    mSelectAction  = mLongPressMenu->addAction(hbTrId("txt_lint_list_select"));
     mIndex = aIndex;
     connect(mSelectAction, SIGNAL(triggered()), this, SLOT(handleSelect()));
     mLongPressMenu->setPreferredPos(aPoint);

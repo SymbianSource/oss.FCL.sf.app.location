@@ -29,11 +29,15 @@ const QString KSpace(" ");
 
 //Icon Paths
 
-// dummy image for a location
+// dummy image for a LandMarks
 const QString KDummyImage("qtg_large_maps");
+//Image for calendar entries
+const QString KCalendarImage("qtg_large_calendar");
+//Image for contacts entries
+const QString KContactsImage("qtg_large_phonebook");
 
 //Contacts collection icon
-const QString KCollectionsContacts("qtg_small_contacts");
+const QString KCollectionsContacts("qtg_small_phonebook");
 
 //Calendar collection icon
 const QString KCollectionsCalendar("qtg_small_calendar");

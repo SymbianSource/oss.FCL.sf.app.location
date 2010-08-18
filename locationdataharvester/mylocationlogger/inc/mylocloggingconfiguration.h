@@ -25,7 +25,7 @@
 * Have this line active if you want to have logging for this component.
 * Comment this line out if you don't want any logging for this component.
 */
-#define _MYLOCLOGGING
+//#define _MYLOCLOGGING
 
 /**
 * Have this line active if you want to have logging to file.

@@ -106,6 +106,12 @@ public:
             RArray<TLookupItem>& aLookupItemArray);
 
     /**
+    * Gets the list of calendar ids.
+    * @param[out] aIdArray Calendar id list
+    */
+    void GetAllCalendarIdsL( RArray<TUint32>& aIdArray );
+    
+    /**
     * ReSet the entry in the lookup table , with null value 
     * @param aLookupItem The lookup item entry to be reseted in the database,
     * get the used maptile path as part of lookupItem filepath , to free the resource 

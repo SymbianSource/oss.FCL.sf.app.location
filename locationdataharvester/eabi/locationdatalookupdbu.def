@@ -20,4 +20,5 @@ EXPORTS
 	_ZN20LocationDataLookupDbD2Ev @ 19 NONAME
 	_ZTI20LocationDataLookupDb @ 20 NONAME
 	_ZTV20LocationDataLookupDb @ 21 NONAME
+	_ZN20LocationDataLookupDb26updateEntryNameByIdAndTypeEjj7QString @ 22 NONAME
 

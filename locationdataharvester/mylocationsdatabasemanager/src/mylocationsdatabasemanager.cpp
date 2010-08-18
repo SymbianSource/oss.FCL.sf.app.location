@@ -480,7 +480,7 @@ void CMyLocationsDatabaseManager::HandleEntryModificationL(
                         // if current lookup item duplicate property is 0, then remove next corresponding
                         // calendar lookup entry duplicate property.
                         // this is required because the current entry will be pointing to a new landmark.
-                        UnsetDuplicateNextCalEntry( existingLandmark->LandmarkId() );
+                        UnsetDuplicateNextCalEntry( aUid, existingLandmark->LandmarkId() );
                     } 
 
                     // set duplicate only if there are calendar entries already pointing to this landmark. 
@@ -507,7 +507,7 @@ void CMyLocationsDatabaseManager::HandleEntryModificationL(
                         // if current lookup item duplicate property is 0, then remove next corresponding
                         // calendar lookup entry duplicate property.
                         // this is required because the current entry will be pointing to a new landmark.
-                        UnsetDuplicateNextCalEntry( existingLandmark->LandmarkId() );
+                        UnsetDuplicateNextCalEntry( aUid, existingLandmark->LandmarkId() );
                     } 
                 }
                 
@@ -859,6 +859,7 @@ EXPORT_C void CMyLocationsDatabaseManager::GetLandmarkFullAddress(
     TPtrC tempStr;
     TInt retStatus;
     TBool addressEmtpy = ETrue;
+    aLandmarkAddress.Copy( KNullDesC );
     retStatus = aLandmark->GetPositionField(EPositionFieldStreet, tempStr);
     if (retStatus == KErrNone && tempStr.Length())
     {
@@ -1003,7 +1004,7 @@ void CMyLocationsDatabaseManager::FillLookupItemAddressDetails( CPosLandmark* aL
 // CMyLocationsDatabaseManager::UnsetDuplicateNextCalEntry()
 // -----------------------------------------------------------------------------
 //
-void CMyLocationsDatabaseManager::UnsetDuplicateNextCalEntry( quint32 aLandmarkId )
+void CMyLocationsDatabaseManager::UnsetDuplicateNextCalEntry( quint32 aUid, quint32 aLandmarkId )
 {
     __TRACE_CALLSTACK;
     // get next duplicate item
@@ -1011,7 +1012,7 @@ void CMyLocationsDatabaseManager::UnsetDuplicateNextCalEntry( quint32 aLandmarkI
     iLocationAppLookupDb->findEntriesByLandmarkId( aLandmarkId, itemArray );
     for ( int i = 0; i < itemArray.count(); i++)
     {
-        if( itemArray[i].mSourceType == ESourceCalendar )
+        if( itemArray[i].mSourceType == ESourceCalendar && itemArray[i].mSourceUid != aUid )
         {
             itemArray[i].mIsDuplicate = 0;
             iLocationAppLookupDb->updateEntryById( itemArray[i] );
@@ -1095,6 +1096,20 @@ EXPORT_C void CMyLocationsDatabaseManager::UpdateMapTilePath( TUint32 aSourceId,
     QString filePath = QString( (QChar*)aFilePath.Ptr(), aFilePath.Length() );
     iLocationAppLookupDb->updateMaptileBySourceIdAndType( aSourceId, aSourceType, filePath );
 }
+
+// -----------------------------------------------------------------------------
+// CMyLocationsDatabaseManager::UpdateEntryName()
+// -----------------------------------------------------------------------------
+//
+EXPORT_C void CMyLocationsDatabaseManager::UpdateEntryName( TUint32 aSourceId, TUidSourceType aSourceType, 
+                                            const TDesC& aName )
+{
+    __TRACE_CALLSTACK;
+    QString name = QString( (QChar*)aName.Ptr(), aName.Length() );
+    iLocationAppLookupDb->updateEntryNameByIdAndType( aSourceId, aSourceType, name );
+	
+}
+
 
 // -----------------------------------------------------------------------------
 // CMyLocationsDatabaseManager::CheckIfAddressChanged()

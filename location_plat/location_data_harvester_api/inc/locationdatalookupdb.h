@@ -217,10 +217,18 @@ public: // Constructor
     */
     QString getAddressDetails( quint32 mId , quint32 mSourceType );
     
+    /**
+    * Gets single line address
+    * @param id , id of the entry
+    * @param sourceType , type of entry
+    * @param name , name of entry
+    */
+    void updateEntryNameByIdAndType(quint32 id, quint32 sourceType , QString name);
+    
 private:
 	
     // fills the lookup entry
-    void fillLookupEntry( QSqlQuery &aRecord, QLookupItem &aLookupItem );
+    void fillLookupEntry( QSqlQuery &aRecord, QLookupItem &aLookupItem );    
     
     // Handle to the items database
     QSqlDatabase *mDb;

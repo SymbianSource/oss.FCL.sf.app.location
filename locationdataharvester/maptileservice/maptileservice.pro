@@ -66,7 +66,7 @@ symbian:
            -lflogger \
            -lefsrv
    
-        myCrml.sources = ./conf/maptilepublisher.qcrml
+        myCrml.sources = ./conf/maptilecontactpublisher.qcrml
         myCrml.path = c:/resource/qt/crml
         DEPLOYMENT += myCrml
         

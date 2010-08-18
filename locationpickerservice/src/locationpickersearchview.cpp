@@ -179,7 +179,7 @@ void LocationPickerSearchView::launchPopUpMenu(HbAbstractViewItem *aItem, const 
 {
     mLongPressMenu = new HbMenu();
     mLongPressMenu->setTimeout(HbMenu::NoTimeout);
-    mSelectAction  = mLongPressMenu->addAction(hbTrId("Select"));
+    mSelectAction  = mLongPressMenu->addAction(hbTrId("txt_lint_list_select"));
     mIndex = aItem->modelIndex();
     connect(mSelectAction, SIGNAL(triggered()),this, SLOT(handleLongPress()));
     mLongPressMenu->setPreferredPos(aPoint);

@@ -16,4 +16,5 @@ EXPORTS
 	?fillLookupEntry@LocationDataLookupDb@@AAEXAAVQSqlQuery@@AAVQLookupItem@@@Z @ 15 NONAME ; void LocationDataLookupDb::fillLookupEntry(class QSqlQuery &, class QLookupItem &)
 	?open@LocationDataLookupDb@@QAE_NXZ @ 16 NONAME ; bool LocationDataLookupDb::open(void)
 	??_ELocationDataLookupDb@@UAE@I@Z @ 17 NONAME ; LocationDataLookupDb::~LocationDataLookupDb(unsigned int)
+	?updateEntryNameByIdAndType@LocationDataLookupDb@@QAEXIIVQString@@@Z @ 18 NONAME ; void LocationDataLookupDb::updateEntryNameByIdAndType(unsigned int, unsigned int, class QString)
 

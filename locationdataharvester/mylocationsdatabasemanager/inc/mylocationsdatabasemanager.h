@@ -90,7 +90,17 @@ class  CMyLocationsDatabaseManager : public CBase
          */                               
         IMPORT_C void UpdateMapTilePath( TUint32 aSourceId, TUint32 aSourceType, 
                                             TFileName& aFilePath );
-        
+
+		/** Update the maptile path to mylocation lookup table
+		 *
+		 * @param[in] aSourceId Uid of the changed source entry.
+		 * @param[in] aSourceType Source type of the aSourceId.
+		 * @param[in] aName entry name.
+		 */ 				 
+
+		IMPORT_C void UpdateEntryName( TUint32 aSourceId, TUidSourceType aSourceType, 
+                                            const TDesC& aName );
+		
         /** Compare the address details to lplookupaddres  table
          *
          * @param aLandmarks , address formed as landmark object
@@ -202,11 +212,12 @@ private:
 
         /**
           * UnsetDuplicateNextCalEntry.
-          * Finds a calendar lookup entry whose detination id  is aLandmarkId
+          * Finds next calendar lookup entry whose detination id  is aLandmarkId
 		  * and unsets it duplcate flag.
+          * @param[in] aCurrentCalUid current calendar entry id.
           * @param[in] aLandmarkId a landmark id.
          */
-       void UnsetDuplicateNextCalEntry( quint32 aLandmarkId );
+       void UnsetDuplicateNextCalEntry( quint32 aCurrentCalUid, quint32 aLandmarkId );
 
         /**
           * IsDuplicateCalEntry.

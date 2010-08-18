@@ -127,8 +127,11 @@ bool GeocodeUpdate::updateGeocodeToCalenderDB(const ulong& calEntryId, const dou
         AgendaGeoValue geoValue;
         geoValue.setLatLong(latitude, longitude);
         MYLOCLOGSTRING("latitude and longitude set to  AgendaGeoValue object.");
-        agendaEntry.setGeoValue(geoValue);
-        ret = mAgendaUtil->updateEntry(agendaEntry);
+        if( !agendaEntry.isNull() )
+        {
+            agendaEntry.setGeoValue(geoValue);
+            ret = mAgendaUtil->store(agendaEntry);
+        }
     }    
     return ret;
 }

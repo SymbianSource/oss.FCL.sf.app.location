@@ -102,7 +102,15 @@ QVariant HgWidgetDataModel::data(const QModelIndex &aIndex, int aRole) const
         {
             QStringList displayText;
             QStringList adressDetail = mProxyModel->data(proxyModelIndex,Qt::DisplayRole).toStringList();
-            QString displayString = adressDetail[0]+KSeparator+KSpace+adressDetail[1];
+            QString displayString;
+            if(!adressDetail[0].isEmpty())
+            {
+                displayString = adressDetail[0]+KSeparator+KSpace+adressDetail[1];
+            }
+            else
+            {
+                displayString = adressDetail[1];
+            }
             QString text("");
             displayText <<displayString<<text;
             returnValue = displayText;
@@ -127,8 +135,7 @@ QVariant HgWidgetDataModel::data(const QModelIndex &aIndex, int aRole) const
                 painter.begin(&mapPixmap);
                 HbIcon adressTypeIcon(adressType);
                 //draw the adressType Icon over mapTile Icon
-                QPixmap adressTypePixmap = adressTypeIcon.pixmap();
-                painter.drawPixmap( (mapPixmap.width()-adressTypePixmap.width()),0,adressTypePixmap ); 
+                adressTypeIcon.paint(&painter,QRectF((mapPixmap.width()-adressTypeIcon.width()),0,adressTypeIcon.width(),adressTypeIcon.height()));
                 painter.fillRect(QRect(0,0,mapWidth,MAPSTROKE),brush);
                 painter.fillRect(QRect(0,mapHeight-MAPSTROKE,mapWidth,(mapHeight-MAPSTROKE)),brush);
                 painter.fillRect(QRect(0,0,MAPSTROKE,mapPixmap.height()),brush);

@@ -30,6 +30,6 @@ file=ABI_DIR\BUILD_DIR\mylocationsdatabasemanager.dll PROGRAMS_DIR\mylocationsda
 data=DATAZ_\APP_RESOURCE_DIR\mylocationsengine.rsc APP_RESOURCE_DIR\mylocationsengine.rsc
 
 data=\epoc32\data\z\resource\qt\crml\maptilestatuspublisher.qcrml   resource\qt\crml\maptilestatuspublisher.qcrml
-data=\epoc32\data\z\resource\qt\crml\maptilepublisher.qcrml   resource\qt\crml\maptilepublisher.qcrml
+data=\epoc32\data\z\resource\qt\crml\maptilecontactpublisher.qcrml   resource\qt\crml\maptilecontactpublisher.qcrml
 data=\epoc32\data\z\resource\qt\crml\maptilecalpublisher.qcrml   resource\qt\crml\maptilecalpublisher.qcrml
 #endif
