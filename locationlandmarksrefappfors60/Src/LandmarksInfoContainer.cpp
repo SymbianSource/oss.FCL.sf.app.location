@@ -27,7 +27,7 @@
 
 #include <lbspositioninfo.h>
 
-#include <LmRefApp.rsg>
+#include <lmrefapp.rsg>
 #include "LmRefApp.hrh"
 #include "LandmarksCommonData.h"
 #include "LandmarksInfoContainer.h"

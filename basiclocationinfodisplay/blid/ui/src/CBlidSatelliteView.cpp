@@ -18,7 +18,7 @@
 
 // SYSTEM INCLUDE FILES
 #include <aknViewAppUi.h>
-#include <Blid.rsg>
+#include <blid.rsg>
 #include <alf/alfenv.h>
 #include <alf/alfcontrolgroup.h>
 #include <alf/alfdisplay.h>

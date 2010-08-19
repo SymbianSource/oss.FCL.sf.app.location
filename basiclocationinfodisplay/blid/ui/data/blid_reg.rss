@@ -16,7 +16,7 @@
 */
 
 #include <appinfo.rh>
-#include <Blid.rsg>
+#include <blid.rsg>
 #include "BlidUID.h"
 #include <data_caging_paths_strings.hrh>
 

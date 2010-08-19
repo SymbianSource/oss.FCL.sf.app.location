@@ -20,7 +20,7 @@
 #include <AknQueryDialog.h> 
 #include <StringLoader.h>
 #include <eikmenub.h> // CEikMenuBar
-#include <Blid.rsg>
+#include <blid.rsg>
 #include <EPos_CPosLandmarkDatabase.h>
 #include <EPos_CPosLmItemIterator.h>
 #include <e32std.h>

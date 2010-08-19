@@ -18,7 +18,7 @@
 // INCLUDE FILES
 #include <f32file.h> // RFs
 #include <centralrepository.h>
-#include <Blid.rsg>
+#include <blid.rsg>
 #include <eikenv.h>
 
 #include "CBlidSettings.h"

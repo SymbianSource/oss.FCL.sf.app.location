@@ -17,7 +17,7 @@
 
 
 // SYSTEM INCLUDE FILES
-#include <Blid.rsg>
+#include <blid.rsg>
 //Added for HTK toolkit support
 #include <alf/alfenv.h>
 #include <alf/alfcontrolgroup.h>

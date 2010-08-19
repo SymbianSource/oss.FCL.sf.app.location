@@ -24,7 +24,7 @@
 #include <eikmenup.h>
 
 #include "LmRefApp.hrh"
-#include <LmRefApp.rsg>
+#include <lmrefapp.rsg>
 #include "LandmarksLmCategoriesModel.h"
 #include "LandmarksApplicationEngine.h"
 #include "LandmarksCategoriesDialog.h"

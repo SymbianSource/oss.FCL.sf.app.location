@@ -23,7 +23,7 @@
 
 #include <lbspositioninfo.h>
 
-#include <LmRefApp.rsg>
+#include <lmrefapp.rsg>
 #include "LandmarksUtils.h"
 #include "LandmarksPositionRequest.h"
 #include "LandmarksOperationObserver.h"

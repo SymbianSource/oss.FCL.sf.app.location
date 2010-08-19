@@ -22,7 +22,7 @@ NAME LMKS
 #include <avkon.rh>
 #include <avkon.rsg>
 #include <avkon.mbg>
-#include <EIKCTL.rsg>
+#include <eikctl.rsg>
 
 #include <appinfo.rh>
 

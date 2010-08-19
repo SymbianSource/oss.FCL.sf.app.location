@@ -18,7 +18,7 @@
 // INCLUDE FILES
 #include <EPos_CPosLandmarkDatabase.h>
 #include <aknViewAppUi.h>
-#include <Landmarks.rsg>
+#include <landmarks.rsg>
 #include <sendnorm.rsg> // R_SENDUI_MENU
 #include <eiktxlbx.h>
 #include <eikmenup.h>

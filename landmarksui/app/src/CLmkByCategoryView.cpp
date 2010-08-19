@@ -19,7 +19,7 @@
 
 #include <EPos_CPosLandmarkDatabase.h>
 #include <aknViewAppUi.h>
-#include <Landmarks.rsg>
+#include <landmarks.rsg>
 #include <eikmenup.h>
 #include <featmgr.h>
 #include <StringLoader.h>

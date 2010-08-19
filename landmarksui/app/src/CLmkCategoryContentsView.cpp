@@ -23,7 +23,7 @@
 #include <aknViewAppUi.h>
 #include <featmgr.h>
 #include <sendnorm.rsg> // R_SENDUI_MENU
-#include <Landmarks.rsg>
+#include <landmarks.rsg>
 #include <EPos_CPosLandmark.h>
 #include <lbsposition.h>
 #include "CLmkCategoryContentsView.h"

@@ -19,7 +19,7 @@
 // INCLUDE FILES
 #include <StringLoader.h> 
 #include <AknUtils.h>
-#include <Blid.rsg>
+#include <blid.rsg>
 #include "CBlidSettingsLBModel.h"
 #include "MBlidSettings.h"
 #include "bliduiconsts.h" 

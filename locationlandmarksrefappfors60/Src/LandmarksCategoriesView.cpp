@@ -25,7 +25,7 @@
 #include <EPos_CPosLandmarkCategory.h>
 
 #include "LmRefApp.hrh"
-#include <LmRefApp.rsg>
+#include <lmrefapp.rsg>
 #include "LandmarksCategoriesView.h"
 #include "LandmarksCategoriesContainer.h"
 #include "LandmarksApplicationEngine.h"

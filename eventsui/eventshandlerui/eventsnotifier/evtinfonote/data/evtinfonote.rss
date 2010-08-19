@@ -22,7 +22,7 @@
 #include <avkon.rh>
 #include <avkon.rsg>
 #include <avkon.mbg>
-#include <EIKCORE.rsg>
+#include <eikcore.rsg>
 #include <eikon.rh>
 #include <eikon.rsg>
 #include <avkon.loc>

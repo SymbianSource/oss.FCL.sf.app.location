@@ -24,7 +24,7 @@
 // For RD_AVKON_UNBRANCH
 #include <bldvariant.hrh>
 #include <AknDef.h>
-#include <Landmarks.rsg>
+#include <landmarks.rsg>
 #include "CLmkAppUi.h"
 #include "CLmkUiUtils.h"
 #include "CLmkSender.h"

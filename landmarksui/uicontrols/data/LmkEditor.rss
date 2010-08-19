@@ -25,7 +25,7 @@
 #include <AiwCommon.hrh>
 #include <AiwCommon.rh>
 #include <AknFep.rsg>
-#include <EIKCTL.rsg>
+#include <eikctl.rsg>
 
 //----------------------------------------------------
 //   

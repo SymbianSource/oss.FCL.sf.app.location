@@ -19,7 +19,7 @@
 // INCLUDE FILES
 #include <StringLoader.h>
 #include <aknnotewrappers.h> 
-#include <Blid.rsg>
+#include <blid.rsg>
 #include <aknstaticnotedialog.h> 
 #include "BlidNotes.h"
 #include "blidcommonconsts.h"

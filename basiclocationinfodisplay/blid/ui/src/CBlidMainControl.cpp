@@ -19,7 +19,7 @@
 #include <aknmessagequerydialog.h> //CAknMessageQueryDialog
 #include <StringLoader.h>
 #include <aknconsts.h>
-#include <Blid.rsg>
+#include <blid.rsg>
 #include <akntitle.h> 
 #include <aknnavide.h>
 #include <eikspane.h>

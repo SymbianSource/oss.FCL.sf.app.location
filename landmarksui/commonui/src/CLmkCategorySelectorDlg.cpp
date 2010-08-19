@@ -28,7 +28,7 @@
 #include "CLmkCategorySelectorDlg.h"
 #include "CLmkDlgCategorySelectorImpl.h"
 #include <lmkui.rsg>
-#include <Landmarks.rsg>
+#include <landmarks.rsg>
 #include <lmkerrors.h>
 
 

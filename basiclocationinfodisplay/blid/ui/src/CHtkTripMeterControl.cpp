@@ -25,7 +25,7 @@
 #include <akntitle.h> 
 #include <akntabgrp.h>
 #include <blid.mbg>
-#include <Blid.rsg>
+#include <blid.rsg>
 #include <aknlayoutscalable_avkon.cdl.h>
 #include <centralrepository.h>
 #include <aknnotedialog.h>

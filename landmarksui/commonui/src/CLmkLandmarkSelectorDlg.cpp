@@ -22,7 +22,7 @@
 #include "CLmkLandmarkSelectorDlg.h"
 #include "CLmkDlgCombiSelectorImpl.h"
 #include <lmkui.rsg>
-#include <Landmarks.rsg>
+#include <landmarks.rsg>
 #include <lmkerrors.h>
 
 

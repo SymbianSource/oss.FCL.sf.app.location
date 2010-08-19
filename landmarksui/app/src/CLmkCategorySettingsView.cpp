@@ -18,7 +18,7 @@
 // INCLUDE FILES
 #include <eikmenup.h>
 #include <eiktxlbx.h>
-#include <Landmarks.rsg>
+#include <landmarks.rsg>
 #include "landmarks.hrh"
 #include "CLmkAppUi.h"
 #include "CLmkAppCategorySettingsImpl.h"

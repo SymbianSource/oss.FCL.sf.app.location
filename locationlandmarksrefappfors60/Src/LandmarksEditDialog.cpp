@@ -34,7 +34,7 @@
 #include <EPos_CPosLandmarkCategory.h>
 
 #include "LmRefApp.hrh"
-#include <LmRefApp.rsg>
+#include <lmrefapp.rsg>
 
 #include "LandmarksUtils.h"
 #include "LandmarksCommonData.h"

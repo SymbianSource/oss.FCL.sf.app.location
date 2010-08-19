@@ -17,7 +17,7 @@
 
 
 #include <appinfo.rh>
-#include <SatelliteReference.rsg>
+#include <satellitereference.rsg>
 
 UID2 KUidAppRegistrationResourceFile
 UID3 0xA000018A

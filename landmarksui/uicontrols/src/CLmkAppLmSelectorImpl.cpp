@@ -33,7 +33,7 @@
 #include <EPos_CPosLmCategoryManager.h>
 #include <AknWaitDialog.h>
 #include <lmkui.rsg>
-#include <Landmarks.rsg>
+#include <landmarks.rsg>
 #include <CLmkEditorDlg.h> // from system include!
 #include "clmkdbsearchutils.h"
 #include "LmkConsts.h"

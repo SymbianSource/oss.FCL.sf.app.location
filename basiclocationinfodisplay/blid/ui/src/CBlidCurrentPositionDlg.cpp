@@ -18,7 +18,7 @@
 
 //  SYSTEM INCLUDE FILES
 #include <aknlists.h>
-#include <Blid.rsg>
+#include <blid.rsg>
 #include <avkon.hrh>
 #include <aknborders.h>
 

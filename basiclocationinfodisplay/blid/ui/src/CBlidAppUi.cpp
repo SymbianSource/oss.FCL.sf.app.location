@@ -18,7 +18,7 @@
 
 // INCLUDE FILES
 #include <AknsUtils.h>
-#include <Blid.rsg>
+#include <blid.rsg>
 #include <akncontext.h> 
 #include <hlplch.h>
 #include <StringLoader.h>

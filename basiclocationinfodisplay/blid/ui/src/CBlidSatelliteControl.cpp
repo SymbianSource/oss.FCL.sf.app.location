@@ -19,7 +19,7 @@
 
 // SYSTEM INCLUDES
 #include <StringLoader.h>
-#include <Blid.rsg>
+#include <blid.rsg>
 #include <blid.mbg>
 #include <akntitle.h> 
 #include <aknnavide.h> 

@@ -25,7 +25,7 @@
 // INCLUDE FILES
 #include "SatelliteReferenceAppUi.h"
 #include "SatelliteReferenceContainer.h" 
-#include <SatelliteReference.rsg>
+#include <satellitereference.rsg>
 #include "SatelliteReference.hrh"
 #include <StringLoader.h>
 
