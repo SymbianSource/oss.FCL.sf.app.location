@@ -1,7 +1,0 @@
-EXPORTS
-	??1CEvtEventsDlg@@UAE@XZ @ 1 NONAME ; CEvtEventsDlg::~CEvtEventsDlg(void)
-	?ExecuteLD@CEvtEventsDlg@@QAEHXZ @ 2 NONAME ; int CEvtEventsDlg::ExecuteLD(void)
-	?NewL@CEvtEventsDlg@@SAPAV1@HAAVCEvtEvent@@AAVCEvtMgmtUiEngine@@H@Z @ 3 NONAME ; class CEvtEventsDlg * CEvtEventsDlg::NewL(int, class CEvtEvent &, class CEvtMgmtUiEngine &, int)
-	?SetHelpContext@CEvtEventsDlg@@QAEXVTCoeHelpContext@@@Z @ 4 NONAME ; void CEvtEventsDlg::SetHelpContext(class TCoeHelpContext)
-	?SetMopParent@CEvtEventsDlg@@QAEXPAVMObjectProvider@@@Z @ 5 NONAME ; void CEvtEventsDlg::SetMopParent(class MObjectProvider *)
-
