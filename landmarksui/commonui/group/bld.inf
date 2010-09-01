@@ -1,0 +1,37 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:    LandmarksUi Content File -    
+*	 This file provides the information required for building the
+*    	 whole of a Landmarks application.
+*
+*/
+
+
+
+
+
+
+ // To get the APP_LAYER_PLATFORM_EXPORT_PATH and 
+ // APP_LAYER_PLATFORM_EXPORT_PATH macro definitions
+#include <platform_paths.hrh>
+
+PRJ_PLATFORMS
+DEFAULT
+
+PRJ_EXPORTS
+
+PRJ_MMPFILES
+LmkCommonUi.mmp
+LmkCommonUiStub.mmp
+//  End of File  

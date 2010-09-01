@@ -1,0 +1,425 @@
+/*
+* Copyright (c) 2003 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:    LandmarksUi Content File -     
+*
+*/
+
+
+
+
+
+
+
+NAME BCAP
+
+#include <eikon.rh>
+#include "BCAppLmkEditor.hrh"
+#include <avkon.rsg>
+#include <avkon.rh>
+#include <avkon.mbg>
+
+// for Text Setting Page
+#define TEXT_SETTING_PAGE_NUMBER 1
+#define TEXT_SETTING_PAGE_WIDTH 9
+#define TEXT_SETTING_PAGE_LINES 5
+#define TEXT_SETTING_PAGE_MAXLENGTH20 20
+
+// for Alpha Password Setting Page
+#define ALPHA_PASSWORD_SETTING_PAGE_NUMBER 1
+#define ALPHA_PASSWORD_LENGTH_OF_STRING 8
+
+// for Time Setting Page
+#define TIME_SETTING_PAGE_NUMBER 1
+#define TIME_EDITOR_MIN_SECOND 0
+#define TIME_EDITOR_MIN_MINUTE 0
+#define TIME_EDITOR_MIN_HOUR 0
+#define TIME_EDITOR_MAX_SECOND 59
+#define TIME_EDITOR_MAX_MINUTE 59
+#define TIME_EDITOR_MAX_HOUR 23
+
+//For Ip address editor
+#define IPADDRESS_MIN_FIRST_FIELD_VALUE     0
+#define IPADDRESS_MIN_SECOND_FIELD_VALUE    0
+#define IPADDRESS_MIN_THIRD_FIELD_VALUE     0
+#define IPADDRESS_MIN_FOURTH_FIELD_VALUE    0
+#define IPADDRESS_MAX_FIRST_FIELD_VALUE     255
+#define IPADDRESS_MAX_SECOND_FIELD_VALUE    255
+#define IPADDRESS_MAX_THIRD_FIELD_VALUE     255
+#define IPADDRESS_MAX_FOURTH_FIELD_VALUE    255
+
+// for Slider Setting Page
+#define SLIDER_SETTING_PAGE_NUMBER 1
+#define SLIDER_SETTING_PAGE_MINVALUE 0
+#define SLIDER_SETTING_PAGE_MAXVALUE 100
+#define SLIDER_SETTING_PAGE_STEP 1
+
+// for Time Offset Setting Page
+#define TIME_OFFSET_SETTING_PAGE_NUMBER 1
+
+RESOURCE RSS_SIGNATURE { }
+
+RESOURCE TBUF r_default_document_name { buf=""; }
+
+RESOURCE EIK_APP_INFO
+    {
+    menubar=r_bcappaknstngitm_menubar;
+    hotkeys=r_bcappaknstngitm_hotkeys;
+    cba=R_AVKON_SOFTKEYS_OPTIONS_EXIT;     
+    }
+
+//----------------------------------------------------
+//   
+//    r_bcappaknstngitm_hotkeys
+//
+//----------------------------------------------------
+//
+RESOURCE HOTKEYS r_bcappaknstngitm_hotkeys
+    {
+    control=
+        {
+        HOTKEY { command=EAknCmdExit; key='e'; }
+        };
+    }
+
+
+//----------------------------------------------------
+//   
+//    r_bcappaknstngitm_menubar
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_bcappaknstngitm_menubar
+    {
+    titles =
+        {
+        MENU_TITLE {menu_pane = r_bcappaknstngitm_menu;}
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_bcappaknstngitm_menu
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_bcappaknstngitm_menu
+    {
+    items=
+        {
+        MENU_ITEM { command=EAknSoftkeyExit; txt="Exit"; }
+        };
+    }
+
+
+
+
+
+
+
+//----------------------------------------------------
+//   
+//    r_my_setting_resource
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_SETTING_ITEM_LIST r_my_setting_resource
+  {
+  flags = 0;
+  title = "";
+  initial_number = 1;
+  } 
+
+//----------------------------------------------------
+//   
+//    r_my_text_setting_page
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_my_text_setting_page
+  {
+  number = TEXT_SETTING_PAGE_NUMBER;
+  label = "My Text Label";
+  type = EEikCtEdwin;
+  editor_resource_id = r_my_text;
+  }
+
+RESOURCE EDWIN r_my_text
+  {
+  width = TEXT_SETTING_PAGE_WIDTH;
+  lines = TEXT_SETTING_PAGE_LINES;
+  maxlength = TEXT_SETTING_PAGE_MAXLENGTH20;
+  }
+
+//----------------------------------------------------
+//   
+//    r_my_password_setting_page
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_my_password_setting_page
+    {
+    number = ALPHA_PASSWORD_SETTING_PAGE_NUMBER;
+    label = "My Password Label";
+    type = EEikCtSecretEd;
+    editor_resource_id = r_my_password;
+    }
+
+RESOURCE SECRETED r_my_password
+    {
+    num_letters = ALPHA_PASSWORD_LENGTH_OF_STRING;
+    }
+
+//----------------------------------------------------
+//   
+//    r_my_time_setting_page
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_my_time_setting_page
+    {
+    number = TIME_SETTING_PAGE_NUMBER;
+    label = "My Time Label";
+    type = EEikCtTimeEditor;
+    editor_resource_id = r_my_time;
+    }
+
+RESOURCE TIME_EDITOR r_my_time
+    {
+    minTime = TIME
+        {
+        second = TIME_EDITOR_MIN_SECOND;
+        minute = TIME_EDITOR_MIN_MINUTE;
+        hour = TIME_EDITOR_MIN_HOUR;
+        };
+    maxTime = TIME
+        {
+        second = TIME_EDITOR_MAX_SECOND;
+        minute = TIME_EDITOR_MAX_MINUTE;
+        hour = TIME_EDITOR_MAX_HOUR;
+        };
+    flags=EEikTimeWithoutSecondsField;
+    }
+
+//----------------------------------------------------
+//   
+//    r_my_ip_setting_page
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_my_ip_setting_page
+    {   
+    label = "My Ip Label";
+    type = EAknCtIpFieldEditor;
+    editor_resource_id = r_my_ip;
+    }
+
+
+RESOURCE IP_FIELD_EDITOR r_my_ip
+    {
+    min_field_values = IP_FIELD
+        { 
+        first_field = IPADDRESS_MIN_FIRST_FIELD_VALUE;
+        second_field = IPADDRESS_MIN_SECOND_FIELD_VALUE;
+        third_field = IPADDRESS_MIN_THIRD_FIELD_VALUE;
+        fourth_field = IPADDRESS_MIN_FOURTH_FIELD_VALUE;
+        };
+    max_field_values = IP_FIELD
+        {
+        first_field = IPADDRESS_MAX_FIRST_FIELD_VALUE;
+        second_field = IPADDRESS_MAX_SECOND_FIELD_VALUE;
+        third_field = IPADDRESS_MAX_THIRD_FIELD_VALUE;
+        fourth_field = IPADDRESS_MAX_FOURTH_FIELD_VALUE;
+        };
+    flags = 0;
+    }
+
+//----------------------------------------------------------------------------
+//
+//    r_my_enum_text_setting_item_list
+//
+//----------------------------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_ITEM_LIST r_my_enum_text_setting_item_list
+    {
+    flags= EAknSettingItemNumberedStyle;
+    title = "My Enum Text Setting Item List";
+    initial_number = 1;
+    items =
+        {
+        AVKON_SETTING_ITEM
+            {
+            identifier = 1;
+            setting_page_resource = r_my_enum_text_setting_page;
+            associated_resource = r_my_enum_text_popup_setting_texts;
+            name = "My Enum Text Title";
+            }
+        };
+    }
+
+RESOURCE AVKON_POPUP_SETTING_TEXTS r_my_enum_text_popup_setting_texts
+    {
+    flags = 0;
+    setting_texts_resource = r_my_on_off_texts;
+    popped_up_texts_resource = r_my_poped_up_on_off_texts;
+    }
+
+RESOURCE ARRAY r_my_on_off_texts
+    {
+    items =
+        {
+        AVKON_ENUMERATED_TEXT 
+            {
+            value = 0; 
+            text = "On"; 
+            },
+        AVKON_ENUMERATED_TEXT 
+            { 
+            value = 1; 
+            text = "Off"; 
+            }
+        };
+    }
+
+RESOURCE ARRAY r_my_poped_up_on_off_texts
+    {
+    items =
+        {
+        LBUF 
+            { 
+            txt = "On"; 
+            },
+        LBUF 
+            { 
+            txt = "Off"; 
+            }
+        };
+    }
+
+RESOURCE AVKON_SETTING_PAGE r_my_enum_text_setting_page
+    {   
+    number= 0;
+    label= "My Enum Text Title";
+    type = EAknCtPopupSettingList;    
+    editor_resource_id = r_my_enum_popup;
+    }
+
+RESOURCE POPUP_SETTING_LIST r_my_enum_popup
+	{
+	flags = 0;
+	width = 0; // in characters.
+	other="Other...";
+	empty_text="No options";
+	new_item_setting_page_resource = 0;
+	type = EAknCtPopupSettingList;				
+	new_item_setting_editor_resource = 0;
+	}
+
+//----------------------------------------------------
+//   
+//    r_my_slider_setting_page
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_my_slider_setting_page
+  {
+  number = SLIDER_SETTING_PAGE_NUMBER;
+  label = "My Slider Label";
+  type = EAknCtSlider;
+  editor_resource_id = r_my_slider;
+  }
+
+RESOURCE SLIDER r_my_slider
+  {
+  layout = EAknSettingsItemSliderLayout;
+  minvalue = SLIDER_SETTING_PAGE_MINVALUE;
+  maxvalue = SLIDER_SETTING_PAGE_MAXVALUE;
+  step = SLIDER_SETTING_PAGE_STEP;
+  valuetype = EAknSliderValuePercentage;
+  minlabel = "My Slider Min Label";
+  maxlabel = "My Slider Max Label";
+  }
+
+//----------------------------------------------------
+//   
+//    r_my_volume_setting_page
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_my_volume_setting_page
+  {
+  type = EAknCtVolumeControl;
+  editor_resource_id = r_my_volume;
+  }
+
+RESOURCE VOLUME r_my_volume
+  {
+  flags = ESettingsVolumeControl;
+  value = 1;
+  }
+
+//-----------------------------------------------------------------------------
+//
+//    r_my_empty_item_list
+//
+//-----------------------------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_ITEM_LIST r_my_empty_item_list
+    {
+    flags= EAknSettingItemNumberedStyle;
+    title = "My Empty Item List Title";
+    initial_number = 1;
+    items =     
+        {
+        AVKON_SETTING_ITEM
+            {
+            identifier = 1;
+            name = "My Empty Item Name";
+            setting_page_resource = r_my_volume_setting_page;            
+            type = EAknCtVolumeControl;
+            setting_editor_resource = r_my_volume;
+            associated_resource = 0;            
+            empty_item_text =  "";
+            compulsory_ind_string = "";
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_my_time_offset_setting_page
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_my_time_offset_setting_page
+    {
+    number = TIME_OFFSET_SETTING_PAGE_NUMBER;
+    label = "My Time Label";
+    type = EEikCtTimeOffsetEditor;
+    editor_resource_id = r_my_time_offset;
+    }
+
+RESOURCE TIME_OFFSET_EDITOR r_my_time_offset
+    {
+    minTimeOffset = TIME_OFFSET
+        {
+        seconds = 0;
+        };
+    maxTimeOffset = TIME_OFFSET 
+        {
+        seconds = 0;
+        };
+    flags=EEikTimeWithoutSecondsField;
+    }
+
+// End of File

@@ -1,0 +1,812 @@
+/*
+ * Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies).
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of "Eclipse Public License v1.0"
+ * which accompanies this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html".
+ *
+ * Initial Contributors:
+ * Nokia Corporation - initial contribution.
+ *
+ * Contributors:
+ *
+ * Description:    LandmarksUi Content File -    Contains all the resources for the LM UI.
+ *
+ */
+
+//  RESOURCE IDENTIFIER
+NAME LMAP
+// 4 letter ID
+
+//  INCLUDES
+
+#include "landmarks.hrh"
+#include <landmarks.loc>
+#include <lmkmsgviewer.loc>
+#include <eikon.rh>
+#include <avkon.rh>
+#include <appinfo.rh>
+#include <avkon.rsg>
+#include <avkon.hrh>
+#include <avkon.loc>
+#include <data_caging_paths_strings.hrh>
+// Added for s60 rel3.1
+#include <AiwCommon.hrh>
+#include <AiwCommon.rh>
+
+//  CONSTANTS  
+
+#define KIconFileMif APP_BITMAP_DIR"\\Landmarks_aif.mif"	
+#define KIconFileMbm APP_BITMAP_DIR"\\Landmarks_aif.mbm"
+
+//  RESOURCE DEFINITIONS 
+
+RESOURCE RSS_SIGNATURE
+    {}
+
+RESOURCE TBUF
+    {buf="";}
+
+RESOURCE EIK_APP_INFO
+    {
+    }
+
+RESOURCE LOCALISABLE_APP_INFO r_landmarks_localisable_app_info
+    {
+    //short_caption = "Landmarks";
+    short_caption = qtn_apps_lm_grid;
+    caption_and_icon = CAPTION_AND_ICON_INFO
+        {
+        //caption = "Landmarks";
+        caption = qtn_apps_lm_list;
+#ifdef __SCALABLE_ICONS
+        number_of_icons = 1;
+        icon_file = KIconFileMif;
+#else
+        number_of_icons = 2;
+        icon_file = KIconFileMbm;
+#endif
+        };
+
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_bylm_view
+//    By landmark view with options/exit softkeys
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_lmk_bylm_view
+    {
+    menubar = r_lmk_bylm_menubar;
+    cba = r_lmk_softkeys_options_exit_contextoptions;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_bylm_view
+//    By landmark view with options/back softkeys, when
+//    launched in embedded mode from Location Centre
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_lmk_bylm_embedded_view
+    {
+    menubar = r_lmk_bylm_menubar;
+    cba = r_lmk_softkeys_options_back_contextoptions;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_bylm_menubar
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_lmk_bylm_menubar
+    {
+    titles=
+        {
+        MENU_TITLE
+            {menu_pane = r_lmk_main_menu; txt="";},
+        MENU_TITLE
+            {menu_pane = r_lmk_bylm_menu2; txt = "";},
+        MENU_TITLE
+            {menu_pane = R_AVKON_MENUPANE_MARKABLE_LIST;},
+        MENU_TITLE
+            {menu_pane = r_lmk_bylm_menu1; txt = "";}
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_bylm_menu1
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_lmk_bylm_menu1
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = ELmkCmdOpenLm;
+            txt = qtn_options_open;
+            flags = EEikMenuItemAction;
+            },
+        MENU_ITEM
+            {
+            command = ELmkCmdNewLm;
+            txt = qtn_lm_opt_new_landmark;
+            cascade = r_lmk_new_landmark_submenu;
+            },
+        MENU_ITEM
+            {
+            command = ELmkShowOnMapPlaceHolder;
+            txt = qtn_mnn_option_show_on_map;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = ELmkNavigateToPlaceHolder;
+            txt = qtn_mnn_option_navigate_to;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = ELmkCmdAddToCat;
+            txt = qtn_lm_opt_add_to_category;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = ERemoveFromCat;
+            txt = qtn_lm_opt_remove_from_category;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command = ELmkCmdSendDummy;
+            txt = qtn_options_send_via;
+            },
+        MENU_ITEM
+            {
+            command = ELmkCmdDeleteLm;
+            txt = qtn_lm_opt_delete_landmark;
+            flags = EEikMenuItemSpecific;
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_bylm_menu2
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_lmk_bylm_menu2
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = ELmkCmdEditCats;
+            txt = qtn_lm_opt_edit_categories;
+            },
+        MENU_ITEM
+            {
+            command=ELmkCmdLaunchPositionSettings;
+            txt=qtn_lm_options_pos_settings;
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_new_landmark_submenu
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_lmk_new_landmark_submenu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = ELmkCmdNewLmCurrentLocation;
+            txt = qtn_lm_opt_new_landmark_current_location;
+            },
+        MENU_ITEM
+            {
+            command = ELmkFromMapPlaceholder;
+            txt = qtn_lm_opt_new_lm_from_map;
+            },
+        MENU_ITEM
+            {
+            command = ELmkCmdNewLmEmpty;
+            txt = qtn_lm_opt_new_landmark_empty;
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_ok_menubar
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_lmk_ok_menubar
+    {
+    titles=
+        {
+        MENU_TITLE
+            {menu_pane=R_AVKON_MENUPANE_MARKABLE_LIST; txt="";},
+        MENU_TITLE
+            {menu_pane = r_lmk_ok_menu; txt = "";}
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_ok_menu
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_lmk_ok_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = ELmkCmdNewLm;
+            txt = qtn_lm_opt_new_landmark;
+            cascade = r_lmk_new_landmark_submenu;
+            flags = EEikMenuItemDimmed;
+            },
+        MENU_ITEM
+            {
+            command = ELmkCmdAddToCat;
+            txt = qtn_lm_opt_add_to_category;
+            },
+        MENU_ITEM
+            {
+            command = ELmkCmdSendDummy;
+            txt = qtn_options_send_via;
+            },
+        MENU_ITEM
+            {
+            command = ELmkCmdDeleteLm;
+            txt = qtn_lm_opt_delete_landmark;
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_bycategory_view
+//    By category view with options/exit softkeys
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_lmk_bycategory_view
+    {
+    menubar = r_lmk_bycategory_menubar;
+    cba = r_lmk_softkeys_options_exit_contextoptions;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_bycategory_view
+//    By category view with options/back softkeys, when
+//    launched in embedded mode from Location Centre
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_lmk_bycategory_embedded_view
+    {
+    menubar = r_lmk_bycategory_menubar;
+    cba = r_lmk_softkeys_options_back_contextoptions;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_bycategory_menubar
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_lmk_bycategory_menubar
+    {
+    titles=
+        {
+        MENU_TITLE
+            {menu_pane = r_lmk_main_menu; txt="";},
+        MENU_TITLE
+            {menu_pane = r_lmk_bycategory_menu; txt = "";}
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_bycategory_menu
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_lmk_bycategory_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command = ELmkCmdOpenCat;
+            txt = qtn_lm_opt_open_category;
+            flags = EEikMenuItemAction;
+            },
+        MENU_ITEM
+            {
+            command = ELmkCmdNewLm;
+            txt = qtn_lm_opt_new_landmark;
+            cascade = r_lmk_new_landmark_submenu;
+            },
+        MENU_ITEM
+            {
+            command = ELmkCmdEditCats;
+            txt = qtn_lm_opt_edit_categories;
+            },
+        MENU_ITEM
+            {
+            command = ELmkShowOnMapPlaceHolder;
+            txt = qtn_mnn_option_show_on_map;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command=ELmkCmdLaunchPositionSettings;
+            txt=qtn_lm_options_pos_settings;
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_main_menu
+//    
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_lmk_main_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {command=EAknCmdHelp; txt=qtn_options_help;},
+        MENU_ITEM
+            {command=EAknCmdExit; txt=qtn_options_exit;}
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_category_settings_view
+//    Category settings view
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_lmk_category_settings_view
+    {
+    menubar=r_lmk_category_settings_menubar;
+    cba=R_AVKON_SOFTKEYS_OPTIONS_BACK;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_category_settings_menubar
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_lmk_category_settings_menubar
+    {
+    titles=
+        {
+        MENU_TITLE
+            {menu_pane=r_lmk_main_menu; txt="";},
+        MENU_TITLE
+            {menu_pane = R_AVKON_MENUPANE_MARKABLE_LIST;},
+        MENU_TITLE
+            {menu_pane=r_lmk_category_settings_menu2; txt="";},
+        MENU_TITLE
+            {menu_pane=r_lmk_category_settings_menu1; txt="";}
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_category_settings_menu1
+//    
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_lmk_category_settings_menu1
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command=ELmkCmdNewCategory;
+            txt=qtn_lm_opt_new_category;
+            },
+        MENU_ITEM
+            {
+            command=ELmkCmdRenameCat;
+            txt=qtn_lm_opt_rename_category;
+            flags = EEikMenuItemSpecific;
+            },
+        MENU_ITEM
+            {
+            command=ELmkCmdDeleteCat;
+            txt=qtn_lm_opt_delete_category;
+            flags = EEikMenuItemSpecific;
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_category_settings_menu2
+//    
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_lmk_category_settings_menu2
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command=ELmkCmdChangeIcon;
+            txt=qtn_lm_opt_change_category_icon;
+            flags = EEikMenuItemSpecific;
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_category_settings_ok_menubar
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_lmk_category_settings_ok_menubar
+    {
+    titles=
+        {
+        MENU_TITLE
+            {menu_pane = R_AVKON_MENUPANE_MARKABLE_LIST;},
+        MENU_TITLE
+            {menu_pane=r_lmk_category_settings_ok_menu; txt="";}
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_category_settings_ok_menu
+//    
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_lmk_category_settings_ok_menu
+    {
+    items=
+        {
+        MENU_ITEM
+            {
+            command=ELmkCmdNewCategory;
+            txt=qtn_lm_opt_new_category;
+            },
+        MENU_ITEM
+            {
+            command=ELmkCmdRenameCat;
+            txt=qtn_lm_opt_rename_category;
+            },
+        MENU_ITEM
+            {
+            command=ELmkCmdDeleteCat;
+            txt=qtn_lm_opt_delete_category;
+            },
+        MENU_ITEM
+            {
+            command=ELmkCmdChangeIcon;
+            txt=qtn_lm_opt_change_category_icon;
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_category_contents_view
+//    Category settings view
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_lmk_category_contents_view
+    {
+    menubar=r_lmk_bylm_menubar;
+    cba=R_AVKON_SOFTKEYS_OPTIONS_BACK;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_tab_group
+//    Application tab group
+//
+//----------------------------------------------------
+//
+RESOURCE TAB_GROUP r_lmk_tab_group
+    {
+    tab_width = EAknTabWidthWithTwoTabs;
+    active = 0;
+    tabs =
+        {
+        TAB
+            {
+            id = ELmkByLmView; // from application hrh
+            txt = "By Lm";
+            },
+        TAB
+            {
+            id = ELmkByCategoryView;
+            txt = "By Cat";
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_list_empty_no_landmarks
+//    
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_list_empty_no_landmarks
+    {
+    buf = qtn_lm_empty_create_landmark;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_category_settings_title
+//    Title for application's edit categories view
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_category_settings_title
+    {
+    buf = qtn_lm_title_edit_categories;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_bycategory_view_title
+//    Title for application's lm by category view
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_bycategory_view_title
+    {
+    buf = qtn_lm_title_categories;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_bylm_view_title
+//    Title for application's lm by category view
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_bylm_view_title
+    {
+    buf = qtn_lm_title_landmarks;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_aiw_interest_showonmap
+//    AIW interest for option show on map
+//
+//----------------------------------------------------
+//
+RESOURCE AIW_INTEREST r_lmk_aiw_interest_showonmap
+    {
+    items =
+        {
+        AIW_CRITERIA_ITEM
+            {
+            id = ELmkShowOnMapPlaceHolder;
+            serviceCmd = KAiwCmdMnShowMap;
+            contentType = "application/x-landmark";
+            serviceClass = KAiwClassMenu;
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_aiw_interest_navigateto
+//    AIW interest for option navigate to
+//
+//----------------------------------------------------
+//
+RESOURCE AIW_INTEREST r_lmk_aiw_interest_navigateto
+    {
+    items =
+        {
+        AIW_CRITERIA_ITEM
+            {
+            id = ELmkNavigateToPlaceHolder;
+            serviceCmd = KAiwCmdMnNavigateTo;
+            contentType = "application/x-landmark";
+            serviceClass = KAiwClassMenu;
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_aiw_interest_selectfrommap
+//    AIW interest for option landmark from map
+//
+//----------------------------------------------------
+//
+RESOURCE AIW_INTEREST r_lmk_aiw_interest_selectfrommap
+    {
+    items =
+        {
+        AIW_CRITERIA_ITEM
+            {
+            id = ELmkFromMapPlaceholder;
+            serviceCmd = KAiwCmdMnSelectFromMap;
+            contentType = "application/x-landmark";
+            serviceClass = KAiwClassMenu;
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_mn_wait_note
+//    General wait note
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG r_lmk_mn_wait_note
+    {
+    flags = EAknWaitNoteFlags | EEikDialogFlagWait;
+    buttons = R_AVKON_SOFTKEYS_EMPTY;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EGeneralNote;
+            control= AVKON_NOTE
+                {
+                layout = EWaitLayout;
+                singular_label = qtn_gen_note_processing;
+                animation = R_QGN_GRAF_WAIT_BAR_ANIM;
+                };
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_softkeys_options_exit_contextoptions
+//
+//----------------------------------------------------
+//
+RESOURCE CBA r_lmk_softkeys_options_exit_contextoptions
+    {
+    buttons =
+        {
+        CBA_BUTTON
+            {id=EAknSoftkeyOptions; txt = text_softkey_option;},
+        CBA_BUTTON
+            {id=EAknSoftkeyExit; txt = text_softkey_exit;},
+        CBA_BUTTON
+            {id=EAknSoftkeyContextOptions; txt = text_softkey_option;}
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_avkon_softkeys_options_back
+//
+//----------------------------------------------------
+//
+RESOURCE CBA r_lmk_softkeys_options_back_contextoptions
+    {
+    buttons =
+        {
+        CBA_BUTTON
+            {id=EAknSoftkeyOptions; txt = text_softkey_option;},
+        CBA_BUTTON
+            {id=EAknSoftkeyBack; txt = text_softkey_back;},
+        CBA_BUTTON
+            {id=EAknSoftkeyContextOptions; txt = text_softkey_option;}
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_category_settings_context_menubar
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_lmk_category_settings_context_menubar
+    {
+    titles=
+        {
+        MENU_TITLE
+            {menu_pane=r_lmk_category_settings_menu2; txt="";},
+        MENU_TITLE
+            {menu_pane=r_lmk_category_settings_menu1; txt="";}
+        };
+    }
+//----------------------------------------------------
+//   
+//    r_lmk_msk_open
+//    MSK label for Lmk by name view & Lmk contents view
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_msk_open
+    {
+    buf = qtn_msk_open;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lm_lmsel_no_categorised_landmarks
+//    Empty listbox text for category settings
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lm_lmsel_no_categorised_landmarks
+    {
+    buf = qtn_lm_lmsel_no_categorised_landmarks;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_guide_new_landmark
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_guide_new_landmark
+    {
+    buf = qtn_lm_guide_new_landmark;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_guide_categorize_landmarks
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_guide_categorize_landmarks
+    {
+    buf = qtn_lm_guide_categorize_landmarks;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_err_eikon_general
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_err_eikon_general
+    {
+    buf = qtn_err_eikon_general;
+    }
+
+// End of File

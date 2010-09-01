@@ -1,0 +1,99 @@
+/*
+* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:    LandmarksUi Content File -  
+*
+*/
+
+
+
+
+/*TYPE TESTCLASS*/
+
+#if defined(__S60_)
+        // To get the APP_LAYER_SYSTEMINCLUDE-definition
+        #include <platform_paths.hrh>
+#endif
+
+TARGET          lmkselector.dll
+TARGETTYPE      dll
+UID             0x1000008D 0x101FB3E3
+
+CAPABILITY      ALL -TCB
+
+DEFFILE         LmkSelector.def
+
+#ifdef SBSv2
+	USERINCLUDE     ../inc 
+
+	#if defined(__S60_)
+	    APP_LAYER_SYSTEMINCLUDE
+	#else // __S60_ not defined
+	    SYSTEMINCLUDE   /epoc32/include 
+	    SYSTEMINCLUDE   /epoc32/include/internal
+	#endif // __S60_
+
+	SOURCEPATH      ../src
+#else // SBSv2 not defined
+	USERINCLUDE     ../inc 
+
+	#if defined(__S60_)
+	    APP_LAYER_SYSTEMINCLUDE
+	#else // __S60_ not defined
+	    SYSTEMINCLUDE   /epoc32/include 
+	    SYSTEMINCLUDE   /epoc32/include/internal
+	#endif // __S60_
+
+	SOURCEPATH      ../src
+#endif // SBSv2
+
+	
+SYSTEMINCLUDE	/epoc32/include/middleware 	
+SYSTEMINCLUDE	/epoc32/include/domain/middleware 	
+SYSTEMINCLUDE	/epoc32/include/osextensions 	
+SYSTEMINCLUDE	/epoc32/include/domain/osextensions 	
+SYSTEMINCLUDE	/epoc32/include/applications
+
+
+SOURCE          lmkselector.cpp
+SOURCE          lmkselectorblocks.cpp
+SOURCE			lmkengine.cpp
+
+
+
+LIBRARY         euser.lib
+LIBRARY         stiftestinterface.lib
+LIBRARY         stiftestengine.lib
+LIBRARY  apgrfx.lib 
+LIBRARY  avkon.lib
+LIBRARY  euser.lib
+LIBRARY  apparc.lib
+LIBRARY  cone.lib
+LIBRARY  eikcore.lib 
+LIBRARY  eikcoctl.lib
+LIBRARY  eikctl.lib
+LIBRARY  etext.lib 
+LIBRARY  egul.lib
+LIBRARY  ws32.lib
+LIBRARY  bafl.lib
+LIBRARY  insock.lib
+LIBRARY  fbscli.lib
+LIBRARY  gdi.lib
+LIBRARY	 LmkCommonUi.lib
+LIBRARY  eposLandmarks.lib
+LIBRARY	 lbs.lib
+LIBRARY	 satinfo.lib
+
+LANG            SC
+
+// End of File

@@ -1,0 +1,41 @@
+EXPORTS
+	_ZN13CLmkEditorDlg12SetMopParentEP15MObjectProvider @ 1 NONAME
+	_ZN13CLmkEditorDlg14SetHelpContextE15TCoeHelpContext @ 2 NONAME
+	_ZN13CLmkEditorDlg16TLmkEditorParamsC1Ev @ 3 NONAME
+	_ZN13CLmkEditorDlg16TLmkEditorParamsC2Ev @ 4 NONAME
+	_ZN13CLmkEditorDlg4NewLER20CPosLandmarkDatabaseR12CPosLandmarkRNS_16TLmkEditorParamsE @ 5 NONAME
+	_ZN13CLmkEditorDlg4NewLER20CPosLandmarkDatabasemRNS_16TLmkEditorParamsE @ 6 NONAME
+	_ZN13CLmkEditorDlg9ExecuteLDEv @ 7 NONAME
+	_ZN13CLmkEditorDlgD0Ev @ 8 NONAME
+	_ZN13CLmkEditorDlgD1Ev @ 9 NONAME
+	_ZN13CLmkEditorDlgD2Ev @ 10 NONAME
+	_ZN21TLmkItemIdDbCombiInfo7SetLmDbEP20CPosLandmarkDatabase @ 11 NONAME
+	_ZN21TLmkItemIdDbCombiInfo9SetItemIdERm @ 12 NONAME
+	_ZN21TLmkItemIdDbCombiInfoC1Ev @ 13 NONAME
+	_ZN21TLmkItemIdDbCombiInfoC2Ev @ 14 NONAME
+	_ZN21TLmkItemIdDbCombiInfoD1Ev @ 15 NONAME
+	_ZN21TLmkItemIdDbCombiInfoD2Ev @ 16 NONAME
+	_ZN23CLmkCategorySelectorDlg12SetMopParentEP15MObjectProvider @ 17 NONAME
+	_ZN23CLmkCategorySelectorDlg4NewLEi @ 18 NONAME
+	_ZN23CLmkCategorySelectorDlg9ExecuteLDER21TLmkItemIdDbCombiInfo @ 19 NONAME
+	_ZN23CLmkCategorySelectorDlg9ExecuteLDER6RArrayI21TLmkItemIdDbCombiInfoE @ 20 NONAME
+	_ZN23CLmkCategorySelectorDlgD0Ev @ 21 NONAME
+	_ZN23CLmkCategorySelectorDlgD1Ev @ 22 NONAME
+	_ZN23CLmkCategorySelectorDlgD2Ev @ 23 NONAME
+	_ZN23CLmkLandmarkSelectorDlg12SetMopParentEP15MObjectProvider @ 24 NONAME
+	_ZN23CLmkLandmarkSelectorDlg4NewLEv @ 25 NONAME
+	_ZN23CLmkLandmarkSelectorDlg9ExecuteLDER21TLmkItemIdDbCombiInfo @ 26 NONAME
+	_ZN23CLmkLandmarkSelectorDlg9ExecuteLDER6RArrayI21TLmkItemIdDbCombiInfoE @ 27 NONAME
+	_ZN23CLmkLandmarkSelectorDlgD0Ev @ 28 NONAME
+	_ZN23CLmkLandmarkSelectorDlgD1Ev @ 29 NONAME
+	_ZN23CLmkLandmarkSelectorDlgD2Ev @ 30 NONAME
+	_ZNK21TLmkItemIdDbCombiInfo7GetLmDbEv @ 31 NONAME
+	_ZNK21TLmkItemIdDbCombiInfo9GetItemIdEv @ 32 NONAME
+	_ZTI13CLmkEditorDlg @ 33 NONAME ; #<TI>#
+	_ZTI23CLmkCategorySelectorDlg @ 34 NONAME ; #<TI>#
+	_ZTI23CLmkLandmarkSelectorDlg @ 35 NONAME ; #<TI>#
+	_ZTV13CLmkEditorDlg @ 36 NONAME ; #<VT>#
+	_ZTV23CLmkCategorySelectorDlg @ 37 NONAME ; #<VT>#
+	_ZTV23CLmkLandmarkSelectorDlg @ 38 NONAME ; #<VT>#
+	_ZN13CLmkEditorDlg34DisableMapAndNavigationMenuOptionsEv @ 39 NONAME
+

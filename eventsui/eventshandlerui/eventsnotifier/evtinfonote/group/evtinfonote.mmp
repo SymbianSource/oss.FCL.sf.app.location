@@ -1,0 +1,74 @@
+/*
+* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Project definition file for project Events UI / Events Info 
+*                Note plymorphic DLL
+*
+*/
+
+
+// System Includes
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh> // For the APP_LAYER_SYSTEMINCLUDE
+
+// User Includes
+#include "../inc/evtinfonoteuid.hrh"
+
+TARGET                  evtinfonote.dll
+TARGETTYPE              DLL
+UID                     0x101FDFAE KEvtInfoNoteUid
+
+CAPABILITY              ALL -TCB
+VENDORID                VID_DEFAULT
+
+USERINCLUDE		        . 
+USERINCLUDE		        ../inc
+USERINCLUDE             ../../inc
+USERINCLUDE             ../../../inc
+USERINCLUDE             ../../../../inc
+
+// System Include
+APP_LAYER_SYSTEMINCLUDE
+
+SOURCEPATH              ../src         
+SOURCE                  evtinfonoteinterface.cpp
+SOURCE                  evtinfonote.cpp
+SOURCE                  evtinfonoteimpl.cpp
+
+SOURCEPATH              ../data
+START RESOURCE          evtinfonote.rss
+HEADER
+TARGETPATH              RESOURCE_FILES_DIR
+LANGUAGE_IDS
+END
+
+LIBRARY 		        ecom.lib
+LIBRARY 		        euser.lib
+LIBRARY                 eiksrv.lib
+LIBRARY 		        avkon.lib
+LIBRARY			        cone.lib 
+LIBRARY			        eikcore.lib
+LIBRARY                 bafl.lib 
+LIBRARY                 efsrv.lib
+LIBRARY			        eikdlg.lib
+LIBRARY					commonengine.lib
+LIBRARY 		        aknnotifierwrapper.lib
+LIBRARY                 evtutils.lib
+LIBRARY                 estor.lib
+LIBRARY                 eikcoctl.lib
+LIBRARY                 egul.lib
+LIBRARY                 fbscli.lib
+LIBRARY                 aknicon.lib
+LIBRARY                 eikcdlg.lib
+LIBRARY                 eikctl.lib 
+LIBRARY                 aknskins.lib aknskinsrv.lib aknswallpaperutils.lib

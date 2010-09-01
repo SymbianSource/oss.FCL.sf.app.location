@@ -1,0 +1,2105 @@
+/*
+* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Contains all the resources for the blid.
+*
+*/
+
+#include <appinfo.rh>
+#include <data_caging_paths_strings.hrh>
+#include <bldvariant.hrh>
+
+//  RESOURCE IDENTIFIER
+NAME    BLID // 4 letter ID
+
+//  INCLUDES
+#include <eikon.rh>
+#include "Blid.hrh"
+#include <blid.loc>
+#include <avkon.rh>
+#include <avkon.rsg>
+#include <avkon.hrh>
+#include <avkon.loc>
+#include <avkon.mbg>
+#include <uikon.hrh>
+#include <eikctl.rsg>
+
+
+//  CONSTANTS  
+#define BLID_QUERY_EDWIN_WIDTH 5
+#define BLID_QUERY_EDWIN_LINES 5
+#define BLID_QUERY_EDWIN_MAXLENGTH 35
+
+//  RESOURCE DEFINITIONS 
+
+RESOURCE RSS_SIGNATURE { }
+
+RESOURCE TBUF { buf="\\private\\101F85A0\\BLID.ini"; }
+
+RESOURCE EIK_APP_INFO
+    {    
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_hotkeys
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE HOTKEYS r_blid_hotkeys
+    {
+    control=
+        {
+		//None
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_home_view
+//    Home view
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_blid_main_view
+    {    
+    cba=R_AVKON_SOFTKEYS_EXIT;    
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_navigation_view
+//    Home view
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_blid_navigation_view
+    {    
+    menubar=r_blid_view_menubar; 
+    cba=r_blid_softkeys_options_exit__contextoptions;    
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_mainsat_view
+//    Home view
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_blid_mainsat_view
+    {    
+    cba=R_AVKON_SOFTKEYS_EXIT;    
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_tripmeter_view
+//    Trip Meter view
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_blid_tripmeter_view
+    {    
+    menubar=r_blid_tripmeter_menubar;  
+    cba=r_blid_softkeys_options_exit__contextoptions;    
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_settings_view
+//    Settings view
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_blid_settings_view
+    {    
+    menubar=r_blid_settings_menubar; 
+    cba=R_AVKON_SOFTKEYS_OPTIONS_BACK;    
+    }
+//----------------------------------------------------
+//   
+//    r_blid_settings_view
+//    Settings view
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_blid_savedwaypts_view
+    {    
+    menubar=r_blid_savedwaypts_menubar; 
+    cba=r_blid_softkeys_options_back__contextoptions;    
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_localisable_app_info
+// Add a new resource definition
+//
+//----------------------------------------------------
+//
+RESOURCE LOCALISABLE_APP_INFO r_blid_localisable_app_info
+    {
+    short_caption = qtn_blid_short_caption_string;
+    caption_and_icon = 
+    CAPTION_AND_ICON_INFO
+        {
+        caption = qtn_blid_caption_string;
+        number_of_icons = 1; 
+        icon_file = APP_BITMAP_DIR"\\blid_aif.mif";
+        };
+    }
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_blid_main_menubar
+    {
+    titles=
+        {
+        MENU_TITLE { menu_pane=r_blid_main_menu; txt="File"; },
+		MENU_TITLE { menu_pane=r_blid_main_menu2; txt="File"; }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_view_menubar
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_blid_view_menubar
+    {
+    titles=
+        {
+        MENU_TITLE { menu_pane=r_blid_main_menu; txt="File"; },
+		MENU_TITLE { menu_pane=r_blid_main_menu2; txt="File"; },
+		MENU_TITLE { menu_pane=r_blid_view_menu; txt="File"; }
+        };
+    }
+    
+//----------------------------------------------------
+//   
+//    r_blid_ownpos_view_menubar
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_blid_ownpos_view_menubar
+    {
+    titles=
+        {
+        MENU_TITLE { menu_pane=r_blid_main_menu; txt="File"; },
+		MENU_TITLE { menu_pane=r_blid_ownpos_view_menu; txt="File"; }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_view_ok_menubar
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_blid_view_ok_menubar
+    {
+    titles=
+        {
+		MENU_TITLE { menu_pane=r_blid_view_ok_menu; txt="File"; }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_settings_menubar
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_blid_settings_menubar
+    {
+    titles=
+        {
+        MENU_TITLE { menu_pane=r_blid_main_menu; txt="File"; },
+		MENU_TITLE { menu_pane=r_blid_settings_menu; txt="File"; }
+        };
+    }
+ 
+//----------------------------------------------------
+//   
+//    r_blid_savedwaypts_menubar
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_blid_savedwaypts_menubar
+    {
+    titles=
+        {
+        MENU_TITLE { menu_pane=r_blid_main_menu; txt="File"; },        
+        MENU_TITLE { menu_pane=R_AVKON_MENUPANE_MARKABLE_LIST; txt=qtn_options_list;},        
+		MENU_TITLE { menu_pane=r_blid_savedwaypts_menu; txt="File"; }		
+		};
+    }
+ 
+//----------------------------------------------------
+//   
+//    r_blid_tripmeter_menubar
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_blid_tripmeter_menubar
+    {
+    titles=
+        {
+        MENU_TITLE { menu_pane=r_blid_main_menu; txt="File"; },
+        MENU_TITLE { menu_pane=r_blid_main_menu2; txt="File"; },
+        MENU_TITLE { menu_pane=r_blid_trip_view_menu; txt="File"; },
+		MENU_TITLE { menu_pane=r_blid_tripmeter_menu; txt="File"; }
+		};
+    }
+
+
+//----------------------------------------------------
+//   
+//    r_blid_main_menu
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_blid_main_menu
+    {
+    items=
+        {		
+		MENU_ITEM { command=EAknCmdHelp; txt=qtn_options_help; },
+		MENU_ITEM { command=EAknCmdExit; txt=qtn_options_exit; }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_main_menu2
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_blid_main_menu2
+    {
+    items=
+        {
+		MENU_ITEM { command=EBlidCmdLaunchPositionSettings; txt=qtn_loc_options_pos_settings; },		
+		MENU_ITEM { command=EBlidCmdSettings; txt=qtn_blid_opt_settings; }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_set_destination_menu
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_blid_set_destination_menu
+    {
+    items=
+        {
+		MENU_ITEM { command=EBlidCmdWaypoint; txt=qtn_blid_opt_set_waypoint; },
+		MENU_ITEM { command=EBlidCmdLmk; txt=qtn_blid_opt_set_landmark; },
+		MENU_ITEM { command=EBlidCmdManualWaypoint; txt=qtn_blid_opt_set_coordinates; }
+        };
+    }
+
+
+//----------------------------------------------------
+//   
+//    r_blid_view_menu
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_blid_view_menu
+    {
+    items=
+        {
+		MENU_ITEM { command=EBlidCmdNavigate; 
+					txt=qtn_blid_opt_set_destination;
+					cascade = r_blid_set_destination_menu; 
+				  },
+		MENU_ITEM { command=EBlidCmdStopNavigation; 
+					txt=qtn_blid_opt_clear_destination; 
+				  },
+	    MENU_ITEM { command=EBlidCmdCurrentLocation;
+					txt=qtn_blid_opt_current_location;
+					cascade = r_blid_save_current_location_menu;
+				  },
+		MENU_ITEM { command=EBlidCmdSatelliteStatus;
+					txt=qtn_blid_opt_satellite_signals; 
+				  },
+		MENU_ITEM { command=EBlidCmdSavedWaypoints;
+					txt=qtn_blid_opt_saved_waypoints; 
+				  }
+        };
+    }
+    
+//----------------------------------------------------
+//   
+//    r_blid_ownpos_view_menu
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_blid_ownpos_view_menu
+    {
+    items=
+        {
+	    MENU_ITEM { command=EBlidCmdSaveLocation;
+					txt=qtn_blid_opt_current_location;					
+				  },
+		MENU_ITEM { command=EBlidCmdSatelliteStatus;
+					txt=qtn_blid_opt_satellite_signals; 
+				  },
+		MENU_ITEM { command=EBlidCmdSavedWaypoints;
+					txt=qtn_blid_opt_saved_waypoints; 
+				  }		
+        };
+    }
+ 
+//----------------------------------------------------
+//   
+//    r_blid_trip_view_menu
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_blid_trip_view_menu
+    {
+    items=
+        {
+	    MENU_ITEM { command=EBlidCmdCurrentLocation;
+					txt=qtn_blid_opt_current_location;
+					cascade = r_blid_save_current_location_menu;
+				  },
+		MENU_ITEM { command=EBlidCmdSatelliteStatus;
+					txt=qtn_blid_opt_satellite_signals; 
+				  },
+		MENU_ITEM { command=EBlidCmdSavedWaypoints;
+					txt=qtn_blid_opt_saved_waypoints; 
+				  }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_view_ok_menu
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_blid_view_ok_menu
+    {
+    items=
+        {
+		MENU_ITEM { command=EBlidCmdNavigate; 
+					txt=qtn_blid_opt_set_destination;
+					cascade = r_blid_set_destination_menu; 
+				  },
+		MENU_ITEM { command=EBlidCmdStopNavigation;
+					txt=qtn_blid_opt_clear_destination; 
+				  }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_settings_menu
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_blid_settings_menu
+    {
+    items=
+        {
+		MENU_ITEM 
+			{ 
+			command=EBlidCmdChangeSetting; 
+			txt=qtn_options_change; 
+			flags = EEikMenuItemAction;
+			},
+		MENU_ITEM 
+			{ 
+			command=EBlidCmdResetSetting; 
+			txt=qtn_options_reset; 
+			flags = EEikMenuItemAction;
+			}			
+        };
+    }
+ 
+//----------------------------------------------------
+//   
+//    r_blid_savedwaypts_menu
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_blid_savedwaypts_menu
+    {
+    items=
+        {
+		MENU_ITEM 
+			{ 
+			command=EBlidCmdRenameWaypt; 
+			txt=qtn_blid_opt_rename_waypoint; 
+			},
+		MENU_ITEM 
+			{ 
+			command=EBlidCmdDeleteWaypt; 
+			txt=qtn_blid_opt_delete_waypoint; 
+			}		
+		};
+    }
+    
+//----------------------------------------------------
+//   
+//    r_blid_tripmeter_menu
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_blid_tripmeter_menu
+    {
+    items=
+        {
+		MENU_ITEM 
+			{ 
+			command=EBlidCmdTripStart; 
+			txt=qtn_blid_tripmeter_opt_start; 
+			},
+		MENU_ITEM 
+			{ 
+			command=EBlidCmdTripStop; 
+			txt=qtn_blid_tripmeter_opt_stop; 
+			},
+		MENU_ITEM 
+			{ 
+			command=EBlidCmdTripResume; 
+			txt=qtn_blid_tripmeter_opt_resume; 
+			},
+		MENU_ITEM 
+			{ 
+			command=EBlidCmdTripReset; 
+			txt=qtn_blid_tripmeter_opt_reset; 
+			},
+		MENU_ITEM 
+			{ 
+			command=EBlidCmdTripClear; 
+			txt=qtn_blid_tripmeter_opt_clear; 
+			}
+		
+		};
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_main_title
+//    Title for application's main view
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_title_main
+    {
+    buf = qtn_blid_title_gps_data;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_title_navigation
+//    Title for application's navigation view
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_title_navigation
+    {
+    buf = qtn_blid_title_navigation;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_title_position
+//    Title for application's ownpos view
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_title_position
+    {
+    buf = qtn_blid_location_details_header;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_title_tripmeter
+//    Title for application's tripmeter view
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_title_tripmeter
+    {
+    buf = qtn_blid_title_tripmeter;
+    }
+//----------------------------------------------------
+//   
+//    r_blid_title_waypoints
+//    Title for application's savedwaypts view
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_title_waypoints
+    {
+    buf = qtn_blid_title_waypoints;
+    }
+/*
+//----------------------------------------------------
+//   
+//    r_blid_tripmeter_title
+//    List item for application's main view
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_tripmeter_title
+    {
+    buf = qtn_blid_title_tripmeter;
+    }
+*/
+//----------------------------------------------------
+//   
+//    r_blid_title_settings
+//    Title for application's settings view
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_title_settings
+    {
+    buf = qtn_blid_title_settings;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_position_latitude
+//    Title for ownposview's list pane
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_position_latitude
+    {
+    buf = qtn_blid_location_details_latitude;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_position_longitude	
+//    Title for ownposview's list pane
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_position_longitude
+    {
+    buf = qtn_blid_location_details_longitude;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_position_altitude
+//    Title for ownposview's list pane
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_position_altitude
+    {
+    buf = qtn_blid_location_details_altitude;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_position_accuracy
+//    Title for ownposview's list pane
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_position_accuracy
+    {
+    buf = qtn_blid_location_details_accuracy;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_position_altitude_accuracy
+//    Title for ownposview's list pane
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_position_altitude_accuracy
+    {
+    buf = qtn_blid_location_details_altitude_accuracy;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_navidata_duration_title
+//    Title for ownposview's list pane
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_navidata_duration_title
+    {
+    buf = qtn_blid_label_duration;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_altitude_calibration
+//    Title for settingview's list pane
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_altitude_calibration
+    {
+    buf = qtn_blid_altitude_calibration;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_altitude_calibration_settings_page
+//    Interger settings page to altitude calibration
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_blid_altitude_calibration_metric_settings_page
+    { 
+    label = qtn_blid_altitude_calibration;
+    softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL;
+    type = EAknCtIntegerEdwin;
+    editor_resource_id = r_blid_settings_metric_edwin;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_altitude_calibration_settings_page
+//    Interger settings page to altitude calibration
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_blid_altitude_calibration_imperial_settings_page
+    { 
+    label = qtn_blid_altitude_calibration;
+    softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL;
+    type = EAknCtIntegerEdwin;
+    editor_resource_id = r_blid_settings_imperial_edwin;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_settings_integer_imperial_edwin
+//    Interger edwin
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_INTEGER_EDWIN r_blid_settings_imperial_edwin
+    {
+    min = -1640;
+    max = 1640;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_settings_integer_metric_edwin
+//    Interger edwin
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_INTEGER_EDWIN r_blid_settings_metric_edwin
+    {
+    min = -500;
+    max = 500;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_metric_meter
+//    List item's format
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_metric_meter
+    {
+    buf = qtn_blid_metric_meter;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_imperial_foot
+//    List item's format
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_imperial_foot
+    {
+    buf = qtn_blid_imperial_foot;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_longitude_format_east
+//    List item's format
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_longitude_format_east
+    {
+    buf = qtn_blid_longitude_format_east;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_metric_speed
+//    List item's format
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_metric_speed
+    {
+    buf = qtn_blid_metric_speed;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_imperial_speed	
+//    List item's format
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_imperial_speed
+    {
+    buf = qtn_blid_imperial_speed;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_waypoint_query
+//    Waypoint name query
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG r_blid_waypoint_query
+  {
+  flags = EGeneralQueryFlags;
+  buttons = R_AVKON_SOFTKEYS_OK_CANCEL;
+  items =
+    {
+    DLG_LINE
+      {
+      type = EAknCtQuery;
+      id = EGeneralQuery;
+      control = AVKON_DATA_QUERY
+        {
+        label = qtn_blid_query_waypoint_name;
+		layout = EDataLayout;
+        control = EDWIN
+          {
+          flags = EEikEdwinNoHorizScrolling | EEikEdwinResizable;
+          width = BLID_QUERY_EDWIN_WIDTH;
+          lines = BLID_QUERY_EDWIN_LINES;
+          maxlength = BLID_QUERY_EDWIN_MAXLENGTH;
+          };
+        };
+      }
+    };
+  }
+
+//----------------------------------------------------
+//   
+//    r_blid_query_waypoint
+//    Select waypoint's title
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_query_waypoint
+    {
+    buf = qtn_blid_query_waypoint;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_waypoint_name
+//    Default waypoint name
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_waypoint_name
+    {
+    buf = qtn_blid_waypoint_name;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_service_rule_name
+//    Logical service rule name
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_service_rule_name
+    {
+    buf = qtn_blid_logical_rule_name;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_error_max_waypoints
+//    Max waypoint note when all slots are used.
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_error_max_waypoints  
+    {
+    buf = qtn_blid_error_max_waypoints;
+    }
+
+
+//----------------------------------------------------
+//   
+//    r_blid_calculating_list
+//    Calculating data indicator
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_calculating_list
+    {
+    buf = qtn_blid_calculating_list;
+    }
+
+
+//----------------------------------------------------
+//   
+//    r_blid_blank
+//    Null string
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_blank
+    {
+    buf = qtn_blid_blank;
+    }
+    
+//------------------------------------------------------------------------------
+//   
+//    r_blid_opt_set_destination
+//    Set destination text
+//
+//------------------------------------------------------------------------------
+//
+RESOURCE TBUF r_blid_opt_set_destination
+    {
+    buf = qtn_blid_opt_set_destination;
+    }
+    
+//------------------------------------------------------------------------------
+//   
+//    r_blid_settings_sysmeasurement_page
+//    Set sysmeasurement text
+//
+//------------------------------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_blid_settings_sysmeasurement_page
+    { 
+    label = qtn_blid_system_measurement;
+    softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL;
+    type = EAknSetListBox;
+    editor_resource_id = r_blid_settings_listbox;
+    }
+//------------------------------------------------------------------------------
+//   
+//    r_blid_settings_listbox 
+//    Set Settings text
+//
+//------------------------------------------------------------------------------
+//
+RESOURCE LISTBOX r_blid_settings_listbox 
+    {
+    flags = EEikListBoxMultipleSelection;
+    }
+
+//------------------------------------------------------------------------------
+//   
+//    r_blid_connect_gps
+//    Connect gps text
+//
+//------------------------------------------------------------------------------
+//
+RESOURCE TBUF r_blid_connect_gps
+    {
+    buf=qtn_blid_connect_gps;
+    }
+  
+//----------------------------------------------------
+//   
+//    r_blid_navigation_speed
+//    Speed string
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_navigation_speed
+    {
+    buf = qtn_blid_navigation_speed;
+    }
+    
+//----------------------------------------------------
+//   
+//    r_blid_query_waypoint_name_exists
+//    Waypoint confirmation
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_query_waypoint_name_exists
+    { 
+    buf = qtn_blid_query_waypoint_name_exists;
+    }
+    
+//----------------------------------------------------
+//   
+//    r_blid_confirmation_query
+//    Waypoint confirmation
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG r_blid_confirmation_query
+    {
+    flags = EGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_YES_NO;
+    items = 
+        {
+        DLG_LINE {
+            type = EAknCtQuery;
+            id = EGeneralQuery;
+            control = AVKON_CONFIRMATION_QUERY {
+                layout = EConfirmationQueryLayout;                
+                };
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_query_delete_waypoint
+//    Waypoint confirmation
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_query_delete_waypoint
+    { 
+    buf = qtn_blid_query_delete_waypoint;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_trip_meter_view_ok_menubar
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_blid_trip_meter_view_ok_menubar
+    {
+    titles=
+        {
+		MENU_TITLE { menu_pane=r_blid_trip_meter_view_ok_menu; txt="File"; }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_trip_meter_view_ok_menu
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_blid_trip_meter_view_ok_menu
+    {
+    items=
+        {
+		MENU_ITEM 
+			{ 
+			command=EBlidCmdTripStart; 
+			txt=qtn_blid_tripmeter_opt_start; 
+			},
+		MENU_ITEM 
+			{ 
+			command=EBlidCmdTripStop; 
+			txt=qtn_blid_tripmeter_opt_stop; 
+			},
+		MENU_ITEM 
+			{ 
+			command=EBlidCmdTripResume; 
+			txt=qtn_blid_tripmeter_opt_resume; 
+			},
+		MENU_ITEM 
+			{ 
+			command=EBlidCmdTripReset; 
+			txt=qtn_blid_tripmeter_opt_reset; 
+			}
+        };
+    }
+    
+//----------------------------------------------------
+//   
+//    r_blid_own_pos_view_ok_menubar
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_blid_own_pos_view_ok_menubar
+    {
+    titles=
+        {
+		MENU_TITLE { menu_pane=r_blid_own_pos_view_ok_menu; txt="File"; }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_own_pos_view_ok_menu
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_blid_own_pos_view_ok_menu
+    {
+    items=
+        {
+	    MENU_ITEM { command=EBlidCmdSaveLocation;
+					txt=qtn_blid_opt_current_location;					
+				  }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_savedwaypts_view_ok_menubar
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_blid_savedwaypts_view_ok_menubar
+    {
+    titles=
+        {
+		MENU_TITLE { menu_pane=R_AVKON_MENUPANE_MARKABLE_LIST; txt=qtn_options_list;},
+		MENU_TITLE { menu_pane=r_blid_savedwaypts_view_ok_menu; txt="File"; }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_savedwaypts_view_ok_menu
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_blid_savedwaypts_view_ok_menu
+    {
+    items=
+        {
+		MENU_ITEM 
+			{ 
+			command=EBlidCmdRenameWaypt; 
+			txt=qtn_blid_opt_rename_waypoint; 
+			},
+		MENU_ITEM 
+			{ 
+			command=EBlidCmdDeleteWaypt; 
+			txt=qtn_blid_opt_delete_waypoint; 
+			}
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_query_delete_waypoints
+//    Waypoint confirmation
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_query_delete_waypoints
+    { 
+    buf = qtn_blid_query_delete_waypoints;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_gps_timeout_note
+//    Poor GPS Data note
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_gps_timeout_note
+    {
+    buf = qtn_blid_infonote_poor_gps;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_not_available
+//    Not available indicator
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_not_available
+    {
+    buf = qtn_blid_not_available;
+    }
+
+//------------------------------------------------------------------------------
+//   
+//    r_blid_manual_location_query_dialog
+//    For Giving the Manual waypoint
+//
+//------------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_blid_manual_location_query_dialog
+    {
+    flags=EGeneralQueryFlags;
+    buttons=R_AVKON_SOFTKEYS_OK_CANCEL;
+    items=
+        {
+        DLG_LINE
+            {
+            type=EAknCtMultilineQuery;
+            id=EMultilineFirstLine;
+            control = AVKON_DATA_QUERY
+                {
+                    layout = EMultiDataFirstLocationEd;
+                    label = qtn_blid_coordinate_latitude;
+                    control = LATITUDE_EDITOR
+                        {
+						flags = ELocationEdFlagLatitude;
+						latlongresourceid = R_EIK_LATITUDE_AND_LONGITUDE;
+                        };
+                };
+            },
+        DLG_LINE
+            {
+            type=EAknCtMultilineQuery;
+            id=EMultilineSecondLine;
+            control= AVKON_DATA_QUERY
+                {
+                    layout = EMultiDataSecondLocationEd;
+                    label = qtn_blid_coordinate_longitude;
+                    control = LONGITUDE_EDITOR
+                    {
+					flags = ELocationEdFlagLongitude;
+					latlongresourceid = R_EIK_LATITUDE_AND_LONGITUDE;
+                    };
+                };
+            }
+        };
+    }
+      
+//----------------------------------------------------
+//   
+//    r_blid_cardinal_point_n
+//    Editor's cardinal point 
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_cardinal_point_n
+    {
+    buf = qtn_blid_coordinate_editor_cardinal_point_n;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_cardinal_point_s
+//    Editor's cardinal point 
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_cardinal_point_s
+    {
+    buf = qtn_blid_coordinate_editor_cardinal_point_s;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_cardinal_point_w
+//    Editor's cardinal point 
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_cardinal_point_w
+    {
+    buf = qtn_blid_coordinate_editor_cardinal_point_w;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_cardinal_point_e
+//    Editor's cardinal point 
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_cardinal_point_e
+    {
+    buf = qtn_blid_coordinate_editor_cardinal_point_e;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_destination_coordinates
+//    Default wanual waypoint name
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_destination_coordinates
+    {
+    buf = qtn_blid_destination_coordinates;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_no_waypoints
+//    Default wanual waypoint name
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_no_waypoints
+    {
+    buf = qtn_blid_no_waypoints;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_error_no_psy
+//    Default wanual waypoint name
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_error_no_psy
+    {
+    buf = qtn_blid_msgquery_no_method_enabled;
+    }
+
+ //----------------------------------------------------
+//   
+//    r_blid_waitnote_searching_gps_satellites
+//    Searching GPS note
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_waitnote_searching_gps_satellites
+    {
+    buf = qtn_blid_waitnote_searching_gps_satellites;
+    }
+ 
+ //----------------------------------------------------
+//   
+//    r_blid_startup_navitext_searching_gps_satellites
+//    Searching GPS note
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_startup_navitext_searching_gps_satellites
+    {
+    buf = qtn_blid_startup_navitext_searching_gps_satellites;
+    }
+ 
+//----------------------------------------------------
+//   
+//    r_blid_note_gps_data
+//    GPS data note
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_note_gps_data
+    {
+    buf = qtn_blid_note_gps_data;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_nav_distance_m
+//    GPS data note
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_nav_distance_m
+    {
+    buf = qtn_blid_nav_distance_m;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_nav_distance_km
+//    GPS data note
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_nav_distance_km
+    {
+    buf = qtn_blid_nav_distance_km;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_nav_distance_mi
+//    GPS data note
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_nav_distance_mi
+    {
+    buf = qtn_blid_nav_distance_mi;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_nav_distance_ft
+//    GPS data note
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_nav_distance_ft
+    {
+    buf = qtn_blid_nav_distance_ft;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_error_no_gps_device
+//    GPS not available note
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_error_no_gps_device
+    {
+    buf = qtn_blid_gps_device_unavailable_note;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_empty_landmark_destination
+//    Empty landmark coordinate note
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_empty_landmark_destination
+    {
+    buf = qtn_blid_empty_landmark_destination;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_set_destination
+//    Set Destination string for Navigation view
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_set_destination
+    {
+    buf = qtn_blid_set_destination;
+    }
+
+//----------------------------------------------------
+//   
+//    r_memlo_not_enough_memory
+//    Out of memory note
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_memlo_not_enough_memory
+	{
+	buf = qtn_memlo_not_enough_memory;
+	}
+
+//----------------------------------------------------
+//   
+//    r_blid_conf_dest_inaccurate
+//    Landmark accuracy poor string
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_conf_dest_inaccurate
+	{
+	buf = qtn_blid_conf_dest_inaccurate;
+	}
+	
+
+//----------------------------------------------------
+//   
+//    r_trip_resume_confirmation_note
+//    Out of memory note
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG r_trip_resume_confirmation_note
+    {
+    flags = EAknGeneralQueryFlags;
+    buttons=R_AVKON_SOFTKEYS_OK_EMPTY;
+    items=
+        {
+        DLG_LINE
+            {
+            type=EAknCtNote;  
+            id = EBlidLat;
+            control= AVKON_NOTE
+                {
+                layout = EGeneralLayout;
+                singular_label = qtn_blid_note_trip_resume;                    
+                animation = R_QGN_NOTE_INFO_ANIM;
+                };
+            }
+        };
+    }
+	
+//--------------------------------------------------------
+//   
+//    r_blid_waiting_gps_list
+//    Trip meter's and My position views string
+//
+//--------------------------------------------------------
+//
+RESOURCE TBUF r_blid_waiting_gps_list
+	{
+	buf = qtn_blid_view_indicator_waiting;
+	}
+
+//------------------------------------------------------------------------------
+//   
+//    r_blid_msk_open
+//    Main view MSK label "Open" text
+//
+//------------------------------------------------------------------------------
+//
+RESOURCE TBUF r_blid_msk_open
+    {
+    buf = qtn_msk_open;
+    }
+    
+//------------------------------------------------------------------------------
+//   
+//    r_blid_msk_change
+//    Settings view MSK label "Change" text
+//
+//------------------------------------------------------------------------------
+//
+RESOURCE TBUF r_blid_msk_change
+    {
+    buf = qtn_msk_change;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_softkeys_options_back__contextoptions
+//    Navigation and Trip meter View's default CBA options  
+//
+//----------------------------------------------------
+//
+RESOURCE CBA r_blid_softkeys_options_back__contextoptions
+    {
+    buttons =
+        {
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyOptions;
+            txt = text_softkey_option;
+            },
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyBack; 
+            txt = text_softkey_back; 
+            },
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyContextOptions; 
+            txt = text_softkey_option;
+            }
+        };
+    }
+//----------------------------------------------------
+//   
+//    r_blid_softkeys_options_exit__contextoptions
+//    All Saved waypoints View's default CBA options  
+//
+//----------------------------------------------------
+//
+RESOURCE CBA r_blid_softkeys_options_exit__contextoptions
+    {
+    buttons =
+        {
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyOptions;
+            txt = text_softkey_option;
+            },
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyExit; 
+            txt = text_softkey_exit; 
+            },
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyContextOptions; 
+            txt = text_softkey_option;
+            }
+        };
+    }
+//------------------------------------------------------------------------------
+//   
+//    r_blid_backlight_normal
+//    Settings view Backlight settings selection text
+//
+//------------------------------------------------------------------------------
+//
+RESOURCE TBUF r_blid_backlight_normal
+    {
+    buf = qtn_blid_backlight_normal;
+    }
+
+
+//------------------------------------------------------------------------------
+//   
+//    r_blid_backlight_on
+//    Settings view Backlight settings selection text
+//
+//------------------------------------------------------------------------------
+//
+RESOURCE TBUF r_blid_backlight_on
+    {
+    buf = qtn_blid_backlight_always_on;
+    }
+
+//------------------------------------------------------------------------------
+//   
+//    r_blid_settings_backlight_page
+//    Set backlight text
+//
+//------------------------------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_blid_settings_backlight_page
+    { 
+    label = qtn_blid_backlight;
+    softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL;
+    type = EAknSetListBox;
+    editor_resource_id = r_blid_backlight_settings_listbox;
+    }
+//------------------------------------------------------------------------------
+//   
+//    r_blid_backlight_settings_listbox 
+//    Set Settings text
+//
+//------------------------------------------------------------------------------
+//
+RESOURCE LISTBOX r_blid_backlight_settings_listbox 
+    {
+    flags = EEikListBoxMultipleSelection;
+    }
+
+//------------------------------------------------------------------------------
+//   
+//    r_blid_backlight
+//    Settings view Backlight text
+//
+//------------------------------------------------------------------------------
+//
+RESOURCE TBUF r_blid_backlight
+    {
+    buf = qtn_blid_backlight;
+    }
+
+// ---------------------------------------------------------
+//   
+//   r_blid_destination_stylus_menu
+//   Stylus popup menu
+//
+// ---------------------------------------------------------
+//
+RESOURCE STYLUS_POPUP_MENU r_blid_destination_stylus_menu
+    {
+    items =
+        {
+        STYLUS_POPUP_MENU_ITEM { command = EBlidCmdStopNavigation; txt = qtn_blid_stylus_clear; },
+				STYLUS_POPUP_MENU_ITEM { command = EBlidCmdWaypoint; txt=qtn_blid_stylus_waypoint; },
+				STYLUS_POPUP_MENU_ITEM { command = EBlidCmdLmk; txt=qtn_blid_stylus_landmark; },
+				STYLUS_POPUP_MENU_ITEM { command = EBlidCmdManualWaypoint; txt=qtn_blid_stylus_coordinates; }
+        };
+    }
+
+//------------------------------------------------------------------------------
+//   
+//    r_blid_connect_gps_list
+//    Connect gps text
+//
+//------------------------------------------------------------------------------
+//
+RESOURCE TBUF r_blid_connect_gps_list
+    {
+    buf=qtn_blid_view_indicator_not_found;
+    }     
+    
+//----------------------------------------------------
+//   Added for Taco
+//    r_blid_main_embeded_view
+//    Home view
+//
+//----------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_blid_main_embeded_view
+    {    
+    menubar=r_blid_main_menubar;  
+    cba=R_AVKON_SOFTKEYS_OPTIONS_BACK;    
+    }
+
+// Adition for taco
+//----------------------------------------------------
+//   
+//    r_blid_save_current_location_menu
+//    ?description
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_blid_save_current_location_menu
+    {
+    items=
+        {
+		MENU_ITEM { command=EBlidCmdShowDetails; txt=qtn_blid_opt_current_location_details; },
+		MENU_ITEM { command=EBlidCmdSaveLocation; txt=qtn_blid_opt_current_location_save; }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_currentlocation_softkeys_save__exit
+//    Current location softkey options  
+//
+//----------------------------------------------------
+//
+RESOURCE CBA r_blid_currentlocation_softkeys_save__exit
+    {
+    buttons =
+        {
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeySave;
+            txt = text_softkey_save;
+            },
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyExit; 
+            txt = text_softkey_exit; 
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_metric_speed_format
+//    List item's format
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_metric_speed_format
+    {
+    buf = qtn_blid_navigation_speed_kmph;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_imperial_speed_format	
+//    List item's format
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_imperial_speed_format
+    {
+    buf = qtn_blid_navigation_speed_mph;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_message_query_dialog
+//
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG r_blid_message_query_dialog
+    {
+    flags = EGeneralQueryFlags | EEikDialogFlagNoBorder | EEikDialogFlagNoShadow;
+    //buttons = R_AVKON_SOFTKEYS_EXIT;
+    items=
+        {
+        DLG_LINE
+            {
+            type = EAknCtPopupHeadingPane;
+            id = EAknMessageQueryHeaderId;
+            control = AVKON_HEADING
+                {
+                headinglayout = R_AVKON_WML_SIGN_QUERY_HEADING_PANE;
+                };
+            },
+        DLG_LINE
+            {
+            type = EAknCtMessageQuery;
+            id = EAknMessageQueryContentId;
+            control = AVKON_MESSAGE_QUERY
+                {
+                };
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_nogps_found	
+//    Infopopup header format
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_nogps_found
+    {
+    buf = qtn_blid_msgquery_header_nogpsdevice;
+    } 
+
+//----------------------------------------------------
+//   
+//    r_blid_nopsy_enabled	
+//    Infopopup header format
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_nopsy_enabled
+    {
+    buf = qtn_blid_msgquery_no_satellite_methods;
+    }
+        
+//----------------------------------------------------
+//   
+//    r_blid_nogps_found_text	
+//    infopop up note text
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_nogps_found_text
+    {
+    buf = qtn_blid_msgquery_check_positioning_settings;
+    }
+    
+//----------------------------------------------------
+//   
+//    r_blid_nogps_available_text	
+//    infopop up note text
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_nogps_available_text
+    {
+    buf = qtn_blid_msgquery_accessory_device_needed;
+    }  
+    
+//----------------------------------------------------
+//   
+//    r_blid_select_positioning_method	
+//    infopop up note text
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_select_positioning_method
+    {
+    buf = qtn_blid_msgquery_link_positioning_settings;
+    }  
+    
+//----------------------------------------------------
+//   
+//    r_blid_softkeys_info_exit
+//    All View's default CBA options  
+//
+//----------------------------------------------------
+//
+RESOURCE CBA r_blid_softkeys_info_exit
+    {
+    buttons =
+        {
+        CBA_BUTTON 
+            {
+            id=EBlidSoftkeyInfo;
+            txt = text_softkey_info;
+            },
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyExit; 
+            txt = text_softkey_exit; 
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_note_searching_animation	
+//    Start up view searching animation text
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_note_searching_animation
+    {
+    buf = qtn_blid_startup_navitext_searching_gps_device;
+    } 
+    
+//----------------------------------------------------
+//   
+//    r_blid_infopopup_softkeys_retry__exit
+//    Current location softkey options  
+//
+//----------------------------------------------------
+//
+RESOURCE CBA r_blid_infopopup_softkeys_retry__exit
+    {
+    buttons =
+        {
+        CBA_BUTTON 
+            {
+            id=EBlidSoftkeyRetry;
+            txt = text_softkey_retry;
+            },
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyOk; 
+            txt = text_softkey_exit; 
+            }
+        };
+    }
+
+//------------------------------------------------------------------------------
+//   
+//    r_blid_arrival_ringing_tone
+//    Settings view arrival tone
+//
+//------------------------------------------------------------------------------
+//
+RESOURCE TBUF r_blid_arrival_ringing_tone
+    {
+    buf = qtn_blid_arrival_tone;
+    }
+    
+//------------------------------------------------------------------------------
+//   
+//    r_blid_reset_odometer
+//    Settings view reset odometer
+//
+//------------------------------------------------------------------------------
+//
+RESOURCE TBUF r_blid_reset_odometer
+    {
+    buf = qtn_blid_reset_odometer;
+    }
+    
+//------------------------------------------------------------------------------
+//   
+//    r_blid_arrival_tone_off
+//    Settings view arrival tone option
+//
+//------------------------------------------------------------------------------
+//
+RESOURCE TBUF r_blid_arrival_tone_off
+    {
+    buf = qtn_blid_arrival_tone_off;
+    }
+    
+//----------------------------------------------------
+//   
+//    r_settings_odometer_reset_confirmation_note
+//    Confirmation note for reseting odometer.
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG r_settings_odometer_reset_confirmation_note
+    {
+    flags = EAknGeneralQueryFlags;
+    buttons=R_AVKON_SOFTKEYS_YES_NO;
+    items=
+        {
+        DLG_LINE
+            {
+            type=EAknCtNote;  
+            id = EBlidResetOdo;
+            control= AVKON_NOTE
+                {
+                layout = EGeneralLayout;
+                singular_label = qtn_blid_reset_odometer_query;                    
+                animation = R_QGN_NOTE_INFO_ANIM;
+                };
+            }
+        };
+    }
+
+
+//----------------------------------------------------
+//   
+//    r_blid_infopopup_softkeys_ok__exit
+//    Current location softkey options  
+//
+//----------------------------------------------------
+//
+RESOURCE CBA r_blid_infopopup_softkeys_ok__exit
+    {
+    buttons =
+        {
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyOk;
+            txt = text_softkey_ok;
+            },
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyExit; 
+            txt = text_softkey_exit; 
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_infopopup_softkeys__exit
+//    Accessory Required
+//
+//----------------------------------------------------
+//
+RESOURCE CBA r_blid_infopopup_softkeys_exit
+    {
+    buttons =
+        {
+        CBA_BUTTON 
+            {
+
+            },
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyExit; 
+            txt = text_softkey_exit; 
+            }
+        };
+    }
+    
+        
+//----------------------------------------------------
+//   
+//    r_info_popup_msg_query
+//    Information message.
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG r_info_popup_msg_query
+    {
+    flags = EAknGeneralQueryFlags;
+    buttons=r_blid_infopopup_softkeys_ok__exit;
+    items=
+        {
+        DLG_LINE
+            {
+            type=EAknCtNote;  
+            id = EBlidResetOdo;
+            control= AVKON_NOTE
+                {
+                layout = EGeneralLayout;
+                singular_label = qtn_blid_msgquery_device_connection_lost;                    
+                animation = R_QGN_NOTE_INFO_ANIM;
+                };
+            }
+        };
+    }
+    
+//----------------------------------------------------
+//   
+//    r_blid_softkeys_options_stop
+//    View's CBA options  
+//
+//----------------------------------------------------
+//
+RESOURCE CBA r_blid_softkeys_options_stop
+    {
+    buttons =
+        {
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyOptions;
+            txt = text_softkey_option;
+            },
+        CBA_BUTTON 
+            {
+            id=EBlidSoftKeyStop; 
+            txt = text_softkey_stop;
+            },
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyContextOptions; 
+            txt = text_softkey_option;
+            }            
+        };
+    }
+
+//------------------------------------------------------------------------------
+//   
+//    r_blid_msk_reset
+//    Settings view MSK label "Reset" text
+//
+//------------------------------------------------------------------------------
+//
+RESOURCE TBUF r_blid_msk_reset
+    {
+    buf = qtn_msk_reset;
+    }
+
+//----------------------------------------------------
+//   
+//    r_blid_note_gps_positioning_available
+//    GPS positioning available note
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_blid_note_gps_positioning_available
+    {
+    buf = qtn_blid_startup_navitext_gps_pos_available;
+    }
+            
+//----------------------------------------------------
+//   
+//    R_BLID_OPTION_INFO_EXIT
+//    All View's default CBA options  
+//
+//----------------------------------------------------
+//
+RESOURCE CBA r_blid_option_info_exit
+    {
+    buttons =
+        {
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyOptions;
+            txt = text_softkey_option;
+            },
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyExit; 
+            txt = text_softkey_exit; 
+            },
+        CBA_BUTTON 
+            {
+            id=EBlidNavigationMskInfo; 
+            txt = text_softkey_info;
+            }
+        };
+    }                            
+// End of File
+

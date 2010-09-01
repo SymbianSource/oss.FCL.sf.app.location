@@ -1,0 +1,83 @@
+/*
+* Copyright (c) 2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This is project specification file for appserver for 
+*                 the SimPsyConfigurator.
+*
+*/
+
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+#include "../inc/simpsyuiconsts.h"
+
+TARGET          simpsyui.exe
+TARGETTYPE      exe
+UID             0x100039CE KSimPsyUiAppUid
+
+EPOCSTACKSIZE   0x5000
+
+ 
+VENDORID    	VID_DEFAULT
+
+CAPABILITY      Location ReadUserData WriteDeviceData SwEvent
+
+USERINCLUDE     ../inc
+USERINCLUDE	    ../../inc
+
+APP_LAYER_SYSTEMINCLUDE
+
+SOURCEPATH      ../src
+SOURCE          simpsyuiapp.cpp
+SOURCE          simpsyuidocument.cpp
+SOURCE          simpsyuiappui.cpp
+SOURCE		simpsyuicontainer.cpp
+SOURCE		simpsyuilbmodel.cpp
+SOURCE          simpsyuiao.cpp
+SOURCE          simpsyfileselectormodel.cpp
+SOURCE          simpsyfileselector.cpp
+
+SOURCEPATH     ../data
+START RESOURCE simpsyui.rss
+HEADER
+TARGETPATH APP_RESOURCE_DIR
+END
+
+START RESOURCE ../data/simpsyui_reg.rss
+DEPENDS simpsyui.rsg
+// Do not change the UID below.
+TARGETPATH /private/10003a3f/apps
+END
+
+LIBRARY         euser.lib 
+LIBRARY         apparc.lib 
+LIBRARY         cone.lib 
+LIBRARY         eikcore.lib
+LIBRARY         avkon.lib 
+LIBRARY 	eikdlg.lib
+LIBRARY 	eikcoctl.lib 
+LIBRARY         apgrfx.lib
+LIBRARY         ws32.lib
+LIBRARY         centralrepository.lib
+LIBRARY         efsrv.lib
+LIBRARY         commondialogs.lib
+LIBRARY         lbs.lib
+LIBRARY		bafl.lib
+LIBRARY         commonengine.lib // StringLoader
+LIBRARY 	eikctl.lib
+LIBRARY         eikcdlg.lib
+LIBRARY         egul.lib // CGulIcon
+LIBRARY         fbscli.lib // CFbsBitmap
+LIBRARY         AknIcon.lib
+LIBRARY		aknskins.lib
+LIBRARY		aknskinsrv.lib
+LIBRARY		aknswallpaperutils.lib 

@@ -1,0 +1,211 @@
+/*
+* Copyright (c) 2004 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: Resource file for simpsyconfigurator
+*
+*/
+
+NAME SIMP
+
+#include <eikon.rh>
+#include <uikon.rh>
+#include <avkon.rh>
+#include <appinfo.rh>
+#include <avkon.rsg>
+#include <avkon.hrh>
+#include <LocPsyConfigUi.rh>
+
+#include "simpsyui.hrh"
+#include "simpsyuiloc.h"
+
+RESOURCE RSS_SIGNATURE { }
+
+RESOURCE TBUF { buf=qtn_simpsyui_grid; }
+
+RESOURCE EIK_APP_INFO
+    {
+    menubar = r_simpsyui_menubar;
+    cba = R_AVKON_SOFTKEYS_OPTIONS_BACK__SELECT;
+    }
+
+RESOURCE LOCALISABLE_APP_INFO r_simpsyui_app_info
+	{
+	short_caption = qtn_simpsyui_grid;
+	caption_and_icon =
+		{
+		CAPTION_AND_ICON_INFO
+			{
+			caption = qtn_simpsyui_grid;
+			}
+		};			
+	}
+
+RESOURCE MENU_BAR r_simpsyui_menubar
+    {
+    titles=
+        {
+        MENU_TITLE 
+            { 
+            menu_pane = r_simpsyui_cfg_menu; 
+            txt=""; 
+            }
+        };
+    }
+
+RESOURCE MENU_PANE r_simpsyui_cfg_menu
+    {
+    items=
+        {
+        MENU_ITEM 
+            { 
+            command = ESimCmdConfigFile; 
+            txt = qtn_simpsyui_opt_config_file; 
+            } ,
+	    MENU_ITEM 
+	        { 
+	        command = ESimCmdGetCurrentLocation; 
+	        txt = qtn_simpsyui_opt_current_location; 
+	        }
+        };
+    }
+
+RESOURCE PSYCONFIG_REGISTRATION r_simpsyui_reg_info
+	{
+	psy_uid = 0x101F7A81; // Use Simulation PSY modules UID
+	}
+
+RESOURCE DIALOG r_simpsyui_error_note
+    {
+	flags = EGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_OK_EMPTY__OK;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+		    id = EGeneralNote;
+            control = AVKON_NOTE 
+                { 
+                layout = EGeneralLayout;
+                singular_label = qtn_simpsyui_location_dlg_label;
+                animation = R_QGN_NOTE_INFO_ANIM;
+                };
+            }
+        };
+    }
+
+RESOURCE DIALOG r_simpsyui_location_dialog
+    {
+    flags = EGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_OK_EMPTY__OK;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtListQueryControl;
+            id = EListQueryControl;
+            control = AVKON_LIST_QUERY_CONTROL
+                {
+				listtype = EAknCtSingleHeadingPopupMenuListBox;
+                listbox = LISTBOX
+                    {
+                    flags = EAknListBoxViewerFlags;
+                    array_id = r_simpsyui_listbox_dummy_array;
+                    };
+                heading = qtn_simpsyui_location_dlg_heading;
+                };
+            }
+        };
+    }
+
+RESOURCE ARRAY r_simpsyui_listbox_dummy_array
+	{
+	items =
+		{
+		LBUF
+			{
+			txt = "";
+			}
+		};
+	}
+
+RESOURCE DIALOG r_simpsyui_request_location
+	{	
+	flags = EAknWaitNoteFlags | EEikDialogFlagWait;
+    buttons = R_AVKON_SOFTKEYS_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EGeneralNote;
+            control= AVKON_NOTE 
+                { 
+                layout = EWaitLayout;
+                singular_label = qtn_simpsyui_wait_requesting_location;
+                animation = R_QGN_GRAF_WAIT_BAR_ANIM;
+                };
+            }
+        };
+	}
+	
+RESOURCE TBUF r_simpsyui_serv_connect_err
+    {
+    buf = qtn_simpsyui_serv_connect_err;
+    }
+
+RESOURCE TBUF r_simpsyui_psy_open_err
+    {
+    buf = qtn_simpsyui_psy_open_err;
+    }
+
+RESOURCE TBUF r_simpsyui_setting_requestor_err
+    {
+    buf = qtn_simpsyui_setting_requestor_err;
+    }
+
+RESOURCE TBUF r_simpsyui_get_location_err
+    {
+    buf = qtn_simpsyui_get_location_err;
+    }
+
+RESOURCE TBUF r_simpsyui_location_info_latitude
+    {
+    buf = qtn_simpsyui_location_info_latitude;
+    }
+
+RESOURCE TBUF r_simpsyui_location_info_longitude
+    {
+    buf = qtn_simpsyui_location_info_longitude;
+    }
+
+RESOURCE TBUF r_simpsyui_location_info_altitude
+    {
+    buf = qtn_simpsyui_location_info_altitude;
+    }
+
+RESOURCE TBUF r_simpsyui_location_info_horz_accuracy
+    {
+    buf = qtn_simpsyui_location_info_horz_accuracy;
+    }
+
+RESOURCE TBUF r_simpsyui_location_info_vert_accuracy
+    {
+    buf = qtn_simpsyui_location_info_vert_accuracy;
+    }
+   
+RESOURCE TBUF r_simpsyui_filename_text
+	{
+	buf = qtn_simpsyui_filename_text;
+	} 
+//End Of File

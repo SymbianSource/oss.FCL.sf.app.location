@@ -1,0 +1,33 @@
+EXPORTS
+	_Z5Debug11TRefByValueIK7TDesC16Ez @ 1 NONAME
+	_Z9CreateDirv @ 2 NONAME
+	_ZN14CEvtTonePlayer12StopPlayingLEi @ 3 NONAME
+	_ZN14CEvtTonePlayer4NewLER20MEvtTonePlayObserver @ 4 NONAME
+	_ZN14CEvtTonePlayer5NewLCER20MEvtTonePlayObserver @ 5 NONAME
+	_ZN14CEvtTonePlayer9PlayFileLERK4TBufILi256EEii @ 6 NONAME
+	_ZN18CEvtKeyLockHandler13EnableKeyLockEi @ 7 NONAME
+	_ZN18CEvtKeyLockHandler13MaintainStateEv @ 8 NONAME
+	_ZN18CEvtKeyLockHandler19UpdateStateWithNoteEv @ 9 NONAME
+	_ZN18CEvtKeyLockHandler22UpdateStateWithoutNoteEv @ 10 NONAME
+	_ZN18CEvtKeyLockHandler4NewLEv @ 11 NONAME
+	_ZN18CEvtKeyLockHandler5NewLCEv @ 12 NONAME
+	_ZN22CEvtInfoNoteInputParam11SetSubjectLERK7TDesC16 @ 13 NONAME
+	_ZN22CEvtInfoNoteInputParam12ExternalizeLER12RWriteStream @ 14 NONAME
+	_ZN22CEvtInfoNoteInputParam12InternalizeLER11RReadStream @ 15 NONAME
+	_ZN22CEvtInfoNoteInputParam13SetShowSnoozeEi @ 16 NONAME
+	_ZN22CEvtInfoNoteInputParam13SetToneRepeatEi @ 17 NONAME
+	_ZN22CEvtInfoNoteInputParam14SetToneEnabledEi @ 18 NONAME
+	_ZN22CEvtInfoNoteInputParam15SetDescriptionLERK7TDesC16 @ 19 NONAME
+	_ZN22CEvtInfoNoteInputParam21SetTrigerringAccuracyENS_19TEvtTriggerAccuracyE @ 20 NONAME
+	_ZN22CEvtInfoNoteInputParam4NewLEv @ 21 NONAME
+	_ZN22CEvtInfoNoteInputParam8SetToneLERK7TDesC16 @ 22 NONAME
+	_ZNK22CEvtInfoNoteInputParam10ShowSnoozeEv @ 23 NONAME
+	_ZNK22CEvtInfoNoteInputParam10ToneRepeatEv @ 24 NONAME
+	_ZNK22CEvtInfoNoteInputParam11DescriptionEv @ 25 NONAME
+	_ZNK22CEvtInfoNoteInputParam11ToneEnabledEv @ 26 NONAME
+	_ZNK22CEvtInfoNoteInputParam18TrigerringAccuracyEv @ 27 NONAME
+	_ZNK22CEvtInfoNoteInputParam4ToneEv @ 28 NONAME
+	_ZNK22CEvtInfoNoteInputParam7SubjectEv @ 29 NONAME
+	_ZTI22CEvtInfoNoteInputParam @ 30 NONAME
+	_ZTV22CEvtInfoNoteInputParam @ 31 NONAME
+

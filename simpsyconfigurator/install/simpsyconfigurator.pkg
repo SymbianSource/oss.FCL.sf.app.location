@@ -1,0 +1,53 @@
+;
+; Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+; All rights reserved.
+; This component and the accompanying materials are made available
+; under the terms of "Eclipse Public License v1.0"
+; which accompanies this distribution, and is available
+; at the URL "http://www.eclipse.org/legal/epl-v10.html".
+;
+; Initial Contributors: Package file for simpsyconfigurator
+; Nokia Corporation - initial contribution.
+;
+; Contributors:
+;
+; Description: 
+;
+&EN
+;
+; UID is the app's UID
+;
+#{"SimPsyConfigurator"},(0x101FD698),2,0,0,TYPE=SA
+;
+; Localised Vendor name
+%{"Nokia-EN"}
+
+; Unique Vendor name
+:"Nokia"
+
+;Supports Series 60 v 3.0
+;This line indicates that this installation is for the Series 60 platform v3.0
+;This line must appear _exactly_ as shown below in the sis file
+;If this line is missing or incorrect, the sis file will not be able
+;to be installed on Series 60 v3.0 platforms
+;(0x101F7961), 0, 0, 0, {"Series60ProductID"}
+;
+;
+
+; Check if MLFW library is present otherwise don't install SimPsyConfigurator.
+; It is not useful.
+IF EXISTS("z:\sys\bin\EPosServer.exe")
+
+; File to install
+
+; Install Simulation PSY Configurator application files
+"\epoc32\release\armv5\urel\simpsyui.exe"                      -"!:\sys\bin\simpsyui.exe"
+"\epoc32\data\z\private\10003a3f\apps\simpsyui_reg.rsc"        -"!:\private\10003a3f\import\apps\simpsyui_reg.rsc"
+"\epoc32\data\z\resource\apps\simpsyui.rsc"                    -"!:\resource\apps\simpsyui.rsc"
+
+; Initial Set of Data files
+"\epoc32\release\winscw\udeb\z\system\data\nmea.nme"	        -"!:\system\data\nmea.nme"
+"\epoc32\release\winscw\udeb\z\system\data\simu_move_const.sps"	-"!:\system\data\simu_move_const.sps"
+"\epoc32\release\winscw\udeb\z\system\data\simu_move_speed.sps"	-"!:\system\data\simu_move_speed.sps"
+
+ENDIF

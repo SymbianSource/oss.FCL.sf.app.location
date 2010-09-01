@@ -1,0 +1,63 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:    LandmarksUi Content File -    
+*
+*/
+
+
+
+
+
+
+
+
+
+// INCLUDES
+// To get the APP_LAYER_SYSTEMINCLUDE-definition
+#include <platform_paths.hrh>
+#include "../../inc/LmkUID.h"         // Common Landmarks UID definitions
+
+// Target information
+TARGET  LmkCommonUi.dll
+TARGETTYPE  dll
+UID  0x0 KLmkCommonUiUID3
+
+CAPABILITY CAP_GENERAL_DLL
+
+VENDORID    VID_DEFAULT
+//exportunfrozen
+
+// Project source directory
+SOURCEPATH ../src
+
+// Source files
+SOURCE CLmkEditorDlg.cpp
+SOURCE CLmkLandmarkSelectorDlg.cpp
+SOURCE CLmkCategorySelectorDlg.cpp
+SOURCE TLmkItemIdDbCombiInfo.cpp
+
+// Language
+LANGUAGE_IDS
+
+// Userincludes
+USERINCLUDE . ../inc ../src ../../uicontrols/inc ../../engine/inc ../../inc
+USERINCLUDE ../../uicontrols/src
+
+// Default system include paths for application layer modules.
+APP_LAYER_SYSTEMINCLUDE
+//SYSTEMINCLUDE  ../../CommonUi/inc 
+
+LIBRARY euser.lib
+LIBRARY LmkUi.lib
+LIBRARY eposlandmarks.lib

@@ -1,0 +1,905 @@
+/*
+* Copyright (c) 2002 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:    LandmarksUi Content File -    Contains the resources for LmkEditor.
+*
+*/
+
+
+
+
+
+
+
+//  INCLUDES
+#include <AiwCommon.hrh>
+#include <AiwCommon.rh>
+#include <AknFep.rsg>
+#include <eikctl.rsg>
+
+//----------------------------------------------------
+//   
+//    r_lmk_editor_menubar
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR r_lmk_editor_menubar
+    {
+    titles=
+        {
+        MENU_TITLE { menu_pane=r_lmk_editor_menu; txt=""; },	
+        MENU_TITLE { menu_pane=r_lmk_editor_main_menu; txt=""; }
+        
+        };
+    }
+    
+//----------------------------------------------------
+//   
+//    r_lmk_editor_menu
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_lmk_editor_main_menu
+    {
+    items=
+        {		
+		MENU_ITEM { command=EAknCmdHelp; txt=qtn_options_help; },
+		MENU_ITEM { command=EAknCmdExit; txt=qtn_options_exit; }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_editor_menu
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_PANE r_lmk_editor_menu
+    {
+    items=
+        {	
+        MENU_ITEM { command=ELmkCmdEditLm; 
+					txt=qtn_lm_opt_edit_landmark; 
+				  },
+		MENU_ITEM { command=ELmkCmdSelectCategories; 
+					txt=qtn_lm_opt_select_categories;
+				  },
+		MENU_ITEM { command=ELmkCmdCategories; 
+					txt=qtn_lm_title_edit_categories; 
+				  },
+		MENU_ITEM { command=ELmkCmdCurrentLocation; 
+					txt=qtn_lm_editor_use_current; 
+				  },
+		MENU_ITEM { command=ELmkCmdDeleteLm; 
+					txt=qtn_lm_opt_delete_landmark; 
+				  },	
+        MENU_ITEM { command=ELmkCmdChangeIcon; 
+					txt=qtn_lm_opt_change_landmark_icon; 
+				  },
+		MENU_ITEM { command=ELmkCmdSaveLm; 
+					txt=qtn_lm_opt_save; 
+				  },
+	    MENU_ITEM { command = ELmkShowOnMapPlaceHolder;
+	    			txt ="";
+	    		  },
+	    MENU_ITEM { command = ELmkNavigateToPlaceHolder;
+	    		    txt ="";
+	    		  },				
+		MENU_ITEM { command=ELmkCmdSendDummy; 
+					txt = qtn_options_send_via; 
+				  },
+		MENU_ITEM { command=ELmkCmdClearPosInfo; 
+				    txt=qtn_lm_opt_clear_pos_info; 
+				  },
+		MENU_ITEM { command=ELmkCmdEditTextLm; 
+					txt = qtn_options_edit; 				  
+					cascade = R_AKNFEP_EDIT_SUBMENU;
+				  },
+        MENU_ITEM { command=ELmkCmdCall; 
+					txt=qtn_options_call; 
+				  },
+        MENU_ITEM { command=ELmkCmdGoToUrl; 
+				    txt=qtn_lm_opt_go_to_url; 
+				  }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_editor_dialog
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG r_lmk_editor_dialog
+    {
+    flags = EEikDialogFlagNoDrag | EEikDialogFlagNoTitleBar | 
+            EEikDialogFlagFillAppClientRect | EEikDialogFlagCbaButtons | 
+            EEikDialogFlagWait;
+    buttons = r_lmk_received_viewer_softkeys_options_done_contextoptions;
+    form = r_lmk_editor_form;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_viewer_dialog
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG r_lmk_viewer_dialog
+    {
+    flags = EEikDialogFlagNoDrag | EEikDialogFlagNoTitleBar | 
+            EEikDialogFlagFillAppClientRect | EEikDialogFlagCbaButtons | 
+            EEikDialogFlagWait;    
+    buttons =   r_lmk_received_viewer_softkeys_options_back_contextoptions;
+    form = r_lmk_editor_form;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_editor_form
+//
+//----------------------------------------------------
+//
+RESOURCE FORM r_lmk_editor_form
+    {
+	// dynamic form resource
+    flags = EEikFormShowBitmaps | 
+			EEikFormUseDoubleSpacedFormat;
+    } 
+
+//----------------------------------------------------
+//   
+//    r_lmk_name_label
+//
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_name_label
+    {
+    buf = qtn_lm_form_label_lm_name;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_category_label
+//
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_category_label
+    {
+    buf = qtn_lm_form_label_category;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_categories_label
+//
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_categories_label
+    {
+    buf = qtn_lm_form_label_categories;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_street_label
+//
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_street_label
+    {
+    buf = qtn_lm_form_label_street;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_city_label
+//
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_city_label
+    {
+    buf = qtn_lm_form_label_city;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_state_province_label
+//
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_state_province_label
+    {
+    buf = qtn_lm_form_label_state;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_country_label
+//
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_country_label
+    {
+    buf = qtn_lm_form_label_country;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_post_code_label
+//
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_post_code_label
+    {
+    buf = qtn_lm_form_label_postal_code;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_latitude_label
+//
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_latitude_label
+    {
+    buf = qtn_lm_form_label_latitude;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_longitude_label
+//
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_longitude_label
+    {
+    buf = qtn_lm_form_label_longitude;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_position_accuracy_label
+//
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_position_accuracy_label
+    {
+    buf = qtn_lm_form_label_horiz_accuracy;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_altitude_label
+//
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_altitude_label
+    {
+    buf = qtn_lm_form_label_altitude;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_altitude_accuracy_label
+//
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_altitude_accuracy_label
+    {
+    buf = qtn_lm_form_label_vert_accuracy;
+    }
+    
+//----------------------------------------------------
+//   
+//    r_lmk_description_label
+//
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_description_label
+    {
+    buf = qtn_lm_form_label_description;
+    }
+       
+//----------------------------------------------------
+//   
+//    r_lmk_phone_number_label
+//
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_phone_number_label
+    {
+    buf = qtn_lm_form_label_phone;
+    }
+            
+//----------------------------------------------------
+//   
+//    r_lmk_web_address_label
+//
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_web_address_label
+    {
+    buf = qtn_lm_form_label_url;
+    }
+        
+//----------------------------------------------------
+//   
+//    r_lmk_empty_landmark_name_note
+//	  Information note
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_empty_landmark_name_note
+    {
+    buf = qtn_lm_note_enter_lm_name;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_categories_list_format
+//	  Format string
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_categories_list_format
+    {
+    buf = qtn_lm_multiple_categories;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_categories_popup_title
+//	  Categories popup title
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_categories_popup_title
+    {
+    buf = qtn_lm_title_categories;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_service_rule_name
+//    Logical service rule name
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_service_rule_name
+    {
+    buf = qtn_lm_service_rule_name;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_distance_editor_type_m
+//    Distance editor's type
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_distance_editor_type_m
+    {
+    buf = qtn_lm_distance_editor_meter;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_distance_editor_type_km
+//    Distance editor's type
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_distance_editor_type_km
+    {
+    buf = qtn_lm_distance_editor_kilometer;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_distance_editor_type_ft
+//    Distance editor's type
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_distance_editor_type_ft
+    {
+    buf = qtn_lm_distance_editor_foot;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_distance_editor_type_mi
+//    Distance editor's type
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_distance_editor_type_mi
+    {
+    buf = qtn_lm_distance_editor_mile;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_cardinal_point_n
+//    Editor's cardinal point 
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_cardinal_point_n
+    {
+    buf = qtn_lm_latitude_editor_north;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_cardinal_point_s
+//    Editor's cardinal point 
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_cardinal_point_s
+    {
+    buf = qtn_lm_latitude_editor_south;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_cardinal_point_w
+//    Editor's cardinal point 
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_cardinal_point_w
+    {
+    buf = qtn_lm_longitude_editor_west;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_cardinal_point_e
+//    Editor's cardinal point 
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_cardinal_point_e
+    {
+    buf = qtn_lm_longitude_editor_east;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_degree_mark
+//    Editor's degree mark
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_degree_mark
+    {
+    buf = qtn_lm_coordinate_editor_degree;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_location_retry_query
+//    Location request Retry query
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG r_lmk_location_retry_query
+  {
+  flags = EGeneralQueryFlags;
+  buttons = R_AVKON_SOFTKEYS_YES_NO;
+  items =
+    {
+    DLG_LINE
+      {
+      type = EAknCtQuery;
+      id = EGeneralQuery;
+      control = AVKON_CONFIRMATION_QUERY
+        {       		
+		layout = EConfirmationQueryLayout;	
+		label=qtn_lm_conf_retry_location_request;
+		};
+      }
+    };
+  }
+
+//----------------------------------------------------
+//   r_lmk_categories_query_prmopt
+//    
+//    
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lmk_categories_query_prompt
+    {
+    buf = qtn_lm_categories_query_prompt;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_message_query_dialog
+//
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG r_lmk_message_query_dialog
+    {
+    flags = EGeneralQueryFlags | EEikDialogFlagNoBorder | EEikDialogFlagNoShadow;
+    buttons = R_AVKON_SOFTKEYS_OK_EMPTY;
+    items=
+        {
+        DLG_LINE
+            {
+            type = EAknCtPopupHeadingPane;
+            id = EAknMessageQueryHeaderId;
+            control = AVKON_HEADING
+                {
+                label = qtn_lm_categories_query_prompt;
+                headinglayout = R_AVKON_WML_SIGN_QUERY_HEADING_PANE;
+                };
+            },
+        DLG_LINE
+            {
+            type = EAknCtMessageQuery;
+            id = EAknMessageQueryContentId;
+            control = AVKON_MESSAGE_QUERY
+                {
+                message = "";
+                };
+            }
+        };
+    }
+    
+//----------------------------------------------------
+//   
+//    r_lmk_editor_context_menubar
+//
+//----------------------------------------------------
+//
+RESOURCE MENU_BAR  r_lmk_editor_context_menubar
+    {
+    titles=
+        {
+        MENU_TITLE { menu_pane=r_lmk_editor_context_menu; txt=""; }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_editor_context_menu
+//    
+//
+//----------------------------------------------------
+//
+#if 0
+RESOURCE MENU_PANE r_lmk_editor_context_menu
+    {
+    items=
+        {       
+        MENU_ITEM { command = ELmkCmdEditLm; 
+					txt = qtn_form_litxt_edit; 
+				  },  
+				// This menu item will be replaced by AIW.
+				//MENU_ITEM { command = KLmkAppAiwId; // The same ID than in interest.
+				//txt = ""; // Will be replaced by AIW (plugin).
+				//},				      
+        //MENU_ITEM { command=ELmkCmdCall; 
+				//	txt=qtn_options_call; 
+				//  },
+        MENU_ITEM { command=ELmkCmdGoToUrl; 
+					txt=qtn_wml_list_open; 
+				  }
+        };
+    } 
+        
+#endif 
+
+RESOURCE MENU_PANE r_lmk_editor_context_menu
+    {
+    items=
+        {       
+        MENU_ITEM { command = ELmkCmdEditLm; 
+					txt = qtn_form_litxt_edit; 
+				  }, 
+				// This menu item will be replaced by AIW.
+        MENU_ITEM { command = ELmkEditMenuAiwId; // The same ID than in interest.
+				  txt = qtn_options_call; // Will be replaced by AIW (plugin).
+				  cascade = r_lmk_editor_call_submenu; // Added submenu for AIW usage.			
+				}, 
+        MENU_ITEM { command=ELmkCmdGoToUrl; 
+					txt=qtn_options_open; 
+				  }
+        };
+    } 
+
+// -----------------------------------------------------------------------------
+//   
+//    r_lmk_editor_call_submenu
+//    
+//    The submenu where call menu options are put by AVKON.
+// -----------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_lmk_editor_call_submenu
+    {
+    items =
+        {
+        // This menu item will be replaced by AIW.
+        MENU_ITEM 
+            { 
+            command = ELmkEditSubMenuAiwId; // The same ID than in interest.
+            txt = ""; // Will be replaced by AIW (plugin).
+            }
+        };
+    }
+
+
+// -----------------------------------------------------------------------------
+//   
+//    r_lmk_editor_aiw_interest
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE AIW_INTEREST r_lmk_editor_aiw_interest
+    {
+    items=
+        {
+        // This application is interested in calling from menu.
+        AIW_CRITERIA_ITEM      
+            {
+            // Some unique id in this RSS, by default use KaiwCmdCall.
+            id              = ELmkEditSubMenuAiwId;
+            serviceCmd      = KAiwCmdCall;
+            serviceClass    = KAiwClassMenu;
+            contentType     = "*";
+            defaultProvider = 0x101F868E;
+            maxProviders    = 1;
+            }
+        };
+    } 
+
+//----------------------------------------------------
+//   
+//    r_lmk_aiw_interest_showonmap
+//    AIW interest for option show on map
+//
+//----------------------------------------------------
+//
+RESOURCE AIW_INTEREST r_lmk_editor_aiw_interest_showonmap
+    {
+    items =
+        {
+        AIW_CRITERIA_ITEM
+            {
+            id = ELmkShowOnMapPlaceHolder;
+            serviceCmd = KAiwCmdMnShowMap;
+            contentType = "application/x-landmark";
+            serviceClass = KAiwClassMenu;
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lmk_aiw_interest_navigateto
+//    AIW interest for option navigate to
+//
+//----------------------------------------------------
+//
+RESOURCE AIW_INTEREST r_lmk_editor_aiw_interest_navigateto
+    {
+    items =
+        {
+        AIW_CRITERIA_ITEM
+            {
+            id = ELmkNavigateToPlaceHolder;
+            serviceCmd = KAiwCmdMnNavigateTo;
+            contentType = "application/x-landmark";
+            serviceClass = KAiwClassMenu;
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_lm_msk_show
+//    Show MSK string
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lm_msk_show
+    {
+	buf = qtn_msk_lm_show;
+    }
+
+//----------------------------------------------------
+//   
+//    r_lm_msk_call
+//    Call MSK string
+//----------------------------------------------------
+//
+RESOURCE TBUF r_lm_msk_call
+    {
+	buf = qtn_msk_lm_call;
+    }
+//----------------------------------------------------
+//   
+//    r_lm_msk_browse
+//    Browse MSK string
+//
+//----------------------------------------------------
+//    
+RESOURCE TBUF r_lm_msk_browse
+    {
+	buf = qtn_msk_lm_browse;
+    }   
+//----------------------------------------------------
+//   
+//    r_lm_msk_edit
+//    Edit MSK string
+//
+//----------------------------------------------------
+//    
+RESOURCE TBUF r_lm_msk_edit
+    {
+	buf = qtn_msk_edit;
+    }   
+//----------------------------------------------------
+//   
+//    r_lm_query_editor_replace
+//    Landmark’s coordinate data will be replaced. Proceed?
+//
+//----------------------------------------------------
+//    
+RESOURCE TBUF r_lm_query_editor_replace
+    {
+	buf = qtn_lm_query_editor_replace;
+    }   
+
+//----------------------------------------------------
+//   
+//    r_lmk_received_viewer_softkeys_options_back_contextoptions
+//    Context menu option for Landmarks viewer
+//
+//----------------------------------------------------
+//    
+RESOURCE CBA r_lmk_received_viewer_softkeys_options_back_contextoptions
+    {
+    buttons =
+        {
+        CBA_BUTTON {id=EAknSoftkeyOptions; txt = text_softkey_option;},
+        CBA_BUTTON {id=EAknSoftkeyBack; txt = text_softkey_back; },
+        CBA_BUTTON {id=EAknSoftkeyContextOptions; txt = text_softkey_option;}
+        };
+    }
+ //----------------------------------------------------
+//   
+//    r_lmk_received_viewer_softkeys_options_done_contextoptions
+//    Currently this is a dummy context menu added to fix
+//    an error, where, when list item is empty,msk clicking
+//    pops up a menu, which is wrong, hence this fix.
+//
+//----------------------------------------------------
+//    
+RESOURCE CBA r_lmk_received_viewer_softkeys_options_done_contextoptions
+    {
+    buttons =
+        {
+        CBA_BUTTON {id=EAknSoftkeyOptions; txt = text_softkey_option;},
+        CBA_BUTTON {id=EAknSoftkeyDone; txt = text_softkey_done; },
+        CBA_BUTTON {id=EAknSoftkeyContextOptions; txt = text_softkey_option;}
+        };
+    }
+//----------------------------------------------------
+//   
+//    r_lmk_msgviewer_context_menubar
+//    Context menu bar for received Landmarks viewer
+//
+//----------------------------------------------------
+//        
+RESOURCE MENU_BAR r_lmk_msgviewer_context_menubar
+    {
+    titles=
+        {
+        MENU_TITLE { menu_pane=r_lmk_editor_menu; txt=""; }	
+        };
+    }
+//----------------------------------------------------
+//   
+//    r_lmk_msgviewer_context_menu
+//    Context menu option for received Landmarks viewer
+//
+//----------------------------------------------------
+//        
+RESOURCE MENU_PANE r_lmk_msgviewer_context_menu
+    {
+    items=
+        {       
+        MENU_ITEM { command = ELmkCmdEditLm; 
+					txt = qtn_form_litxt_edit; 
+				  }, 
+        MENU_ITEM { command=ELmkCmdGoToUrl; 
+					txt=qtn_options_open; 
+				  }
+        };
+    } 
+//----------------------------------------------------
+//   
+//    r_lmk_lat_editor
+//    Avkon's Latitude editor
+//
+//----------------------------------------------------
+//     
+RESOURCE LATITUDE_EDITOR r_lmk_lat_editor
+	{
+	flags = ELocationEdFlagLatitude;
+	latlongresourceid = R_EIK_LATITUDE_AND_LONGITUDE;
+	}
+//----------------------------------------------------
+//   
+//    r_lmk_long_editor
+//    Avkon's Longitude editor
+//
+//----------------------------------------------------
+//     
+RESOURCE LONGITUDE_EDITOR r_lmk_long_editor
+	{
+	flags = ELocationEdFlagLongitude;
+	latlongresourceid = R_EIK_LATITUDE_AND_LONGITUDE;
+	}
+//----------------------------------------------------
+//   
+//    r_lmk_unit_editor_metric
+//    Avkon's distance editor using metric units
+//
+//----------------------------------------------------
+//     
+RESOURCE AVKON_UNIT_EDITOR r_lmk_unit_editor_metric
+    {
+    min = 0;
+    max = 20000;	// KMaxAccuracy
+    maxfractionaldigits = 2;
+    flags = EAknUnitEditorAllowUninitialized;
+    }
+//----------------------------------------------------
+//   
+//    r_lmk_unit_editor_imperial
+//    Avkon's distance editor using imperial units
+//
+//----------------------------------------------------
+//     
+RESOURCE AVKON_UNIT_EDITOR r_lmk_unit_editor_imperial
+    {
+    min = 0;
+    max = 6099;		// KMaxAccuracy/KMetreToFoot
+    maxfractionaldigits = 2;
+    flags = EAknUnitEditorAllowUninitialized;
+    }
+// End of File

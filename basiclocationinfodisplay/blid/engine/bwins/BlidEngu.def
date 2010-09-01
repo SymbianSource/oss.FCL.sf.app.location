@@ -1,0 +1,21 @@
+EXPORTS
+	??0TNamedCoordinate@@QAE@ABN0ABVTDesC16@@@Z @ 1 NONAME ; TNamedCoordinate::TNamedCoordinate(double const &, double const &, class TDesC16 const &)
+	??0TNamedCoordinate@@QAE@ABN0MABVTDesC16@@M@Z @ 2 NONAME ; TNamedCoordinate::TNamedCoordinate(double const &, double const &, float, class TDesC16 const &, float)
+	??0TNamedCoordinate@@QAE@XZ @ 3 NONAME ; TNamedCoordinate::TNamedCoordinate(void)
+	?Accuracy@TNamedCoordinate@@QBEMXZ @ 4 NONAME ; float TNamedCoordinate::Accuracy(void) const
+	?AppMode@CBlidEng@@QAE?AW4TAppMode@1@XZ @ 5 NONAME ; enum CBlidEng::TAppMode CBlidEng::AppMode(void)
+	?CreateModelL@CBlidEng@@QAEXW4TBlidModelType@1@@Z @ 6 NONAME ; void CBlidEng::CreateModelL(enum CBlidEng::TBlidModelType)
+	?GetDistanceToDestination@CBlidEng@@QAEHAAM@Z @ 7 NONAME ; int CBlidEng::GetDistanceToDestination(float &)
+	?HasArrivedToDestination@CBlidEng@@QAEHXZ @ 8 NONAME ; int CBlidEng::HasArrivedToDestination(void)
+	?LocationModel@CBlidEng@@QBEPAVMBlidLocation@@XZ @ 9 NONAME ; class MBlidLocation * CBlidEng::LocationModel(void) const
+	?Name@TNamedCoordinate@@QBEPAVHBufC16@@XZ @ 10 NONAME ; class HBufC16 * TNamedCoordinate::Name(void) const
+	?NewL@CBlidEng@@SAPAV1@XZ @ 11 NONAME ; class CBlidEng * CBlidEng::NewL(void)
+	?RestoreL@CBlidEng@@QAEXABVCStreamStore@@VTStreamId@@@Z @ 12 NONAME ; void CBlidEng::RestoreL(class CStreamStore const &, class TStreamId)
+	?RouterModel@CBlidEng@@QBEPAVMBlidRouter@@XZ @ 13 NONAME ; class MBlidRouter * CBlidEng::RouterModel(void) const
+	?SetAccuracy@TNamedCoordinate@@QAEXABM@Z @ 14 NONAME ; void TNamedCoordinate::SetAccuracy(float const &)
+	?SetAppMode@CBlidEng@@QAEXW4TAppMode@1@@Z @ 15 NONAME ; void CBlidEng::SetAppMode(enum CBlidEng::TAppMode)
+	?SetBackLightStateL@CBlidEng@@QAEXW4TBacklightState@1@@Z @ 16 NONAME ; void CBlidEng::SetBackLightStateL(enum CBlidEng::TBacklightState)
+	?SetName@TNamedCoordinate@@QAEXABVTDesC16@@@Z @ 17 NONAME ; void TNamedCoordinate::SetName(class TDesC16 const &)
+	?SettingsModel@CBlidEng@@QBEPAVMBlidSettings@@XZ @ 18 NONAME ; class MBlidSettings * CBlidEng::SettingsModel(void) const
+	?StoreL@CBlidEng@@QAE?AVTStreamId@@AAVCStreamStore@@0@Z @ 19 NONAME ; class TStreamId CBlidEng::StoreL(class CStreamStore &, class CStreamStore &)
+

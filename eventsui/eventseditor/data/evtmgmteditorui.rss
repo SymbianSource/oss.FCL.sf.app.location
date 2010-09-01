@@ -1,0 +1,1365 @@
+/*
+* Copyright (c) 2008 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:   Resource file defintion for project Events Management UI
+*
+*/
+
+
+
+//  RESOURCE IDENTIFIER
+NAME    EVEN // 4 letter ID
+
+//  SYSTEM INCLUDES
+#include <eikon.rh>
+#include <appinfo.rh>
+#include <avkon.rsg>
+#include <avkon.rh>
+#include <avkon.mbg>
+#include <bldvariant.hrh>
+#include <avkon.hrh>
+#include <avkon.loc>
+#include <data_caging_paths_strings.hrh>
+#include <AiwCommon.hrh>
+#include <AiwCommon.rh>
+#include <evtui.loc>
+
+// USER INCLUDES
+#include "evtmgmteditorui.hrh"
+
+//  RESOURCE DEFINITIONS 
+
+// ---------------------------------------------------------------------------
+// RESOURCE RSS_SIGNATURE 
+// ---------------------------------------------------------------------------
+//
+RESOURCE RSS_SIGNATURE 
+    {
+    }
+
+// ---------------------------------------------------------------------------
+// RESOURCE TBUF
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF 
+    {
+    buf="evtmgmteditorui";
+    }
+
+// ---------------------------------------------------------------------------
+// RESOURCE MENU_PANE r_evtmgmtui_startup_appmenu
+// Menu pane for generic application level settings
+// ---------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_evtmgmtui_startup_appmenu
+    {
+    items=
+        {
+        MENU_ITEM 
+            { 
+            command = EAknCmdHelp; 
+            txt = qtn_options_help; 
+            },
+        MENU_ITEM 
+            {
+            command = EAknCmdExit;  
+            txt = qtn_options_exit; 
+            }
+        };
+    }
+    
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_createnew_list
+// List box item for creating new event
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_createnew_list
+    {
+    buf = qtn_locev_list_create_new_event;
+    }
+
+/***************** Form ****************************************************/
+
+//----------------------------------------------------
+// RESOURCE DIALOG r_evtmgmtui_createevent_form_dialog
+// Form dialog to create an event
+//----------------------------------------------------
+//
+RESOURCE DIALOG r_evtmgmtui_createevent_form_dialog
+{
+    flags = EEikDialogFlagNoDrag | 
+            EEikDialogFlagFillAppClientRect |
+            EEikDialogFlagWait |
+            EEikDialogFlagCbaButtons;
+            
+    buttons = r_evtmgmtui_createevent_cba_nomsk;
+    form = r_evtmgmtui_createevent_form;
+}
+
+//----------------------------------------------------
+// RESOURCE DIALOG r_evtmgmtui_createevent_form
+// Form to create an event
+//----------------------------------------------------
+//
+RESOURCE FORM r_evtmgmtui_createevent_form
+    {
+    flags =  EEikFormUseDoubleSpacedFormat ;
+    items =
+        {
+        DLG_LINE
+            {
+            type=EEikCtEdwin;
+            prompt=qtn_locev_list_lbl_subject;
+            id=EEvtMgmtUiDlgCIdSubject;
+            itemflags = EEikDlgItemTakesEnterKey | EEikDlgItemOfferAllHotKeys;
+            control=EDWIN 
+                {
+                flags = EEikEdwinJustAutoCurEnd | EEikEdwinResizable | EEikEdwinNoLineOrParaBreaks  ;
+                width=16; 
+                maxlength=160;
+                lines=10;
+                 };
+            },
+         DLG_LINE
+            {
+            type=EEikCtEdwin;
+            prompt=qtn_locev_list_lbl_place;
+            id=EEvtMgmtUiDlgCIdPlace;
+            itemflags = EEikDlgItemAsLabel | EEikDlgItemTakesEnterKey | EEikDlgItemOfferAllHotKeys;
+            control=EDWIN 
+                {       
+                flags = EEikEdwinResizable | EEikEdwinReadOnly | EEikEdwinAvkonDisableCursor | EEikEdwinNoAutoSelection ;
+                maxlength=80;
+                lines=2;
+                max_view_height_in_lines=2;                
+                };
+            }, 
+       DLG_LINE
+             {
+             type = EAknCtPopupFieldText;
+             prompt = qtn_locev_list_lbl_repeat;
+             id = EEvtMgmtUiDlgCIdRepeat;
+             itemflags = EEikDlgItemTakesEnterKey | EEikDlgItemOfferAllHotKeys;
+             control = POPUP_FIELD_TEXT
+                 {
+                 popupfield = POPUP_FIELD
+                     {
+                     width = 50;
+                     };
+                 textarray = r_evtmgmtui_createeventform_repeatarray;
+                 active = 0;
+                 };
+             },    
+       DLG_LINE
+             {
+             type = EEikCtEdwin;
+	           prompt=qtn_locev_list_lbl_alert_tone;
+	           id=EEvtMgmtUiDlgCIdAssignTone;
+	           itemflags = EEikDlgItemTakesEnterKey | EEikDlgItemOfferAllHotKeys;
+	           control=EDWIN 
+	               {
+	               maxlength=0;
+	               flags = EEikEdwinReadOnly  | EEikEdwinAvkonDisableCursor | EEikEdwinNoAutoSelection;
+	               };
+             }, 
+       DLG_LINE
+             {
+							type = EAknCtPopupFieldText;
+							prompt = qtn_locev_list_lbl_audio_loop;
+							id = EEvtMgmtUiDlgCIdAudioLoop;
+							itemflags = EEikDlgItemTakesEnterKey | EEikDlgItemOfferAllHotKeys;
+							control = POPUP_FIELD_TEXT
+							    {
+							    popupfield = POPUP_FIELD
+							        {
+							        width = 50;
+							        };
+							    textarray = r_evtmgmtui_createeventform_audiolooparray;
+							    active = 0;
+							    };
+             }, 
+       DLG_LINE
+             {
+             type = EAknCtPopupFieldText;
+             prompt = qtn_locev_list_lbl_status;
+             id = EEvtMgmtUiDlgCIdStatus;
+             itemflags = EEikDlgItemTakesEnterKey | EEikDlgItemOfferAllHotKeys;
+             control = POPUP_FIELD_TEXT
+                 {
+                 popupfield = POPUP_FIELD
+                     {
+                     width = 50;
+                     };
+                 textarray = r_evtmgmtui_createeventform_statusarray;
+                 active = 0;
+                 };
+             }
+        };
+    }
+    
+// ---------------------------------------------------------------------------
+// RESOURCE CBA r_evtmgmtui_createevent_cba
+// Control button array for events ui create event view
+// ---------------------------------------------------------------------------
+//  
+RESOURCE CBA r_evtmgmtui_createevent_cba
+    {
+    flags = 0;
+    buttons = 
+        {
+        CBA_BUTTON 
+            {
+            id = EAknSoftkeyOptions; 
+            txt = text_softkey_option;
+            },
+        CBA_BUTTON 
+            {
+            id = EAknSoftkeyDone; 
+            txt = text_softkey_done;
+            },
+        CBA_BUTTON
+            {
+            id = EAknFormCmdEdit; 
+            txt = qtn_locev_options_change;
+            }
+        };
+    }
+
+// ---------------------------------------------------------------------------
+// RESOURCE CBA r_evtmgmtui_createevent_cba_edit
+// Control button array for events ui create event view
+// ---------------------------------------------------------------------------
+// 
+RESOURCE CBA r_evtmgmtui_createevent_cba_edit
+    {
+    flags = 0;
+    buttons = 
+        {
+        CBA_BUTTON 
+            {
+            id = EAknSoftkeyOptions; 
+            txt = text_softkey_option;
+            },
+        CBA_BUTTON 
+            {
+            id = EAknSoftkeyDone; 
+            txt = text_softkey_done;
+            },
+        CBA_BUTTON
+            {
+            id = EAknFormCmdEdit; 
+            txt = qtn_form_litxt_edit;
+            }
+        };
+    }
+
+// ---------------------------------------------------------------------------
+// RESOURCE CBA r_evtmgmtui_createevent_cba_define
+// Control button array for events ui create event view
+// ---------------------------------------------------------------------------
+// 
+RESOURCE CBA r_evtmgmtui_createevent_cba_define
+    {
+    flags = 0;
+    buttons = 
+        {
+        CBA_BUTTON 
+            {
+            id = EAknSoftkeyOptions; 
+            txt = text_softkey_option;
+            },
+        CBA_BUTTON 
+            {
+            id = EAknSoftkeyDone; 
+            txt = text_softkey_done;
+            },
+        CBA_BUTTON
+            {
+            id = EAknFormCmdEdit; 
+            txt = qtn_msk_define;
+            }
+        };
+    }
+
+// ---------------------------------------------------------------------------
+// RESOURCE CBA r_evtmgmtui_createevent_cba_back
+// Control button array for events ui create event view
+// ---------------------------------------------------------------------------
+// 
+RESOURCE CBA r_evtmgmtui_createevent_cba_back
+    {
+    flags = 0;
+    buttons = 
+        {
+        CBA_BUTTON 
+            {
+            id = EAknSoftkeyOptions; 
+            txt = text_softkey_option;
+            },
+        CBA_BUTTON 
+            {
+            id = EAknSoftkeyBack; 
+            txt = text_softkey_back;
+            },
+        CBA_BUTTON
+            {
+            id = EAknFormCmdEdit; 
+            txt = qtn_locev_options_edit;
+            }
+        };
+    }
+// ---------------------------------------------------------------------------
+// RESOURCE MENU_BAR r_evtmgmtui_createeventform_menubar
+// Create Event Form UI's menubar structure
+// ---------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_evtmgmtui_createeventform_menubar
+    {
+    titles=
+        {
+        MENU_TITLE 
+            {
+            menu_pane = r_evtmgmtui_createeventform_menu; 
+            txt = ""; 
+            },
+        MENU_TITLE 
+            {
+            menu_pane = r_evtmgmtui_startup_appmenu;
+            txt = ""; 
+            }
+        };
+    }
+
+// ---------------------------------------------------------------------------
+// RESOURCE MENU_BAR r_evtmgmtui_createeventform_adddesc_menu
+// Create Event Form UI's cascaded menu structure to add description
+// ---------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_evtmgmtui_createeventform_adddesc_menu
+    {
+    items=
+        {
+        MENU_ITEM 
+                { 
+                command = EEvtEditorCmdAddDescNew; 
+                txt = qtn_locev_options_new_desc; 
+                },
+        MENU_ITEM 
+                {
+                command = EEvtEditorCmdAddDescFromExisting; 
+                txt = qtn_locev_options_from_notes; 
+                }
+        };
+    }
+                
+// ---------------------------------------------------------------------------
+// RESOURCE MENU_BAR r_evtmgmtui_createeventform_menu
+// Create Event Form UI's menu structure
+// ---------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_evtmgmtui_createeventform_menu
+    {
+    items=
+        {    
+        MENU_ITEM 
+             {
+             command = EEvtEditorCmdEditDesc; 
+             txt = qtn_locev_options_edit_desc; 
+             },
+        MENU_ITEM 
+             {
+             command = EEvtEditorCmdSetPlace; 
+             txt = qtn_locev_options_setplace; 
+             },  
+        MENU_ITEM 
+             {
+             command = EEvtEditorCmdDiscard; 
+             txt = qtn_locev_options_discard; 
+             },
+        MENU_ITEM 
+               {
+               command = EEvtEditorCmdAssignTone; 
+               txt = qtn_locev_options_set_tone; 
+               },
+         MENU_ITEM 
+                {
+                command = EEvtEditorCmdAddDesc; 
+                txt = qtn_locev_options_add_desc; 
+                cascade = r_evtmgmtui_createeventform_adddesc_menu;
+                },        
+        MENU_ITEM 
+               {
+               command = EEvtEditorCmdRemoveDesc; 
+               txt = qtn_locev_options_remove_desc;             
+               },
+        MENU_ITEM 
+            {
+            command = EEvtEditorCmdActivate; 
+            txt = qtn_locev_options_activate; 
+            }, 
+        MENU_ITEM 
+           {
+           command = EEvtEditorCmdSaveDraft; 
+           txt = qtn_locev_options_setdraft; 
+           },
+        MENU_ITEM 
+            {
+            command = EEvtEditorCmdShowOnMap; 
+            txt = qtn_locev_options_show_map; 
+            }, 
+        MENU_ITEM 
+            {
+            command = EEvtEditorCmdNavigateToPlace; 
+            txt = qtn_locev_options_navigate; 
+            },
+       MENU_ITEM 
+          {
+          command = EEvtEditorCmdDelete; 
+          txt = qtn_locev_options_delete; 
+          },
+       MENU_ITEM 
+          {
+          command = EEvtMgmtUiEventUiPosSettings; 
+          txt = qtn_locev_options_posi_settings; 
+          }
+        };
+    }
+
+//----------------------------------------------------
+// RESOURCE DIALOG r_evtui_createnewform_dlgline_radius
+// Event Editot Dialog line for radius
+//----------------------------------------------------
+//
+RESOURCE  DLG_LINE r_evtui_createnewform_dlgline_radius
+       {
+       type=EAknCtUnitEditor;
+       prompt=qtn_locev_list_lbl_radius;
+       id=EEvtMgmtUiDlgCIdRadius;
+       itemflags = EEikDlgItemTakesEnterKey | EEikDlgItemOfferAllHotKeys;
+       control=AVKON_UNIT_EDITOR 
+           {       
+           min=0.1;
+           max=1.5;
+           value=0.1;
+           unit = EAknUnitEditorKilometer ;
+           };
+       }
+               
+//----------------------------------------------------
+// RESOURCE DIALOG r_evtui_createnewform_dlgline_desc
+// Event Editot Dialog line for description
+//----------------------------------------------------
+//
+RESOURCE DLG_LINE r_evtui_createnewform_dlgline_desc
+      {
+      type=EEikCtEdwin;
+      prompt=qtn_locev_list_lbl_description;
+      id=EEvtMgmtUiDlgCIdDesc;
+      itemflags = EEikDlgItemTakesEnterKey | EEikDlgItemOfferAllHotKeys;
+      control=EDWIN 
+          {
+          maxlength=0;
+          flags = EEikEdwinReadOnly  | EEikEdwinAvkonDisableCursor | EEikEdwinNoAutoSelection ;
+          };
+      }
+
+//----------------------------------------------------
+// RESOURCE DIALOG r_evtui_createnewform_dlgline_assignedtone
+// Event Editot Dialog line for assigned tone
+//----------------------------------------------------
+//
+RESOURCE DLG_LINE r_evtui_createnewform_dlgline_assignedtone
+           {
+           type=EEikCtEdwin;
+           prompt=qtn_locev_list_lbl_alert_tone;
+           id=EEvtMgmtUiDlgCIdAssignTone;
+           itemflags = EEikDlgItemTakesEnterKey | EEikDlgItemOfferAllHotKeys;
+           control=EDWIN 
+               {
+               maxlength=0;
+               flags = EEikEdwinReadOnly  | EEikEdwinAvkonDisableCursor | EEikEdwinNoAutoSelection ;
+               };
+           }
+
+//----------------------------------------------------
+// RESOURCE DIALOG r_evtui_createnewform_dlgline_audioloop
+// Event Editot Dialog line for audio loop
+//----------------------------------------------------
+//
+ RESOURCE DLG_LINE r_evtui_createnewform_dlgline_audioloop
+        {
+        type = EAknCtPopupFieldText;
+        prompt = qtn_locev_list_lbl_audio_loop;
+        id = EEvtMgmtUiDlgCIdAudioLoop;
+        itemflags = EEikDlgItemTakesEnterKey | EEikDlgItemOfferAllHotKeys;
+        control = POPUP_FIELD_TEXT
+            {
+            popupfield = POPUP_FIELD
+                {
+                width = 50;
+                };
+            textarray = r_evtmgmtui_createeventform_audiolooparray;
+            active = 0;
+            };
+        }
+
+//----------------------------------------------------
+// RESOURCE ARRAY r_evtmgmtui_createeventform_repeatarray
+// array for repeat pop-up dialog
+//----------------------------------------------------
+//
+RESOURCE ARRAY r_evtmgmtui_createeventform_repeatarray
+    {
+    items =
+        {
+        LBUF{ txt = qtn_locev_list_value_repeat_on; },
+        LBUF{ txt = qtn_locev_list_value_repeat_off; }                  
+        };
+    }
+
+ //----------------------------------------------------
+ // RESOURCE ARRAY r_evtmgmtui_createeventform_expirationarray
+ // array for expiration pop-up dialog
+ //----------------------------------------------------
+ //
+RESOURCE ARRAY r_evtmgmtui_createeventform_expirationarray
+    {
+    items =
+        {
+        LBUF{ txt = qtn_evtui_createnew_form_expirationoption_none; },
+        LBUF{ txt = qtn_evtui_createnew_form_expirationoption_defined; }                  
+        };
+    }
+
+//----------------------------------------------------
+// RESOURCE ARRAY r_evtmgmtui_createeventform_audiolooparray
+// array for audio-loop pop-up dialog
+//----------------------------------------------------
+//
+RESOURCE ARRAY r_evtmgmtui_createeventform_audiolooparray
+    {
+    items =
+        {
+        LBUF{ txt = qtn_locev_list_value_loop_off; },
+        LBUF{ txt = qtn_locev_list_value_loop_on; }                  
+        };
+    }
+
+//----------------------------------------------------
+// RESOURCE ARRAY r_evtmgmtui_createeventform_statusarray
+// array for status pop-up dialog
+//----------------------------------------------------
+//
+RESOURCE ARRAY r_evtmgmtui_createeventform_statusarray
+    {
+    items =
+        {
+        LBUF{ txt = qtn_locev_list_value_active; },
+        LBUF{ txt = qtn_locev_list_value_draft; },
+        LBUF{ txt = qtn_locev_list_value_completed; }        
+        };
+    }
+
+//----------------------------------------------------
+// RESOURCE ARRAY r_evtmgmtui_evteditor_setplacearray
+// array for set place pop-up dialog
+//----------------------------------------------------
+//
+RESOURCE ARRAY r_evtmgmtui_evteditor_setplacearray
+    {
+    items =
+        {
+        LBUF{ txt = qtn_locev_list_current_place; },
+        LBUF{ txt = qtn_locev_list_landmarks; } ,
+        LBUF{ txt = qtn_locev_list_from_map; } 
+        };
+    }
+
+//----------------------------------------------------
+// RESOURCE ARRAY r_evtmgmtui_evteditor_assigntonearray
+// array for assign tone pop-up dialog
+//----------------------------------------------------
+//
+RESOURCE ARRAY r_evtmgmtui_evteditor_assigntonearray
+    {
+    items =
+        {
+        LBUF{ txt = qtn_locev_list_alert_tone; },
+        LBUF{ txt = qtn_locev_list_record_clip; }        
+        };
+    }
+
+// ---------------------------------------------------------------------------
+// RESOURCE CBA r_evtmgmtui_listquery_cba
+// Control button array for listbox popup dialog
+// ---------------------------------------------------------------------------
+//  
+RESOURCE CBA r_evtmgmtui_listquery_cba
+    {
+    flags = 0;
+    buttons = 
+        {
+        CBA_BUTTON 
+            {
+            id = EAknSoftkeySelect; 
+            txt = text_softkey_select;
+            },
+        CBA_BUTTON
+            {
+            id = EAknSoftkeyCancel; 
+            txt = text_softkey_cancel;
+            },    
+        CBA_BUTTON 
+            {
+            id = EAknSoftkeySelect; 
+            txt = qtn_msk_select;
+            }       
+        };
+    }
+
+// ---------------------------------------------------------------------------
+// RESOURCE CBA r_evtmgmtui_createevent_cba_nomsk
+// Control button array for events ui create event view
+// ---------------------------------------------------------------------------
+// 
+RESOURCE CBA r_evtmgmtui_createevent_cba_nomsk
+    {
+    flags = 0;
+    buttons = 
+        {
+        CBA_BUTTON 
+            {
+            id = EAknSoftkeyOptions; 
+            txt = text_softkey_option;
+            },
+        CBA_BUTTON 
+            {
+            id = EAknSoftkeyDone; 
+            txt = text_softkey_done;
+            },
+        CBA_BUTTON
+            {
+            id = EAknFormCmdEdit; 
+            txt = "";
+            }
+        };
+    }
+    
+//------------------------------------------------------------------------------
+// RESOURCE DIALOG r_evtui_confirmation_query
+// Confirmation Query Dialog
+//------------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_evtui_confirmation_query
+    {
+    flags = EGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_YES_NO;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtQuery;
+            id = EGeneralQuery;
+            control = AVKON_CONFIRMATION_QUERY
+                {
+                layout = EConfirmationQueryLayout;                
+                };
+            }
+        };
+    }
+
+//----------------------------------------------------
+// RESOURCE AVKON_LIST_QUERY r_evtmgmtui_list_query
+// General Listbox dialog
+//----------------------------------------------------
+//
+RESOURCE AVKON_LIST_QUERY r_evtmgmtui_list_query
+    {
+    flags = EGeneralQueryFlags;
+    softkeys = r_evtmgmtui_listquery_cba;
+    items =
+        {
+        AVKON_LIST_QUERY_DLG_LINE
+            {
+            control = AVKON_LIST_QUERY_CONTROL
+                {
+                listtype = EAknCtSingleGraphicPopupMenuListBox;
+                listbox = AVKON_LIST_QUERY_LIST
+                    { 
+                    //array_id=r_evtmgmtui_createeventform_audiolooparray;
+                    };
+                heading = qtn_locev_options_setplace;
+                };
+            }
+        };
+    }
+//------------------------------------------------------------------------------
+// RESOURCE DIALOG r_evtui_message_query
+// Message Query Dialog
+//------------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_evtui_message_query
+{
+   flags = EGeneralQueryFlags;
+   buttons = R_AVKON_SOFTKEYS_OK_CANCEL;
+   items=
+       {
+       DLG_LINE
+          {
+            type = EAknCtPopupHeadingPane;
+            id = EAknMessageQueryHeaderId;
+            itemflags = EEikDlgItemNonFocusing;
+            control = AVKON_HEADING
+                {                  
+                headinglayout=R_AVKON_LIST_HEADING_PANE_POPUPS;
+                };
+          },
+       DLG_LINE
+          {
+            type = EAknCtMessageQuery;
+            id = EAknMessageQueryContentId;
+            control = AVKON_MESSAGE_QUERY
+                {
+                };
+          }
+       };
+}
+
+// ---------------------------------------------------------------------------
+// r_evtui_message_query_empty
+// Query dialog showing info note
+// ---------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_evtui_message_query_empty
+    {
+    flags = EAknInformationNoteFlags | EEikDialogFlagNoBorder | EEikDialogFlagNoShadow;
+    buttons = R_AVKON_SOFTKEYS_EMPTY;
+    items =
+        {
+        DLG_LINE 
+            {
+            type = EAknCtPopupHeadingPane;
+            id = EAknMessageQueryHeaderId;
+            control = AVKON_HEADING
+                {
+                headinglayout = R_AVKON_WML_SIGN_QUERY_HEADING_PANE;
+                };
+            },
+        DLG_LINE
+            {
+            type = EAknCtQuery;
+            id = EGeneralQuery;
+            control = AVKON_CONFIRMATION_QUERY
+                {
+                layout = EConfirmationQueryLayout;  
+                bmpfile = "z:\\resource\\apps\\avkon2.mif";
+                bmpid = EMbmAvkonQgn_note_info;
+                bmpmask = EMbmAvkonQgn_note_info_mask;
+                };
+            }           
+        };
+    }  
+
+RESOURCE IMAGE r_evtui_infonote_image
+    {
+     bmpfile = "z:\\resource\\apps\\avkon2.mif";
+     bmpid = EMbmAvkonQgn_note_info;
+     bmpmask = EMbmAvkonQgn_note_info_mask;
+    }
+
+//----------------------------------------------------
+//   
+//    r_evtmgmtui_waitdlg_cancel
+//    Progress note 
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG r_evtmgmtui_waitdlg_cancel
+    {   
+    flags = EAknWaitNoteFlags | EEikDialogFlagWait;
+    buttons = R_AVKON_SOFTKEYS_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EGeneralNote;
+            control= AVKON_NOTE 
+                { 
+                layout = EWaitLayout;
+                singular_label = qtn_locev_note_request_loc;
+                animation = R_QGN_GRAF_WAIT_BAR_ANIM;
+                };
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_evtmgmtui_waitdlg
+//    Progress note 
+//
+//----------------------------------------------------
+//
+RESOURCE DIALOG r_evteditor_waitdlg
+    {   
+    flags = EAknWaitNoteFlags | EEikDialogFlagWait;
+    buttons = R_AVKON_SOFTKEYS_EMPTY;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EGeneralNote;
+            control= AVKON_NOTE 
+                { 
+                layout = EWaitLayout;
+                singular_label = qtn_locev_note_request_loc;
+                animation = R_QGN_GRAF_WAIT_BAR_ANIM;
+                };
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_evtmgmtui_aiw_interest_selectfrommap
+//    AIW interest for option landmark from map
+//
+//----------------------------------------------------
+//
+RESOURCE AIW_INTEREST r_evtmgmtui_aiw_interest_selectfrommap
+    {
+    items =
+        {
+        AIW_CRITERIA_ITEM
+            {
+            id = EEvtMgmtUiFromMapPlaceholder;
+            serviceCmd = KAiwCmdMnSelectFromMap;
+            contentType = "application/x-landmark";
+            serviceClass = KAiwClassBase;           
+            }
+        };
+    }
+
+
+//----------------------------------------------------
+//   
+//    r_evtmgmtui_aiw_interest_showonmap
+//    AIW interest for option show on map
+//
+//----------------------------------------------------
+//
+RESOURCE AIW_INTEREST r_evtmgmtui_aiw_interest_showonmap
+    {
+    items =
+        {
+        AIW_CRITERIA_ITEM
+            {
+            id = EEvtMgmtUiShowOnMapPlaceHolder;
+            serviceCmd = KAiwCmdMnShowMap;
+            contentType = "application/x-landmark";
+            serviceClass = KAiwClassBase;
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_evtmgmtui_aiw_interest_navigateto
+//    AIW interest for option navigate to
+//
+//----------------------------------------------------
+//
+RESOURCE AIW_INTEREST r_evtmgmtui_aiw_interest_navigateto
+    {
+    items =
+        {
+        AIW_CRITERIA_ITEM
+            {
+            id = EEvtMgmtUiNavigateToPlaceHolder;
+            serviceCmd = KAiwCmdMnNavigateTo;
+            contentType = "application/x-landmark";
+            serviceClass = KAiwClassBase;
+            }
+        };
+    }
+
+//-----------------------------------------------------------------------------
+//
+//  r_evtui_place_data_query
+//
+//-----------------------------------------------------------------------------
+RESOURCE DIALOG r_evtui_place_data_query
+    {
+    flags=EGeneralQueryFlags;
+    buttons=R_AVKON_SOFTKEYS_OK_CANCEL;
+    items=
+        {
+        DLG_LINE
+            {
+            type=EAknCtQuery;
+            id=EGeneralQuery;
+            control= AVKON_DATA_QUERY 
+                { 
+                    layout = EStaticSizeDataLayout; // Use this when you have a heading in data query
+                    label = "";
+                    control=EDWIN 
+                        {
+                        flags= EEikEdwinNoHorizScrolling | EEikEdwinResizable; 
+                        maxlength=80; 
+                        width=16; 
+                        lines=1; 
+                        };
+                };
+            }
+        };
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_locev_note_prompt_text
+// Text Query prompt
+//----------------------------------------------------
+//
+RESOURCE TBUF r_locev_note_prompt_text
+    {
+    buf = qtn_locev_note_prompt_text;
+    }
+    
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_createnew_form_cmdedit
+// Menu item for edit attributes of the event
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_createnew_form_cmdedit
+    {
+    buf = qtn_locev_options_edit;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_createnew_form_cmdchange
+// Menu item for change attributes of the event
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_createnew_form_cmdchange
+    {
+    buf = qtn_locev_options_change;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_createnew_form_placepopup_title
+// title  for 'Set Place' dialog 
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_createnew_form_placepopup_title
+    {
+    buf = qtn_locev_heading_set_place;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_createnew_form_placepopupoption_currentplace
+// 'Current Place' pop-up option for 'Set Place' dialog 
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_createnew_form_placepopupoption_currentplace
+    {
+    buf = qtn_locev_list_current_place;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_createnew_form_placepopupoption_landmark
+// 'Landmark' pop-up option for 'Set Place' dialog
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_createnew_form_placepopupoption_landmark
+    {
+    buf = qtn_locev_list_landmarks;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_createnew_form_placepopupoption_frommap
+// 'From map' pop-up option for 'Set Place' dialog
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_createnew_form_placepopupoption_frommap
+    {
+    buf = qtn_locev_list_from_map;
+    }
+    
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_createnew_form_confirmation_deleteevent
+// Confirmation text to delete event
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_createnew_form_confirmation_deleteevent
+    {
+    buf = qtn_locev_confirm_delete_event;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_createnew_form_defaultnavititle
+// Default navipane title
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_createnew_form_defaultnavititle
+    {
+    buf = qtn_locev_title_new_event;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_createnew_form_assigntonepopup_title
+// Title text for assign-tone popup dialog
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_createnew_form_assigntonepopup_title
+    {
+    buf = qtn_locev_list_heading_alert_tone;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_createnew_form_assignpopuptoneoptions_tone
+// popup option for assign-tone popup dialog
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_createnew_form_assigntonepopupoptions_tone
+    {
+    buf = qtn_locev_list_alert_tone;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_createnew_form_assigntonepopupoptions_recordnew
+// popup option for assign-tone popup dialog
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_createnew_form_assigntonepopupoptions_recordnew
+    {
+    buf = qtn_locev_list_record_clip;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_createnew_form_defined
+// default text for place 
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_createnew_form_defined
+    {
+    buf = qtn_locev_list_value_define;
+    }
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_editor_adddesc_title
+// title for notepad editor dialog 
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_editor_adddesc_title
+    {
+    buf = qtn_locev_list_heading_add_desc;
+    }
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_unnamed
+// List box entry for unnamed trigger 
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_unnamed
+    {
+    buf = qtn_locev_list_unnamed;
+    }
+    
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_retry_requesting_location
+// Retry message when current location retrieval fails
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_retry_requesting_location
+    {
+    buf = qtn_locev_note_saving_failed;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_cancel_requesting_location
+// Mesaage when current location retrieval is cancelled
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_cancel_requesting_location
+    {
+    buf = qtn_locev_note_not_saved;
+    }
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_positioningerror
+// Error mesaage when no positioning method is enabled
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_positioningerror
+    {
+    buf = qtn_locev_note_positioning;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_positioningerror_link
+// Error mesaage as part of link when no positioning method is enabled
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_positioningerror_link
+    {
+    buf = qtn_locev_note_positioning_link;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_positioningerror_header
+// Error mesaage title when no positioning method is enabled
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_positioningerror_header
+    {
+    buf = qtn_locev_note_heading_positioning;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_landmark_locmiss_error
+// Error message when landmark withouth coordinate informatio is selected.
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_landmark_locmiss_error
+    {
+    buf = qtn_locev_note_invalid_lm;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_landmark_locmiss_error
+// Confirmation message before replacing old place
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_editor_confirm_placesave
+    {
+    buf = qtn_locev_note_replace_details;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_wait_requesting_location
+// Wait note text when waiting response for a location request.
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_wait_requesting_location
+    {
+    buf = qtn_locev_note_request_loc;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_locev_note_saving_event
+// Wait note text while saving event
+//----------------------------------------------------
+//
+RESOURCE TBUF r_locev_note_saving_event
+    {
+    buf = qtn_locev_note_saving_event;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_locev_not deleting
+// Wait note while deleting event
+//----------------------------------------------------
+//
+RESOURCE TBUF r_locev_note_deleting
+    {
+    buf = qtn_locev_note_deleting;
+    }
+    
+//----------------------------------------------------
+// RESOURCE TBUF r_locev_note_list_acc_unknown
+// Accuracy note after retrieval of current location.
+//----------------------------------------------------
+//
+RESOURCE TBUF r_locev_note_list_acc_unknown
+    {
+    buf = qtn_locev_note_txt_acc_unknown;
+    }
+ 
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_ringtoneselect_off
+// To add 'Off' in ringtone selection dialog.
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_ringtoneselect_off
+    {
+    buf = qtn_locev_list_value_alert_off;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_ringtoneselect_off
+// To add 'Off' in ringtone selection dialog.
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_accuracylevel_low
+    {
+    buf = qtn_locev_note_heading_low_acc;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_ringtoneselect_off
+// To add 'Off' in ringtone selection dialog.
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_accuracylevel_medium
+    {
+    buf = qtn_locev_note_heading_medium_acc;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_ringtoneselect_off
+// To add 'Off' in ringtone selection dialog.
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_accuracylevel_high
+    {
+    buf = qtn_locev_note_heading_high_acc;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_unit_km
+// KM unit
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_unit_km
+    {
+    buf = qtn_locev_list_lbl_radius_km;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_evtui_unit_mile
+// Mile unit
+//----------------------------------------------------
+//
+RESOURCE TBUF r_evtui_unit_miles
+    {
+    buf = qtn_locev_list_lbl_radius_miles;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_locev_query_discard_changes
+// Confirmation note text while discarding changes in editor
+//----------------------------------------------------
+//
+RESOURCE TBUF r_locev_query_discard_changes
+    {
+    buf = qtn_locev_query_discard_changes;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_locev_note_missed_info
+// Information note text when mandatory fields are not filled
+//----------------------------------------------------
+//
+RESOURCE TBUF r_locev_note_missed_info
+    {
+    buf = qtn_locev_note_missed_info;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_locev_note_singleevt_delete
+// Wait note text while deleting single event
+//----------------------------------------------------
+//
+RESOURCE TBUF r_locev_note_singleevt_delete
+    {
+    buf = qtn_locev_note_singleevt_delete;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_locev_note_txt_acc_km
+// Unit value for display in accuracy note.
+//----------------------------------------------------
+//
+RESOURCE TBUF r_locev_note_txt_acc_km
+    {
+    buf = qtn_locev_note_txt_acc_km;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_locev_note_txt_acc_metres
+// Unit value for display in accuracy note.
+//----------------------------------------------------
+//
+RESOURCE TBUF r_locev_note_txt_acc_metres
+    {
+    buf = qtn_locev_note_txt_acc_metres;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_locev_note_txt_acc_miles
+// Unit value for display in accuracy note.
+//----------------------------------------------------
+//
+RESOURCE TBUF r_locev_note_txt_acc_miles
+    {
+    buf = qtn_locev_note_txt_acc_miles;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_locev_note_txt_acc_ft
+// Unit value for display in accuracy note.
+//----------------------------------------------------
+//
+RESOURCE TBUF r_locev_note_txt_acc_ft
+    {
+    buf = qtn_locev_note_txt_acc_ft;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_locev_list_value_active
+// Status value for popup list.
+//----------------------------------------------------
+//
+RESOURCE TBUF r_locev_list_value_active
+    {
+    buf = qtn_locev_list_value_active;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_locev_list_value_draft
+// Status value for popup list.
+//----------------------------------------------------
+//
+RESOURCE TBUF r_locev_list_value_draft
+    {
+    buf = qtn_locev_list_value_draft;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_locev_list_value_completed
+// Status value for popup list.
+//----------------------------------------------------
+//
+RESOURCE TBUF r_locev_list_value_completed
+    {
+    buf = qtn_locev_list_value_completed;
+    }
+
+//----------------------------------------------------
+// RESOURCE TBUF r_locev_list_value_invalid
+// Status value for popup list.
+//----------------------------------------------------
+//
+RESOURCE TBUF r_locev_list_value_invalid
+    {
+    buf = qtn_locev_list_value_invalid;
+    } 
+
+//----------------------------------------------------
+// RESOURCE TBUF r_locev_list_vorec_clip_name
+// Record new file string.
+//----------------------------------------------------
+//
+RESOURCE TBUF r_locev_list_vorec_clip_name
+    {
+    buf = qtn_locev_list_vorec_clip_name;
+    } 
+//End file

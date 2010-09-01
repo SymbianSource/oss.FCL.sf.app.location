@@ -1,0 +1,47 @@
+/*
+* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*	 This file provides the information required for building the
+*    whole of a location application.
+*
+*/
+
+#include <platform_paths.hrh>
+
+PRJ_PLATFORMS  
+DEFAULT
+
+// Export the Blid API files
+PRJ_EXPORTS
+
+// Export the IBY file
+../rom/blid.iby CORE_APP_LAYER_IBY_EXPORT_PATH(blid.iby)
+../rom/blid_resources.iby LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(blid_resources.iby)
+../rom/blidstub.iby CORE_APP_LAYER_IBY_EXPORT_PATH(blidstub.iby)
+
+// Export the Blid.loc file
+../loc/Blid.loc                        APP_LAYER_LOC_EXPORT_PATH(Blid.loc)
+
+// Export Configuration Markup language and Central Repository Mark up language files
+../conf/odometersettings.confml          APP_LAYER_CONFML(odometersettings.confml)     
+../conf/odometersettings_101F85A0.crml   APP_LAYER_CRML(odometersettings_101F85A0.crml)
+
+// Backup CenRep Settings
+../data/backup_registration.xml     Z:/private/101F85A0/backup_registration.xml
+
+#include "../engine/group/bld.inf"
+#include "../ui/group/bld.inf"
+#include "../help/group/bld.inf"
+
+//  End of File  

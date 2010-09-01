@@ -1,0 +1,68 @@
+/*
+* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies). 
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Project definition file for project Events Handler Application
+*
+*/
+
+
+// SYSTEM INCLUDES
+#include <platform_paths.hrh> // For the APP_LAYER_SYSTEMINCLUDE
+#include <data_caging_paths.hrh>
+
+// USER INCLUDES
+#include "../inc/evthandlerappuid.hrh"
+
+TARGET          evthandlerapp.exe
+TARGETTYPE      exe
+UID             0x100039ce KEvtHandlerAppUid
+
+VERSION         1.0
+
+VENDORID        VID_DEFAULT
+CAPABILITY      CAP_APPLICATION TrustedUI
+
+SOURCEPATH      ../src
+SOURCE          evthandlerapp.cpp
+SOURCE          evthandlerappdocument.cpp
+SOURCE          evthandlerappui.cpp
+SOURCE          evtdlglauncher.cpp
+SOURCE          evtrequest.cpp
+
+USERINCLUDE     ../inc
+USERINCLUDE     ../../inc
+USERINCLUDE 	../../../inc
+
+SOURCEPATH      ../data 
+START RESOURCE  evthandlerapp.rss
+HEADER
+TARGETPATH      APP_RESOURCE_DIR
+LANGUAGE_IDS
+END
+
+START RESOURCE evthandlerapp_reg.rss
+DEPENDS evthandlerapp.rsg
+TARGETPATH /private/10003a3f/apps
+END
+
+APP_LAYER_SYSTEMINCLUDE
+
+LIBRARY         euser.lib 
+LIBRARY         apparc.lib 
+LIBRARY         cone.lib 
+LIBRARY         eikcore.lib 
+LIBRARY         avkon.lib apgrfx.lib ws32.lib
+LIBRARY         evtengine.lib evtutils.lib
+LIBRARY         evteditor.lib
+LIBRARY         NpdLib.lib // Notepad libraries
+
