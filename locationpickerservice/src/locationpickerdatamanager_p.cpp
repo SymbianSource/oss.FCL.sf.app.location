@@ -273,9 +273,7 @@ void LocationPickerDataManagerPrivate::populateCollections(QList<int>& aCount)
     // add contact collection
     QStandardItem *modelItemContact = new QStandardItem();
     int conNum = aCount.value(0);
-    QString contactCollectionNum;
-    contactCollectionNum.setNum(conNum);
-    contactCollectionNum.append(" items");
+    QString contactCollectionNum(hbTrId("txt_lint_list_ln_items",conNum));
     QString contactCollectionName( hbTrId("txt_lint_list_contact_addresses") );
  
 
@@ -288,9 +286,7 @@ void LocationPickerDataManagerPrivate::populateCollections(QList<int>& aCount)
    
     //txt_lint_list_calender_addresses
     int calNum = aCount.value(1);
-    QString calendarCollectionNum;
-    calendarCollectionNum.setNum(calNum);
-    calendarCollectionNum.append(" items");
+    QString calendarCollectionNum(hbTrId("txt_lint_list_ln_items",calNum));
     QString calendarCollectionName( hbTrId("txt_lint_list_calendar_locations") );
     QStringList calender = (QStringList()<<calendarCollectionName<<calendarCollectionNum);
     
@@ -302,9 +298,7 @@ void LocationPickerDataManagerPrivate::populateCollections(QList<int>& aCount)
      
     //txt_lint_list_places_addresses
     int placNum = aCount.value(2);
-    QString placesCollectionNum;
-    placesCollectionNum.setNum(placNum);
-    placesCollectionNum.append(" items");
+    QString placesCollectionNum(hbTrId("txt_lint_list_ln_items",placNum));
     QString placesCollectionName( hbTrId("txt_lint_list_places") );
     QStringList places = (QStringList()<<placesCollectionName<<placesCollectionNum);
 

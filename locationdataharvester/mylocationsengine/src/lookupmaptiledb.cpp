@@ -189,7 +189,9 @@ void CLookupMapTileDatabase::CreateEntryL(const TLookupItem& aLookupItem)
     if (ret != KErrNone)
     {
 		Close();
-        Open();
+        ret = Open();
+        if( ret != KErrNone )
+            return;
        
     }
 	 iItemsDatabase.Begin();
@@ -226,8 +228,9 @@ void CLookupMapTileDatabase::ReSetEntryL(TLookupItem &aLookupItem)
     if (ret != KErrNone)
     {
         Close();
-        Open();
-
+        ret = Open();
+        if( ret != KErrNone )
+            return;
     }
     iItemsDatabase.Begin();
 
@@ -270,8 +273,9 @@ void CLookupMapTileDatabase::UpdateEntryL(const TLookupItem& aLookupItem)
     if (ret != KErrNone)
     {
 		Close();
-        Open();
-       
+        ret = Open();
+        if( ret != KErrNone )
+            return;       
     }
 	 iItemsDatabase.Begin();
 
@@ -315,8 +319,9 @@ void CLookupMapTileDatabase::DeleteEntryL(TLookupItem& aLookupItem)
     if (ret != KErrNone)
     {
 		Close();
-        Open();
-       
+        ret = Open();
+        if( ret != KErrNone )
+            return;
     }
 	 iItemsDatabase.Begin();
 
@@ -366,7 +371,9 @@ void CLookupMapTileDatabase::DeleteMapTileL( const TLookupItem& aLookupItem)
     if (ret != KErrNone)
     {
        Close();
-       Open();      
+       ret = Open();
+       if( ret != KErrNone )
+           return;
     }
     
     iItemsDatabase.Begin();
@@ -430,8 +437,9 @@ void CLookupMapTileDatabase::FindEntriesByMapTileFetchingStateL(const TUint32 aF
         if (ret != KErrNone)
         {
            Close();
-           ret= Open();
-           
+           ret = Open();
+           if( ret != KErrNone )
+               return;
         }
       iItemsDatabase.Begin();
 
@@ -472,8 +480,9 @@ void CLookupMapTileDatabase::GetAllCalendarIdsL( RArray<TUint32>& aIdArray )
         if (ret != KErrNone)
         {
            Close();
-           ret= Open();
-           
+           ret = Open();
+           if( ret != KErrNone )
+               return;
         }
     iItemsDatabase.Begin();
 
@@ -496,6 +505,7 @@ void CLookupMapTileDatabase::GetAllCalendarIdsL( RArray<TUint32>& aIdArray )
     }
 
     CleanupStack::PopAndDestroy( &myView ); // myView
+    Close();
 }
 
 // -----------------------------------------------------------------------------
@@ -515,7 +525,9 @@ TBool CLookupMapTileDatabase::FindEntryL(TLookupItem& aLookupItem)
     if (ret != KErrNone)
     {
 		Close();
-        Open();
+        ret = Open();
+        if( ret != KErrNone )
+            return EFalse;
        
     }
 	 iItemsDatabase.Begin();
@@ -553,8 +565,9 @@ TBool CLookupMapTileDatabase::FindEntryByFilePathL(const TDesC& aFilePath)
     if (ret != KErrNone)
     {
         Close();
-        Open();
-       
+        ret = Open();
+        if( ret != KErrNone )
+            return EFalse;       
     }
     
     iItemsDatabase.Begin();
