@@ -304,7 +304,10 @@ CLmkEditorImpl::~CLmkEditorImpl()
     delete iWaitDialogLauncher;
 
     CEikButtonGroupContainer* cba = CEikButtonGroupContainer::Current();
-    cba->RemoveCommandObserver(KMskCommandPos);
+    if (cba)
+        {
+        cba->RemoveCommandObserver(KMskCommandPos);
+        }
 
     if (iLmkUiUtils)
         {
