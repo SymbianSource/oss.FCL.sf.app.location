@@ -101,15 +101,21 @@ QVariant HgWidgetDataModel::data(const QModelIndex &aIndex, int aRole) const
         case Qt::DisplayRole:
         {
             QStringList displayText;
-            QStringList adressDetail = mProxyModel->data(proxyModelIndex,Qt::DisplayRole).toStringList();
+            QStringList adressDetail = mProxyModel->data(proxyModelIndex,Qt::DisplayRole).
+            	toStringList();
             QString displayString;
             if(!adressDetail[0].isEmpty())
             {
-                displayString = adressDetail[0]+KSeparator+KSpace+adressDetail[1];
+                displayString = adressDetail[0]+KSpace+KTitleSeparator+KSpace+
+                adressDetail[1]+KSpace+KSeparator+adressDetail[2];
+            }
+            else if (!adressDetail[1].isEmpty())
+            {
+                displayString = adressDetail[1]+KSpace+KSeparator+adressDetail[2];
             }
             else
             {
-                displayString = adressDetail[1];
+                displayString = adressDetail[2];
             }
             QString text("");
             displayText <<displayString<<text;
@@ -135,9 +141,11 @@ QVariant HgWidgetDataModel::data(const QModelIndex &aIndex, int aRole) const
                 painter.begin(&mapPixmap);
                 HbIcon adressTypeIcon(adressType);
                 //draw the adressType Icon over mapTile Icon
-                adressTypeIcon.paint(&painter,QRectF((mapPixmap.width()-adressTypeIcon.width()),0,adressTypeIcon.width(),adressTypeIcon.height()));
+                adressTypeIcon.paint(&painter,QRectF((mapPixmap.width()-adressTypeIcon.width()),
+                	0,adressTypeIcon.width(),adressTypeIcon.height()));
                 painter.fillRect(QRect(0,0,mapWidth,MAPSTROKE),brush);
-                painter.fillRect(QRect(0,mapHeight-MAPSTROKE,mapWidth,(mapHeight-MAPSTROKE)),brush);
+                painter.fillRect(QRect(0,mapHeight-MAPSTROKE,mapWidth,
+                	(mapHeight-MAPSTROKE)),brush);
                 painter.fillRect(QRect(0,0,MAPSTROKE,mapPixmap.height()),brush);
                 painter.fillRect(QRect((mapWidth-MAPSTROKE),0,mapWidth,mapHeight),brush);
                 painter.end();

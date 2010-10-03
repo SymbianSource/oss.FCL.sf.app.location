@@ -26,7 +26,8 @@ symbian: {
     # Build.inf rules
     BLD_INF_RULES.prj_exports += \
          "$${LITERAL_HASH}include <platform_paths.hrh>" \
-         "rom/locationpickerservice.iby  CORE_APP_LAYER_IBY_EXPORT_PATH(locationpickerservice.iby)"
+         "rom/locationpickerservice.iby  CORE_APP_LAYER_IBY_EXPORT_PATH(locationpickerservice.iby)" \
+         "rom/locationpickerservice_resources.iby  LANGUAGE_APP_LAYER_IBY_EXPORT_PATH(locationpickerservice_resources.iby)"
 
     TARGET.UID3 = 0x2002C3AA 
     isEmpty(TARGET.EPOCSTACKSIZE):TARGET.EPOCSTACKSIZE = 0x14000
@@ -87,3 +88,6 @@ HEADERS += inc/locationpickercontent.h \
     inc/locationpickerdocumentloader.h \
     inc/hgwidgetdatamodel.h
 
+
+
+symbian:MMP_RULES += SMPSAFE

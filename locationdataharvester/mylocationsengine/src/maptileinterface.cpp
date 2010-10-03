@@ -25,7 +25,6 @@
 #include "maptileinterface.h"
 #include "mylocationlogger.h"
 #include "mylocationsdefines.h"
-#include "lookupmaptiledb.h"
 #include <math.h>
 
 //Invalid latitude & longitude value

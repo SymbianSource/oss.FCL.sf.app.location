@@ -108,6 +108,7 @@ bool LocationPickerDataManagerPrivate::populateLandmarks( QList<QLookupItem> &aI
     }
     QString lmAddressLine1;
     QString lmAddressLine2;
+    QString lmAddressLine3;
     QString contextAddress;
     QString contextAddressCountry;
     
@@ -117,6 +118,7 @@ bool LocationPickerDataManagerPrivate::populateLandmarks( QList<QLookupItem> &aI
         contextAddressCountry.clear();
         lmAddressLine1.clear();
         lmAddressLine2.clear();
+        lmAddressLine3.clear();
     
         if( !aItemArray[i].mIsDuplicate )
         {
@@ -127,68 +129,68 @@ bool LocationPickerDataManagerPrivate::populateLandmarks( QList<QLookupItem> &aI
             {
                 if( lmAddressLine1.isEmpty() )
                 {
-                    lmAddressLine1 = aItemArray[i].mStreet;
+                    lmAddressLine2 = aItemArray[i].mStreet;
                 }
                 else
                 {
-                    lmAddressLine2 = aItemArray[i].mStreet;
+                    lmAddressLine3 = aItemArray[i].mStreet;
                     addressEmtpy = EFalse;
-            	  }
+            	}
             }
             if( !aItemArray[i].mCity.isEmpty() )
             {
-                if( lmAddressLine1.isEmpty() )
+                if( lmAddressLine2.isEmpty() )
                 {
-                    lmAddressLine1 = aItemArray[i].mCity;
+                    lmAddressLine2 = aItemArray[i].mCity;
                 }
                 else
                 {
                     if( !addressEmtpy )
                     {
-                        lmAddressLine2 = lmAddressLine2 + KSeparator;
-                        lmAddressLine2 = lmAddressLine2 + KSpace;
-                        lmAddressLine2 = lmAddressLine2 + aItemArray[i].mCity;
+                        lmAddressLine3 = lmAddressLine3 + KSeparator;
+                        lmAddressLine3 = lmAddressLine3 + KSpace;
+                        lmAddressLine3 = lmAddressLine3 + aItemArray[i].mCity;
                     }
                     else
                     {
-                        lmAddressLine2 = aItemArray[i].mCity;
+                        lmAddressLine3 = aItemArray[i].mCity;
                         addressEmtpy = EFalse;
                     }
                 }
             }
             if( !aItemArray[i].mState.isEmpty() )
             {
-                if( lmAddressLine1.isEmpty() )
+                if( lmAddressLine2.isEmpty() )
                 {
-                    lmAddressLine1 = aItemArray[i].mState;
+                    lmAddressLine2 = aItemArray[i].mState;
                 }
                 else
                 {
                     if( !addressEmtpy )
                     {
-                        lmAddressLine2 = lmAddressLine2 + KSeparator;
-                        lmAddressLine2 = lmAddressLine2 + KSpace;
-                        lmAddressLine2 = lmAddressLine2 + aItemArray[i].mState;
+                        lmAddressLine3 = lmAddressLine3 + KSeparator;
+                        lmAddressLine3 = lmAddressLine3 + KSpace;
+                        lmAddressLine3 = lmAddressLine3 + aItemArray[i].mState;
                     }
                     else
                     {
-                        lmAddressLine2 = aItemArray[i].mState;
+                        lmAddressLine3 = aItemArray[i].mState;
                         addressEmtpy = EFalse;
                     }
                 }
             }
-            contextAddress = lmAddressLine2;
+            contextAddress = lmAddressLine3;
             if( !aItemArray[i].mCountry.isEmpty() )
             {
                 if( !addressEmtpy )
                 {
-                    lmAddressLine2 = lmAddressLine2 + KSeparator;
-                    lmAddressLine2 = lmAddressLine2 + KSpace;
-                    lmAddressLine2 = lmAddressLine2 + aItemArray[i].mCountry;
+                    lmAddressLine3 = lmAddressLine3 + KSeparator;
+                    lmAddressLine3 = lmAddressLine3 + KSpace;
+                    lmAddressLine3 = lmAddressLine3 + aItemArray[i].mCountry;
                 }
                 else
                 {
-                    lmAddressLine2 = aItemArray[i].mCountry;
+                    lmAddressLine3 = aItemArray[i].mCountry;
                     addressEmtpy = EFalse;
                 }
                 contextAddressCountry = aItemArray[i].mCountry;
@@ -249,7 +251,7 @@ bool LocationPickerDataManagerPrivate::populateLandmarks( QList<QLookupItem> &aI
             QStringList contextList;
             contextList<<lmAddressLine1<<contextAddress<<contextAddressCountry;
             QStandardItem *modelItem = new QStandardItem();
-            addressData << lmAddressLine1 << lmAddressLine2;
+            addressData << lmAddressLine1 << lmAddressLine2<<lmAddressLine3;
             modelItem->setData(QVariant(addressData), Qt::DisplayRole);
             modelItem->setData( icons, Qt::DecorationRole );
             modelItem->setData( aItemArray[i].mId, Qt::UserRole );
@@ -273,7 +275,9 @@ void LocationPickerDataManagerPrivate::populateCollections(QList<int>& aCount)
     // add contact collection
     QStandardItem *modelItemContact = new QStandardItem();
     int conNum = aCount.value(0);
-    QString contactCollectionNum(hbTrId("txt_lint_list_ln_items",conNum));
+    QString contactCollectionNum;
+    contactCollectionNum.setNum(conNum);
+    contactCollectionNum.append(" items");
     QString contactCollectionName( hbTrId("txt_lint_list_contact_addresses") );
  
 
@@ -286,7 +290,9 @@ void LocationPickerDataManagerPrivate::populateCollections(QList<int>& aCount)
    
     //txt_lint_list_calender_addresses
     int calNum = aCount.value(1);
-    QString calendarCollectionNum(hbTrId("txt_lint_list_ln_items",calNum));
+    QString calendarCollectionNum;
+    calendarCollectionNum.setNum(calNum);
+    calendarCollectionNum.append(" items");
     QString calendarCollectionName( hbTrId("txt_lint_list_calendar_locations") );
     QStringList calender = (QStringList()<<calendarCollectionName<<calendarCollectionNum);
     
@@ -298,7 +304,9 @@ void LocationPickerDataManagerPrivate::populateCollections(QList<int>& aCount)
      
     //txt_lint_list_places_addresses
     int placNum = aCount.value(2);
-    QString placesCollectionNum(hbTrId("txt_lint_list_ln_items",placNum));
+    QString placesCollectionNum;
+    placesCollectionNum.setNum(placNum);
+    placesCollectionNum.append(" items");
     QString placesCollectionName( hbTrId("txt_lint_list_places") );
     QStringList places = (QStringList()<<placesCollectionName<<placesCollectionNum);
 

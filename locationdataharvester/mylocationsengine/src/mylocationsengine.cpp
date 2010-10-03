@@ -20,6 +20,7 @@
 #include <QFile>
 #include <f32file.h>
 #include <calchangecallback.h> 
+#include <caliterator.h>
 #include <cntitem.h>
 #include <cntfldst.h>
 #include <EPos_CPosLmDatabaseManager.h>
@@ -28,9 +29,11 @@
 #include <f32file.h>
 #include <locationservicedefines.h>
 #include <e32property.h>
+#include <centralrepository.h> 
 #include "contactsubscriber.h"
 #include "calendarsubscriber.h"
 #include "mylocationsengine.h"
+#include "mylocationsdefines.h"
 #include "geocodeupdate.h" //header for GeocodeUpdate class
 //handle for CMyLocationsHistoryDbObserver class
 #include "mylocationlogger.h"
@@ -46,7 +49,13 @@ enum TMaptileStatusKeys {EMaptileStatusInteger=0x1};
 //Protocol : [appid-addresstype-maptilestatus]
 _LIT8( KMaptileStatusFormat, "%d-%d-%d" );
 const TInt KProtocolBufferSize = 16;
+static const TInt startDateArray[2] = { 1900, 1};
+static const TInt endDateArray[2] = { 2100, 1};
+// Maptile interface uid
+const TUid KUidMapTileInterface = { 0x2002E6E8 };
 
+// Central Repository Key IDs
+const TInt KMaptileDbSyncState  = 0x2;
 const QString KSpace(" ");
 
 // ============================ MEMBER FUNCTIONS ===============================
@@ -89,7 +98,11 @@ void CMyLocationsEngine::ConstructL()
     
     MYLOCLOGSTRING("iMapTileInterface = CMapTileInterface::NewL()");
     //Maptile Db instance
-    iMaptileDatabase = CLookupMapTileDatabase::NewL(KMapTileLookupDatabaseName);
+    iMaptileDatabase = new LookupMapTileDatabase();
+    if( !iMaptileDatabase->open() )
+    {
+        User::Leave( KErrUnknown );
+    }
 
     MYLOCLOGSTRING("Maptile Db instance created ");
 	
@@ -311,6 +324,12 @@ void CMyLocationsEngine::NotifyChangeL(TInt &aStatus)
         // create a calendar entry view with the opened session
         iCalView = CCalEntryView::NewL(*iCalSession);
         StartCalenderChangeNotifierL();
+        TInt value=0;
+        MaptileDbSyncStatusL(EMapTileDbStatusGet, value);
+        if(value==1)
+        {
+            RefreshCalendarEntryListL();            
+        }
     }
     else
     {
@@ -398,12 +417,12 @@ void CMyLocationsEngine::GetChangeNotificationL( TInt &aId, TInt& addressType, T
             }
 
             //Update the entry with inprogress status
-            TLookupItem lookupItem;
+            MaptileLookupItem lookupItem;
             lookupItem.iUid = iAddressInfo[index]->iUid;
             lookupItem.iSource = type;
-            lookupItem.iFilePath.Zero();
+            lookupItem.iFilePath.clear();
             lookupItem.iFetchingStatus = EMapTileFetchingInProgress;
-            iMaptileDatabase->UpdateEntryL( lookupItem );
+            iMaptileDatabase->updateEntry( lookupItem );
             
             //Request for maptile fetching
             if( contactAddressLm )
@@ -434,30 +453,28 @@ void CMyLocationsEngine::GetChangeNotificationL( TInt &aId, TInt& addressType, T
 void CMyLocationsEngine::SubscribeFromCalendarL(TInt aId)
 {
     __TRACE_CALLSTACK;
+    if( !iMaptileGeocoderPluginAvailable )
+    {
+      return;
+    }
     iLastCalendarId = aId;
+    TInt repValue=0;
+    MaptileDbSyncStatusL(EMapTileDbStatusGet , repValue);
+    if (  repValue == 1 )
+    {              
+        return;              
+    }
     for ( int index =0;iMapTileRequestQueue.Count()>index ;index++)
     {
-        if( iLastCalendarId == iMapTileRequestQueue[index]->iUId )
-        {            
-            return;
-        }
-    }
-    
-    CCalEntry* calEntry = NULL;
-    calEntry = iCalView->FetchL(aId);
-    CleanupStack::PushL(calEntry);
-    TPtrC address(calEntry->LocationL());
-    if( address.Length()>0 )
-    {
-        TLookupItem lookupItem;
-        lookupItem.iUid = aId;
-        lookupItem.iSource = ESourceCalendar;
-        lookupItem.iFilePath.Zero();
-        lookupItem.iFetchingStatus = EMapTileFetchingInProgress;
-        iMaptileDatabase->UpdateEntryL( lookupItem );
-        RequestMapTileImageL( address, ESourceCalendar, aId , EChangeModify );
-    }
-    CleanupStack::PopAndDestroy(calEntry);
+       if( iLastCalendarId == iMapTileRequestQueue[index]->iUId )
+       {            
+           return;
+       }
+    }    
+    TCalChangeEntry calChangeEntry ;
+    calChangeEntry.iEntryId=aId;
+    calChangeEntry.iChangeType=MCalChangeCallBack2::EChangeModify;
+    CalenderEntryModifyL(calChangeEntry); 
 }
 // -----------------------------------------------------------------------------
 // CMyLocationsEngine::StartCalenderChangeNotifierL()
@@ -471,31 +488,28 @@ void CMyLocationsEngine::StartCalenderChangeNotifierL()
     // fall under the timeframe one year past and one year ahead of the current time.
     if (iCalSession)
     {
-        MYLOCLOGSTRING("iCalSession is not null");
-        TTime currentTime;
-        currentTime.HomeTime();
-
-        TTime startTime = currentTime - TTimeIntervalYears(1);
-        TTime endTime = currentTime + TTimeIntervalYears(1);
-
-        TCalTime calStartTime;
-        calStartTime.SetTimeLocalL(startTime);
+        // Subscribe for notification on changes in the opened session (file).
+        TCalTime startDate;
+        TCalTime endDate;
+        TDateTime startTime = TDateTime(
+                startDateArray[0], static_cast<TMonth>(startDateArray[1]),
+                0, 0, 0, 0, 0);
+        TDateTime endTime = TDateTime(
+                endDateArray[0], static_cast<TMonth>(endDateArray[1]),
+                0, 0, 0, 0, 0);
         
-        MYLOCLOGSTRING("SetTimeLocalL(startTime)");
-
-        TCalTime calEndTime;
-        calEndTime.SetTimeLocalL(endTime);
+        startDate.SetTimeUtcL(startTime);
+        endDate.SetTimeUtcL(endTime);
+        CalCommon::TCalTimeRange searchTimeRange(startDate, endDate);
         
-        MYLOCLOGSTRING("SetTimeLocalL(endTime)");
-
-        // set the filter for modification tracking
-        CCalChangeNotificationFilter *filter =
-                CCalChangeNotificationFilter::NewL(
-                        MCalChangeCallBack2::EChangeEntryAll, ETrue,
-                        CalCommon::TCalTimeRange(calStartTime, calEndTime));
-        MYLOCLOGSTRING(" CCalChangeNotificationFilter::NewL()");
-        // 'this' object implements MCalChangeCallBack
+        CCalChangeNotificationFilter* filter = NULL;
+        filter = CCalChangeNotificationFilter::NewL(
+                MCalChangeCallBack2::EChangeEntryAll, true, searchTimeRange);
+        
         iCalSession->StartChangeNotification(*this, *filter);
+        
+        // Cleanup.
+        delete filter;
     }
 }
 
@@ -543,7 +557,10 @@ void CMyLocationsEngine::CalChangeNotification(
         delete iCalenderNotification;
         iCalenderNotification = NULL;
     }
-    
+    if( !iMaptileGeocoderPluginAvailable )
+    {
+        return;
+    }
     // get entries associated with this UID
     for (int i = 0; i < aChangeItems.Count(); i++)
     {
@@ -551,8 +568,9 @@ void CMyLocationsEngine::CalChangeNotification(
         // Check if this is some undefined change in calendar db. 
         if( aChangeItems[0].iChangeType == EChangeUndefined && aChangeItems[0].iEntryType == EChangeEntryAll )
         {
+             MYLOCLOGSTRING("Refresh the calendar for EChangeUndefined ");
             // Refresh the calendar related entries in the location and maptiledb.
-            RefreshCalendarEntryListL();
+            RefreshCalendarEntryListL();            
             break;
         }
         TCalChangeEntry calChangeEntry = aChangeItems[i];
@@ -579,8 +597,10 @@ void CMyLocationsEngine::CalChangeNotification(
             break;
         }
         case EChangeDelete:
-        {
-            TLookupItem lookupItem;
+        {           
+            
+            iMyLocationsDatabaseManager->UpdateCalendarLocationById(calChangeEntry.iEntryId,EEntryDeleted,KNullDesC);
+            MaptileLookupItem lookupItem;
             lookupItem.iSource = ESourceCalendar;
             lookupItem.iUid = calChangeEntry.iEntryId;
             TRAP_IGNORE(ManipulateMapTileDataBaseL(lookupItem));           
@@ -599,15 +619,66 @@ void CMyLocationsEngine::CalChangeNotification(
 //
 void CMyLocationsEngine::RefreshCalendarEntryListL()
 {
+    __TRACE_CALLSTACK;
+    TInt repValue=1;
+    MaptileDbSyncStatusL(EMapTileDbStatusSet , repValue);
+    // Deletes all the invalid calendar entries from location and maptile lookup db.
+    DeleteInvalidCalendarEntriesL();
+
+    CCalIter* calIter = CCalIter::NewL(*iCalSession);
+    CleanupStack::PushL( calIter );
+    TPtrC8 iterUid = calIter->FirstL();
+    while ( iterUid != KNullDesC8 )
+    {
+    
+        MYLOCLOGSTRING("while ( iterUid != KNullDesC8 )");
+        RPointerArray<CCalEntry> entryArray;
+        iCalView->FetchL( iterUid, entryArray );
+        MYLOCLOGSTRING1("iCalView->FetchL :entryArray.Count()->%d",entryArray.Count());
+        // get entries associated with this UID
+        for( int i =0; i<entryArray.Count() ; i++ )
+        {              
+            TCalChangeEntry calChangeEntry;            
+            calChangeEntry.iEntryId = entryArray[i]->LocalUidL() ;
+            MaptileLookupItem lookupItem;
+            lookupItem.iUid = entryArray[i]->LocalUidL() ;
+            lookupItem.iSource = ESourceCalendar;
+            if( iMaptileDatabase->findEntry(lookupItem ) )
+            {
+                calChangeEntry.iChangeType = EChangeModify;
+                TRAP_IGNORE( CalenderEntryModifyL(calChangeEntry) ) ;
+            }
+            else
+            {
+                calChangeEntry.iChangeType = EChangeAdd;
+                TRAP_IGNORE(CalenderEntryAddedL(calChangeEntry));
+            }
+        }
+        iterUid.Set(calIter->NextL());
+        entryArray.ResetAndDestroy();
+    }    
+    CleanupStack::PopAndDestroy( calIter );
+    repValue=0;
+    MaptileDbSyncStatusL(EMapTileDbStatusSet , repValue);
+}
+
+// -----------------------------------------------------------------------------
+// CMyLocationsEngine::DeleteInvalidCalendarEntriesL()
+// -----------------------------------------------------------------------------
+//
+void CMyLocationsEngine::DeleteInvalidCalendarEntriesL()
+{
+     __TRACE_CALLSTACK;
     //Get all the calendar ids and check its validity. 
     //Delete if they are no more valid.
-    RArray<TUint32> ids;
-    iMaptileDatabase->GetAllCalendarIdsL( ids );
-    for( TInt i = 0; i < ids.Count(); i++ )
+    QList<quint32> ids;
+    iMaptileDatabase->getAllCalendarIds( ids );
+    for( TInt i = 0; i < ids.count(); i++ )
     {
         if( !IsCalendarEntryValidL( ids[i] ) )
         {
-            TLookupItem lookupItem;
+            iMyLocationsDatabaseManager->UpdateCalendarLocationById(ids[i],EEntryDeleted,KNullDesC);
+            MaptileLookupItem lookupItem;
             lookupItem.iSource = ESourceCalendar;
             lookupItem.iUid = ids[i];
             TRAP_IGNORE( ManipulateMapTileDataBaseL( lookupItem ) );           
@@ -624,8 +695,44 @@ void CMyLocationsEngine::RefreshCalendarEntryListL()
 //
 TBool CMyLocationsEngine::IsCalendarEntryValidL( TUint32 aId )
 {
+     __TRACE_CALLSTACK;
     return ( ( iCalView->FetchL( aId ) == NULL ) ? EFalse:ETrue );
 }
+
+// -----------------------------------------------------------------------------
+// CMyLocationsEngine::MaptileDbSyncStatusL()
+// -----------------------------------------------------------------------------
+//
+void CMyLocationsEngine::MaptileDbSyncStatusL(const TCenrepSetting& aSettingType , TInt& aValue)
+{
+     __TRACE_CALLSTACK;
+    CRepository* centralRepository = NULL; 
+    centralRepository = CRepository::NewL( KUidMapTileInterface ) ;
+    CleanupStack::PushL( centralRepository );
+    switch(aSettingType)
+    {
+        case EMapTileDbStatusGet:
+        {
+            centralRepository->Get( KMaptileDbSyncState , aValue );
+            break;
+        }
+        case EMapTileDbStatusSet:
+        {
+            centralRepository->Set( KMaptileDbSyncState , aValue );
+            MaptileLookupItem item;
+            item.iSource = ESourceCalendar;
+            item.iUid = iLastCalendarId;   
+            iMaptileDatabase->getEntry(item);
+            if(iLastCalendarId >0)
+            {
+                PublishEntry(iLastCalendarId,item);
+            }
+            break;
+        }
+    }    
+    CleanupStack::PopAndDestroy(centralRepository);
+}
+
 // -----------------------------------------------------------------------------
 // CMyLocationsEngine::CalenderEntryAddedL()
 // -----------------------------------------------------------------------------
@@ -635,23 +742,27 @@ void CMyLocationsEngine::CalenderEntryAddedL(TCalChangeEntry aCalChangeEntry)
     __TRACE_CALLSTACK;
     
     TUint32 entryId=0;
-    entryId=aCalChangeEntry.iEntryId;
+    entryId=aCalChangeEntry.iEntryId;   
     //create entry in the data base and maintain a fetching state.
-    TLookupItem lookupItem;
+    MaptileLookupItem lookupItem;
     lookupItem.iUid = entryId ;
     lookupItem.iSource = ESourceCalendar;
-    lookupItem.iFilePath.Zero();
+    lookupItem.iFilePath.clear();
     lookupItem.iFetchingStatus = EMapTileFetchingInProgress;     
-    TRAP_IGNORE( iMaptileDatabase->CreateEntryL(lookupItem) );
+    iMaptileDatabase->createEntry(lookupItem) ;
     CCalEntry* calEntry = NULL;
     calEntry = iCalView->FetchL( entryId );
-    CleanupStack::PushL(calEntry);
-    TPtrC address(calEntry->LocationL());     
-    if (address.Length() > 0)
+    if(calEntry!=NULL)
     {
-        RequestMapTileImageL( address, ESourceCalendar, entryId , EChangeAdd );
-    }  
-    CleanupStack::PopAndDestroy(calEntry);
+        CleanupStack::PushL(calEntry);
+        TPtrC address(calEntry->LocationL());     
+        iMyLocationsDatabaseManager->UpdateCalendarLocationById(entryId,EEntryAdded,address);
+        if (address.Length() > 0)
+        {
+            RequestMapTileImageL( address, ESourceCalendar, entryId , EChangeAdd );
+        }  
+        CleanupStack::PopAndDestroy(calEntry);
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -663,39 +774,115 @@ void CMyLocationsEngine::CalenderEntryModifyL(TCalChangeEntry aCalChangeEntry)
     __TRACE_CALLSTACK;
     TUint32 entryId = 0;
     entryId = aCalChangeEntry.iEntryId;
-    TLookupItem lookupItem;
+    MaptileLookupItem lookupItem;
     lookupItem.iSource = ESourceCalendar;
-    lookupItem.iUid = entryId;
+    lookupItem.iUid = entryId;   
+    iMaptileDatabase->getEntry(lookupItem);
+    QString maptilePath= lookupItem.iFilePath;
     CCalEntry* calEntry = NULL;
     calEntry = iCalView->FetchL(entryId);
     CleanupStack::PushL(calEntry);
-    if(iGeocodeUpdate->isGeocodeNotAvailable(entryId))
-    {        
-        TPtrC address(calEntry->LocationL());
-        if (iMyLocationsDatabaseManager->CheckIfAddressChanged(address, entryId,
-                ESourceCalendar))
-        {
-            lookupItem.iFilePath.Zero();
-            lookupItem.iFetchingStatus = EMapTileFetchingInProgress;
-            TRAP_IGNORE( iMaptileDatabase->ReSetEntryL(lookupItem) );
-            if (address.Length() > 0)
-            {
-                RequestMapTileImageL(address, ESourceCalendar, entryId , EChangeModify);
-            }
-            else
-            {
-                UpdateDatabaseL(NULL, entryId, ESourceCalendar, EEntryDeleted);
-            }
-            if ( lookupItem.iFilePath.Length() > 0 )
-            {
-                iMaptileDatabase->DeleteMapTileL(lookupItem);
-            }
+    TPtrC address(calEntry->LocationL());
+    TBool retGeo=EFalse;
+    retGeo=iGeocodeUpdate->isGeocodeNotAvailable(entryId);
+    TBool addressChanged=EFalse;
+    addressChanged=iMyLocationsDatabaseManager->CheckIfAddressChanged(address, entryId,
+                ESourceCalendar);
+    // retGeo , true if geo-code not available otherwise false.
+    if(!retGeo )
+       {       
+           if( lookupItem.iUserSetting && addressChanged )
+           {
+               //sync to local db 
+               //reset the user setting flag
+               //update maptile all previous status
+               //return;
+               iMaptileDatabase->updateEntry(lookupItem);
+               iLastCalendarId=entryId;
+               PublishEntry(entryId,lookupItem);
+               //TRAP_IGNORE(iMyLocationsDatabaseManager->UpdateCalendarLocationL( address, entryId,
+                //                                     ESourceCalendar) );  
+           }
+           else if(lookupItem.iFetchingStatus==EMapTileFetchingInProgress || lookupItem.iFetchingStatus==EMapTileFetchingNetworkError)
+           {               
+               //normal scenario ,
+               // go for geo-coding 
+               //return;
+               lookupItem.iFilePath.clear();
+               lookupItem.iFetchingStatus = EMapTileFetchingInProgress;     
+               iMaptileDatabase->updateEntry(lookupItem) ;
+               TRAP_IGNORE( UpdateDatabaseL( NULL, 
+                   entryId, ESourceCalendar, EEntryDeleted ) );               
+               if (maptilePath.length() > 0)
+               {
+                   lookupItem.iFilePath=maptilePath;
+                  iMaptileDatabase->deleteMapTile(lookupItem);
+               }               
+               RequestMapTileImageL(address, ESourceCalendar, entryId, EChangeModify);
+           }
+           else
+           {
+               PublishEntry(entryId,lookupItem);
+           }
+       }
+       else
+       {
+           if(addressChanged)
+           {
+                // go for geo-coding 
+                // return;
+                lookupItem.iFilePath.clear();
+                lookupItem.iFetchingStatus = EMapTileFetchingInProgress;
+                iMaptileDatabase->updateEntry(lookupItem);
+                TRAP_IGNORE( UpdateDatabaseL( NULL,
+                                entryId, ESourceCalendar, EEntryDeleted ) );
+                if (maptilePath.length() > 0)
+                {
+                    lookupItem.iFilePath = maptilePath;
+                    iMaptileDatabase->deleteMapTile(lookupItem);
+                }
+                RequestMapTileImageL(address, ESourceCalendar, entryId,
+                        EChangeModify);
+           }
+           else 
+           {
+               // dont do anything  
+               QLookupItem locationItem;
+               LocationDataLookupDb lookupDb;
+               if(lookupDb.findEntryBySourceIdAndType(locationItem))
+               {
+                  MYLOCLOGSTRING("entry found in loocation lookupdb ");
+                  iGeocodeUpdate->updateGeocodeToCalenderDB(entryId,locationItem.mLatitude,locationItem.mLongitude);
+               }  
+               iLastCalendarId=entryId;
+               PublishEntry(entryId,lookupItem);
+                
+               //return;
+           }
+           
+       }
+       CleanupStack::PopAndDestroy(calEntry);       
     
-        }        
-    }   
-    CleanupStack::PopAndDestroy(calEntry);
 }
-
+// -----------------------------------------------------------------------------
+// CMyLocationsEngine::PublishEntry()
+//  maptile db updated, publishing the calendar entry.
+// -----------------------------------------------------------------------------
+//
+void CMyLocationsEngine::PublishEntry(TInt32 aEntryId, MaptileLookupItem& aLookupItem)
+{
+    __TRACE_CALLSTACK;
+    //Publish the maptile status ,if it was from calendar
+    if (iLastCalendarId == aEntryId)
+    {
+        TBuf8<KProtocolBufferSize> buffer;
+        buffer.Zero();
+        buffer.Format(KMaptileStatusFormat, iLastCalendarId,
+            aLookupItem.iSource, aLookupItem.iFetchingStatus);
+        RProperty::Set(KMaptileStatusPublish, EMaptileStatusInteger,
+                buffer);
+    }
+}
 // -----------------------------------------------------------------------------
 // CMyLocationsEngine::HandleDatabaseEventL()
 // Callback that provides information about the contact database change event.
@@ -721,7 +908,7 @@ void CMyLocationsEngine::HandleDatabaseEventL(TContactDbObserverEvent aEvent)
 void CMyLocationsEngine::TriggerMaptileRequestL(TContactDbObserverEvent& aEvent)
 {
     __TRACE_CALLSTACK;
-    TLookupItem lookupItem;      
+    MaptileLookupItem lookupItem;      
     lookupItem.iUid = aEvent.iContactId;
     // If contact is deleted delete from mylocations db
     if ( aEvent.iType == EContactDbObserverEventContactDeleted || aEvent.iType == EContactDbObserverEventOwnCardDeleted )
@@ -812,16 +999,16 @@ void CMyLocationsEngine::TriggerMaptileRequestL(TContactDbObserverEvent& aEvent)
                     aEvent.iContactId, ESourceContactsPref) )
 
                 {
-                    lookupItem.iFilePath.Zero();
+                    lookupItem.iFilePath.clear();
                     lookupItem.iFetchingStatus = EMapTileFetchingInProgress;
-                    TRAP_IGNORE( iMaptileDatabase->ReSetEntryL(lookupItem) );
+                    iMaptileDatabase->resetEntry(lookupItem);
                     
                     RequestMapTileImageL(*preferedAddressLm, ESourceContactsPref,
                             aEvent.iContactId, iEventType );
 
-                    if ( lookupItem.iFilePath.Length() > 0 )
+                    if ( lookupItem.iFilePath.isEmpty() != false )
                     {
-                        iMaptileDatabase->DeleteMapTileL(lookupItem);
+                        iMaptileDatabase->deleteMapTile(lookupItem);
                     }
                     
                 }
@@ -844,15 +1031,15 @@ void CMyLocationsEngine::TriggerMaptileRequestL(TContactDbObserverEvent& aEvent)
                 if ( iMyLocationsDatabaseManager->CheckIfAddressChanged(*homeAddressLm,
                         aEvent.iContactId, ESourceContactsHome) )
                 {
-                    lookupItem.iFilePath.Zero();
+                    lookupItem.iFilePath.clear();
                     lookupItem.iFetchingStatus = EMapTileFetchingInProgress;
-                    TRAP_IGNORE( iMaptileDatabase->ReSetEntryL(lookupItem) )
+                    iMaptileDatabase->resetEntry(lookupItem);
                     //remove entry from databse                    
                     RequestMapTileImageL(*homeAddressLm, ESourceContactsHome, aEvent.iContactId,
                         iEventType);
-                    if (lookupItem.iFilePath.Length() > 0) 
+                    if (lookupItem.iFilePath.isEmpty() != false ) 
                     {
-                        iMaptileDatabase->DeleteMapTileL(lookupItem);
+                        iMaptileDatabase->deleteMapTile(lookupItem);
                     }                 
                 }
             }
@@ -876,15 +1063,15 @@ void CMyLocationsEngine::TriggerMaptileRequestL(TContactDbObserverEvent& aEvent)
                 if ( iMyLocationsDatabaseManager->CheckIfAddressChanged(*workAddressLm,
                         aEvent.iContactId, ESourceContactsWork) )
                 {
-                    lookupItem.iFilePath.Zero();
+                    lookupItem.iFilePath.clear();
                     lookupItem.iFetchingStatus = EMapTileFetchingInProgress;
-                    TRAP_IGNORE( iMaptileDatabase->ReSetEntryL(lookupItem) )
+                    iMaptileDatabase->resetEntry(lookupItem);
 
                     RequestMapTileImageL(*workAddressLm, ESourceContactsWork,
                             aEvent.iContactId, iEventType);
-                    if (lookupItem.iFilePath.Length() > 0) 
+                    if (lookupItem.iFilePath.isEmpty() != false ) 
                     {
-                        iMaptileDatabase->DeleteMapTileL(lookupItem);
+                        iMaptileDatabase->deleteMapTile(lookupItem);
                     }
                 } 
             }
@@ -899,9 +1086,9 @@ void CMyLocationsEngine::TriggerMaptileRequestL(TContactDbObserverEvent& aEvent)
         }    
         case EContactDbObserverEventContactAdded:
         {
-            TLookupItem lookupItem;
+            MaptileLookupItem lookupItem;
             lookupItem.iUid = aEvent.iContactId;
-            lookupItem.iFilePath.Zero();
+            lookupItem.iFilePath.clear();
             lookupItem.iFetchingStatus = EMapTileFetchingInProgress;
             
             MYLOCLOGSTRING("EContactDbObserverEventContactAdded" );
@@ -909,21 +1096,21 @@ void CMyLocationsEngine::TriggerMaptileRequestL(TContactDbObserverEvent& aEvent)
             {
                 //create entry in the data base and maintain a fetching state.
                 lookupItem.iSource = ESourceContactsPref;
-                iMaptileDatabase->CreateEntryL(lookupItem);
+                iMaptileDatabase->createEntry(lookupItem);
                 RequestMapTileImageL(*preferedAddressLm, ESourceContactsPref,
                         aEvent.iContactId, iEventType);
             }
             if (homeAddressLm)
             {
                 lookupItem.iSource = ESourceContactsHome;
-                iMaptileDatabase->CreateEntryL(lookupItem);
+                iMaptileDatabase->createEntry(lookupItem);
                 RequestMapTileImageL(*homeAddressLm, ESourceContactsHome,
                         aEvent.iContactId, iEventType);
             }
             if (workAddressLm)
             {
                 lookupItem.iSource = ESourceContactsWork;
-                iMaptileDatabase->CreateEntryL(lookupItem);
+                iMaptileDatabase->createEntry(lookupItem);
                 RequestMapTileImageL(*workAddressLm, ESourceContactsWork,
                         aEvent.iContactId, iEventType);
             }
@@ -1304,7 +1491,7 @@ void CMyLocationsEngine::GeoCodefetchingCompleted( TInt aErrCode, const TReal& a
     {
         MYLOCLOGSTRING1("No.of RequestQueue - %d",iMapTileRequestQueue.Count());
        
-	    TLookupItem lookupItem;
+	    MaptileLookupItem lookupItem;
         lookupItem.iSource = iMapTileRequestQueue[0]->iAddressType;
         lookupItem.iUid = iMapTileRequestQueue[0]->iUId;
 
@@ -1313,13 +1500,12 @@ void CMyLocationsEngine::GeoCodefetchingCompleted( TInt aErrCode, const TReal& a
             UpdateGeoCodeToAppDataBase( aLatitude, aLongitude );
             
             TBool flag = EFalse;
-            TRAP_IGNORE( flag = iMaptileDatabase->FindEntryByFilePathL(aMapTilePath) );
+            QString str = QString( (QChar*)aMapTilePath.Ptr(), aMapTilePath.Length());
+            flag = iMaptileDatabase->findEntryByFilePath( str );
             if ( flag )
             {  
                 MYLOCLOGSTRING1("%S - found in the DB",&aMapTilePath);
-            
-             				
-                lookupItem.iFilePath.Copy(aMapTilePath);
+                lookupItem.iFilePath = QString( (QChar*)aMapTilePath.Ptr(), aMapTilePath.Length());
                 lookupItem.iFetchingStatus = EMapTileFectchingCompleted;
                 TRAP_IGNORE( UpdateMaptileDatabaseL(iMapTileRequestQueue[0]->iEventType, lookupItem ) );              
                 //Publish the maptile status
@@ -1400,12 +1586,12 @@ void CMyLocationsEngine::MyLocationThreeAMTimerExpiredL()
     //Forward the event for maptile fetching only if maptile plugin available
     if( iMaptileGeocoderPluginAvailable )
     {
-        RArray<TLookupItem> iLookupItems;
-        iMaptileDatabase->FindEntriesByMapTileFetchingStateL((TUint32)EMapTileFetchingNetworkError,
+        QList<MaptileLookupItem> iLookupItems;
+        iMaptileDatabase->findEntriesByMapTileFetchingState((quint32)EMapTileFetchingNetworkError,
                                             iLookupItems);
-        for( TUint32 i = 0; i < iLookupItems.Count(); i++ )
+        for( TUint32 i = 0; i < iLookupItems.count(); i++ )
         {
-            TLookupItem iItem = iLookupItems[i];
+            MaptileLookupItem iItem = iLookupItems[i];
             switch( iItem.iSource )
             {
                 // Get the home address details
@@ -1456,7 +1642,7 @@ void CMyLocationsEngine::MyLocationThreeAMTimerExpiredL()
                         }
                         else
                         {
-                            iMaptileDatabase->DeleteEntryL( iItem );
+                            iMaptileDatabase->deleteEntry( iItem );
                         }
                      }
                      break;
@@ -1486,27 +1672,23 @@ void CMyLocationsEngine::MapTilefetchingCompleted(TInt aErrCode,
 
         MYLOCLOGSTRING1("No.of RequestQueue - %d",iMapTileRequestQueue.Count());
 
-        TLookupItem lookupItem;
+        MaptileLookupItem lookupItem;
         lookupItem.iSource = iMapTileRequestQueue[0]->iAddressType;
         lookupItem.iUid = iMapTileRequestQueue[0]->iUId;
        
         if ( aErrCode == KErrNone )
         {           
             CreateMultipleMaptiles( aMapTilePath );
-            lookupItem.iFilePath.Copy(aMapTilePath);
+            lookupItem.iFilePath = QString( (QChar*)aMapTilePath.Ptr(), aMapTilePath.Length());
             lookupItem.iFetchingStatus = EMapTileFectchingCompleted;
  
         }
-        else if ( aErrCode == KErrCouldNotConnect )
+        else 
 		{
 		    lookupItem.iFetchingStatus = EMapTileFetchingNetworkError;
             iMyLocationThreeAMTimer->StartTimer();
               
-		}
-		else
-		{
-		    lookupItem.iFetchingStatus = EMapTileFetchingUnknownError;
-		}
+		}	
 		
         TRAP_IGNORE( UpdateMaptileDatabaseL( iMapTileRequestQueue[0]->iEventType,lookupItem ) );
 
@@ -1592,7 +1774,7 @@ void CMyLocationsEngine::ProcessNextMaptileRequest()
 // -----------------------------------------------------------------------------
 //
 void CMyLocationsEngine::UpdateMaptileDatabaseL(
-        TInt aEventType, TLookupItem& aLookupItem)
+        TInt aEventType, MaptileLookupItem& aLookupItem)
 {
     __TRACE_CALLSTACK;
     if (aEventType == EContactDbObserverEventContactChanged || aEventType
@@ -1600,17 +1782,17 @@ void CMyLocationsEngine::UpdateMaptileDatabaseL(
             aEventType == EChangeAdd )
     {
         
-        if (iMaptileDatabase->FindEntryL(aLookupItem))
+        if ( iMaptileDatabase->findEntry(aLookupItem) )
         {
-            iMaptileDatabase->UpdateEntryL(aLookupItem);
+            iMaptileDatabase->updateEntry(aLookupItem);
         }
         else
         {
-            iMaptileDatabase->CreateEntryL(aLookupItem);
+            iMaptileDatabase->createEntry(aLookupItem);
         }
     }
-    if (aLookupItem.iFetchingStatus == EMapTileFetchingUnknownError
-            || aLookupItem.iFetchingStatus == EMapTileFetchingNetworkError)
+    if ( aLookupItem.iFetchingStatus == EMapTileFetchingUnknownError
+            || aLookupItem.iFetchingStatus == EMapTileFetchingNetworkError )
     {
         TRAP_IGNORE( UpdateDatabaseL( NULL,
                         aLookupItem.iUid, aLookupItem.iSource, EEntryDeleted ) );
@@ -1624,11 +1806,13 @@ void CMyLocationsEngine::UpdateMaptileDatabaseL(
         buffer->Des().Copy(ptr);
         if(buffer)
         {
-            aLookupItem.iFilePath.Append(*buffer);
+            QString str = QString( (QChar*)buffer->Ptr(), buffer->Length());
+            aLookupItem.iFilePath.append( str );
         }
         CleanupStack::PopAndDestroy(buffer);
-        iMyLocationsDatabaseManager->UpdateMapTilePath(aLookupItem.iUid,
-                aLookupItem.iSource, aLookupItem.iFilePath);
+        TBuf<KBufSize> filePath( aLookupItem.iFilePath.utf16() );
+        iMyLocationsDatabaseManager->UpdateMapTilePath( aLookupItem.iUid,
+                aLookupItem.iSource, filePath );
     }
 }
 
@@ -1656,8 +1840,6 @@ void CMyLocationsEngine::UpdateGeoCodeToAppDataBase( TReal aLatitude, TReal aLon
             landmark = iMapTileInterface->GetLandMarkDetails();
             if (NULL != landmark)
             {
-                TRAP_IGNORE( landmark->SetPositionFieldL(EPositionFieldComment,
-                        iMapTileRequestQueue[0]->iAddressDetails->Des() ) );
                 TRAP_IGNORE( UpdateDatabaseL( landmark, iMapTileRequestQueue[0]->iUId,
                                 ESourceCalendar,
                                 MapChangeType( ESourceCalendar, iMapTileRequestQueue[0]->iEventType ) ) );
@@ -1747,15 +1929,17 @@ void CMyLocationsEngine::UpdateDatabaseL( CPosLandmark* aLandmark, const TUint32
 // CMyLocationsEngine::ManipulateMapTileDataBaseL()
 // -----------------------------------------------------------------------------
 //
-void CMyLocationsEngine::ManipulateMapTileDataBaseL(TLookupItem& aLookupItem)
+void CMyLocationsEngine::ManipulateMapTileDataBaseL(MaptileLookupItem& aLookupItem)
 {
     __TRACE_CALLSTACK;
     TBool entryAvailable=EFalse;
-    entryAvailable = iMaptileDatabase->FindEntryL(aLookupItem);
-    iMaptileDatabase->DeleteEntryL(aLookupItem);
+    quint32 tempStatus = aLookupItem.iFetchingStatus;
+    entryAvailable = iMaptileDatabase->getEntry( aLookupItem );
+    iMaptileDatabase->deleteEntry(aLookupItem);
+    aLookupItem.iFetchingStatus = tempStatus;
     if (entryAvailable)
     {
-        iMaptileDatabase->DeleteMapTileL(aLookupItem);
+        iMaptileDatabase->deleteMapTile(aLookupItem);
     }            
 }
 

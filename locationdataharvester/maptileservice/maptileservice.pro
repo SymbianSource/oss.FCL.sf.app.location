@@ -26,11 +26,13 @@ CONFIG += dll
 CONFIG += hb
 CONFIG += mobility
 MOBILITY = publishsubscribe
+QT           += sql
 
 DEPENDPATH += .
 INCLUDEPATH += .
 INCLUDEPATH += ../inc
 INCLUDEPATH += ../mylocationlogger/inc
+
 
 MOC_DIR = moc
 
@@ -91,4 +93,8 @@ defBlock = \
         "DEFFILE  ../bwins/maptileservice.def" \
 	"$${LITERAL_HASH}endif"
 MMP_RULES += defBlock
+
+
+
+symbian:MMP_RULES += SMPSAFE
 

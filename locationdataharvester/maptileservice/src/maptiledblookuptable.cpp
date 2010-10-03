@@ -16,211 +16,474 @@
 *
 */
 
-#include <bautils.h>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QVariant>
+#include <QFile>
+#include <QTextStream>
+#include <locationservicedefines.h>
 #include <maptileservice.h>
+#include "mylocationsdefines.h"
 #include "maptiledblookuptable.h"
 
 // select all from
-_LIT( KSelectAllFrom, "SELECT * FROM " );
+const QString KSelectAllFrom( "SELECT * FROM " );
 
 // string 'where'
-_LIT( KStringWhere, " WHERE " );
+const QString KWhere( " WHERE " );
 
 // string ' = '
-_LIT( KStringEqual, " = " );
+const QString KEqual( " = " );
 
-// string 'And'
-_LIT( KStringAnd, " AND " );
+// string 'AND'
+const QString KAnd( " AND " );
+// string 'OR'
+const QString KOr( " OR " );
 
+// string '( ' 
+const QString KOpenBrace( "( " );
+// string ' )'
+const QString KCloseBrace( " )" );
 
-_LIT(KQueryByMaptileState,"SELECT * FROM cntmaptilelookuptable WHERE cntuid = %d AND ( fetchingstatus = %d OR fetchingstatus = %d )");
+// Maptile table name
+const QString KMaptileLookupTable( "maptilelookup " );
+// column source id
+const QString KSourceId( "sourceid" );
+// column source type
+const QString KSourceType( "sourcetype" );
+// column maptile path
+const QString KFilePath( "filepath" );
+// column fetching status
+const QString KStatus( "fetchingstatus" );
+
+// column user setting status
+const QString KUserSetting( "usersetting" );
 
 // -----------------------------------------------------------------------------
-// CLookupMapTileDatabase::CLookupMapTileDatabase()
+// LookupMapTileDatabase::LookupMapTileDatabase()
 // Default constructor.
 // -----------------------------------------------------------------------------
 //
-CLookupMapTileDatabase::CLookupMapTileDatabase()
+LookupMapTileDatabase::LookupMapTileDatabase(  QObject *parent ) :
+        QObject( parent ),
+        mDb( NULL ),
+        mDbOpen( false )
 {
+	mDb = new QSqlDatabase();
+    *mDb = QSqlDatabase::addDatabase( "QSQLITE" );
+    mDb->setDatabaseName( KLocationDataLookupDbName );
+    if (!mDb->open())
+    {
+        return;
+    }
+
+    // create lookup table if doesnot exist
+    QSqlQuery query( *mDb );
+    QString queryString;
+    QTextStream ( &queryString ) << "create table if not exists " << KMaptileLookupTable << KOpenBrace << 
+                       KSourceId << " int," <<
+                       KSourceType << " int," <<
+                       KFilePath << " varchar(255)," <<
+                       KStatus << " int ," << 
+                       KUserSetting << " bool " << "default 0" << KCloseBrace;
+                       
+                       
+    query.exec( queryString );
+    
+    mDb->close();
 }
 
 // -----------------------------------------------------------------------------
-// CLookupMapTileDatabase::~CLookupMapTileDatabase()
+// LookupMapTileDatabase::~LookupMapTileDatabase()
 // Destructor.
 // -----------------------------------------------------------------------------
 //
-CLookupMapTileDatabase::~CLookupMapTileDatabase()
+LookupMapTileDatabase::~LookupMapTileDatabase()
 {
-
-    // close the database
-	iItemsDatabase.Close();
-	
-	// close the file session
-	iFsSession.Close();
-}
- 
-// -----------------------------------------------------------------------------
-// CLookupMapTileDatabase::~CLookupMapTileDatabase()
-// Creates an object of this class and pushes to cleanup stack.
-// -----------------------------------------------------------------------------
-//
-CLookupMapTileDatabase* CLookupMapTileDatabase::NewLC( const TDesC& aLookupTableName )
-{
-    
-    CLookupMapTileDatabase* self = new (ELeave) CLookupMapTileDatabase;
-    CleanupStack::PushL(self);
-    self->ConstructL( aLookupTableName );
-    return self;
+    close();
+    delete mDb;
 }
 
-
-// -----------------------------------------------------------------------------
-// CLookupMapTileDatabase::NewL()
-// Creates an object of this class.
-// -----------------------------------------------------------------------------
-//
-CLookupMapTileDatabase* CLookupMapTileDatabase::NewL( const TDesC& aLookupTableName )
+// ---------------------------------------------------------
+// LookupMapTileDatabase::open()
+// ---------------------------------------------------------
+bool LookupMapTileDatabase::open()
 {
-    CLookupMapTileDatabase* self = CLookupMapTileDatabase::NewLC( aLookupTableName );
-    CleanupStack::Pop( self );
-    return self;
+    if( !mDbOpen )
+    {
+        mDbOpen = mDb->open();
+    }
+    return mDbOpen;
 }
- 
+
+// ---------------------------------------------------------
+// LookupMapTileDatabase::close()
+// ---------------------------------------------------------
+void LookupMapTileDatabase::close()
+{
+    if( mDbOpen )
+        mDb->close();
+    mDbOpen = false;
+}
 
 // -----------------------------------------------------------------------------
-// CLookupMapTileDatabase::ConstructL()
-// 2nd phase contructor.
+// LookupMapTileDatabase::createEntry()
+// Creates an entry in the lookup table.
 // -----------------------------------------------------------------------------
 //
-void CLookupMapTileDatabase::ConstructL( const TDesC& aLookupTableName )
+void LookupMapTileDatabase::createEntry( const MaptileLookupItem& aLookupItem )
 {
-   
-    User::LeaveIfError( iFsSession.Connect() );
-    
-    iDbFileName.Copy( KLookupDbPath );
-    iDbFileName.Append( aLookupTableName );
-    
-    iDatabaseExists = EFalse; 
+    if( mDbOpen )
+    {
+        QString queryString;
+        QTextStream ( &queryString ) <<  
+                "INSERT INTO " << KMaptileLookupTable << 
+                KOpenBrace << KSourceId << ", " << KSourceType << ", " << KFilePath << ", " << KStatus << KCloseBrace <<
+                " VALUES " << 
+                KOpenBrace << ":sid" << ", " << ":stype"  << ", " << ":path" << ", " << ":status" << KCloseBrace;
+                
 
-    if( BaflUtils::FileExists( iFsSession, iDbFileName ) )
-    {	
-        // database exists 
-        iDatabaseExists = ETrue; 
+        QSqlQuery query(*mDb);
+        query.prepare( queryString );
+
+        query.bindValue(":sid", aLookupItem.iUid);
+        query.bindValue(":stype", aLookupItem.iSource);
+        query.bindValue(":path", aLookupItem.iFilePath);
+        query.bindValue(":status", aLookupItem.iFetchingStatus);
+        query.exec();
     }
 }
 
 // -----------------------------------------------------------------------------
-// CLookupMapTileDatabase::FindNumberOfAddressL()
+// LookupMapTileDatabase::updateEntry()
+// Updates an entry in the lookup table.
+// -----------------------------------------------------------------------------
+//
+void LookupMapTileDatabase::updateEntry( const MaptileLookupItem& aLookupItem )
+{
+    if( mDbOpen )
+    {
+        QString queryString; //UPDATE maptilelookup SET filepath = ?, status = ? WHERE sourceid = ? AND sourcetype = ?"
+        QTextStream ( &queryString ) <<  
+                "UPDATE " << KMaptileLookupTable << " SET " <<
+                KFilePath << " = ?, " << KStatus << " = ? ," << KUserSetting << " = ? " <<
+                KWhere << 
+                KSourceId << " = ? " << KAnd  << KSourceType << " = ? ";
+                
+        QSqlQuery query(*mDb);
+        query.prepare( queryString );
+    
+        query.addBindValue( aLookupItem.iFilePath );
+        query.addBindValue( aLookupItem.iFetchingStatus );   
+        query.addBindValue( false ); 
+        query.addBindValue( aLookupItem.iUid );
+        query.addBindValue( aLookupItem.iSource );
+        query.exec();
+    }
+}
+
+// -----------------------------------------------------------------------------
+// LookupMapTileDatabase::deleteEntry()
+// Deletes an entry from the lookup table.
+// -----------------------------------------------------------------------------
+//
+void LookupMapTileDatabase::deleteEntry(MaptileLookupItem& aLookupItem)
+{
+    if( mDbOpen )
+    {
+        QString queryString; // DELETE FROM lplookup WHERE sourceid = ? AND sourcetype = ?"
+        QTextStream ( &queryString ) <<  
+                "DELETE FROM  " << KMaptileLookupTable <<
+                KWhere << 
+                KSourceId << " = ? " << KAnd  << KSourceType << " = ? ";
+        
+        QSqlQuery query(*mDb);
+        query.prepare( queryString );
+        
+        query.addBindValue( aLookupItem.iUid );
+        query.addBindValue( aLookupItem.iSource );
+        
+        query.exec();
+    }
+}
+
+
+// -----------------------------------------------------------------------------
+// LookupMapTileDatabase::deleteMapTile()
+// Deletes an maptile if there's no reference to maptile in lookupdb
+// -----------------------------------------------------------------------------
+//
+void LookupMapTileDatabase::deleteMapTile( const MaptileLookupItem& aLookupItem)
+{
+    if( mDbOpen )
+    {
+        QString queryString; //  "SELECT filepath FROM maptilelookuptable WHERE filepath = ?"
+        QTextStream ( &queryString ) <<  
+                KSelectAllFrom << KMaptileLookupTable << 
+                KWhere <<
+                KFilePath << KEqual << " ? " ;
+        QSqlQuery query(*mDb);
+        query.prepare( queryString );
+        query.addBindValue( aLookupItem.iFilePath );
+        
+        query.exec();
+        
+        // Delete if no reference to maptile
+        if ( !query.first() ) 
+        {
+            //delete all releted  maptile 
+            QString temp = aLookupItem.iFilePath;
+            temp.append(MAPTILE_IMAGE_PORTRAIT);       
+            QFile file;
+            file.remove(temp);
+            
+            temp = aLookupItem.iFilePath;
+            temp.append(MAPTILE_IMAGE_CONTACT);
+            temp.append(MAPTILE_IMAGE_LANDSCAPE);
+            file.remove(temp);
+            
+            temp = aLookupItem.iFilePath;
+            temp.append(MAPTILE_IMAGE_CALENDAR);
+            temp.append(MAPTILE_IMAGE_LANDSCAPE);
+            file.remove(temp);
+            
+            temp = aLookupItem.iFilePath;
+            temp.append(MAPTILE_IMAGE_HURRIGANES);         
+            file.remove(temp);
+            
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// LookupMapTileDatabase::findEntriesByMapTileFetchingStatus()
+// Finds a list of lookup items given a fetching status.
+// -----------------------------------------------------------------------------
+//
+void LookupMapTileDatabase::findEntriesByMapTileFetchingState(const quint32 aFetchingState,
+        QList<MaptileLookupItem>& aLookupItemArray)
+{
+    if( mDbOpen )
+    {
+        QString queryString; //  "SELECT * FROM maptilelookuptable WHERE fetchingstatus = %d"
+        QTextStream ( &queryString ) <<  
+                KSelectAllFrom << KMaptileLookupTable << 
+                KWhere <<
+                KStatus << KEqual << " ? " ;
+        QSqlQuery query(*mDb);
+        query.prepare( queryString );
+        query.addBindValue( aFetchingState );
+        
+        query.exec();
+        
+        while( query.next() )
+        {    
+            QSqlRecord rec = query.record();
+            MaptileLookupItem lookupItem;
+            lookupItem.iUid = query.value( rec.indexOf( KSourceId ) ).toUInt();
+            lookupItem.iSource = query.value( rec.indexOf( KSourceType ) ).toUInt();
+            lookupItem.iFilePath = query.value( rec.indexOf( KFilePath ) ).toString();
+            lookupItem.iFetchingStatus = query.value( rec.indexOf( KStatus ) ).toUInt();
+            lookupItem.iUserSetting = query.value( rec.indexOf( KUserSetting ) ).toBool();
+            aLookupItemArray.append( lookupItem );
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// LookupMapTileDatabase::getAllCalendarIds()
+// Gets the list of calendar ids .
+// -----------------------------------------------------------------------------
+//
+void LookupMapTileDatabase::getAllCalendarIds( QList<quint32>& aIdArray )
+{
+    if( mDbOpen )
+    {
+        QString queryString; //  "SELECT cntuid FROM maptilelookuptable WHERE sourcetype = %d");
+        QTextStream ( &queryString ) <<  
+                KSelectAllFrom << KMaptileLookupTable << 
+                KWhere <<
+                KSourceType << KEqual << " ? " ;
+        QSqlQuery query(*mDb);
+        query.prepare( queryString );
+        query.addBindValue( ESourceCalendar );
+        
+        query.exec();
+        
+        while( query.next() )
+        {    
+            QSqlRecord rec = query.record();
+            quint32 id = query.value( rec.indexOf( KSourceId ) ).toUInt();
+            aIdArray.append( id );
+        }
+    }
+}
+
+
+
+// -----------------------------------------------------------------------------
+// LookupMapTileDatabase::resetEntry()
+// Reset the entry with null value and get the used maptile path as part of aLookupItem.
+// -----------------------------------------------------------------------------
+//
+void LookupMapTileDatabase::resetEntry(MaptileLookupItem &aLookupItem)
+{
+    if( mDbOpen )
+    {
+        // getEntry will replace the fetching status. so copy fetching status to temparory variable. 
+	      quint32 tempStatus = aLookupItem.iFetchingStatus;
+	      
+	      if( getEntry( aLookupItem ) )
+	      {
+	      	  // set file path to nullstring
+	          aLookupItem.iFilePath = "";
+	          aLookupItem.iFetchingStatus = tempStatus;
+	          // update entry in db
+	          updateEntry( aLookupItem );
+	      }
+	  }
+}
+ 
+// -----------------------------------------------------------------------------
+// LookupMapTileDatabase::findNumberOfAddress()
 // find the number of address associated with the aId.
 // -----------------------------------------------------------------------------
 //
-int CLookupMapTileDatabase::FindNumberOfAddressL( int& aId )
+int LookupMapTileDatabase::findNumberOfAddress( int& aId )
 {
     int count = 0;
-    
-    // Create a query to find the item.
-    TFileName queryBuffer;
-    queryBuffer.Format( KQueryByMaptileState,aId,
-             MapTileService::MapTileFetchingInProgress,
-             MapTileService::MapTileFetchingNetworkError );
-  
-    TInt ret = iItemsDatabase.Open( iFsSession, iDbFileName );
-    
-    if( ret != KErrNone )
-    {          
-        //if already opened , close and open again
-        iItemsDatabase.Close();          
-        User::LeaveIfError( iItemsDatabase.Open( iFsSession, iDbFileName ) );
-    }
-    
-    User::LeaveIfError( iItemsDatabase.Begin() );       
-    // Create a view of the table with the above query.
-    RDbView myView;
-    myView.Prepare( iItemsDatabase, TDbQuery( queryBuffer ) );
-    CleanupClosePushL( myView );
-    myView.EvaluateAll();
-    myView.FirstL();
-    
-    
-    while (myView.AtRow())
-    {
-        count++;
-        myView.NextL();
-    }
-    
-    CleanupStack::PopAndDestroy( &myView ); // myView
-         
-    //Close the database
-    iItemsDatabase.Close();
 
+    if( mDbOpen )
+    {
+        QString queryString; //  "SELECT * FROM maptilelookup WHERE sourceid = aId AND ( fetchingstatus = MapTileFetchingInProgress OR fetchingstatus = MapTileFetchingNetworkError )"
+        QTextStream ( &queryString ) <<  
+                KSelectAllFrom << KMaptileLookupTable << 
+                KWhere <<
+                KSourceId << KEqual << aId << 
+                KAnd << 
+                KOpenBrace << KStatus << KEqual << MapTileService::MapTileFetchingInProgress << 
+                              KOr << KStatus << KEqual << MapTileService::MapTileFetchingNetworkError << KCloseBrace ;
+        QSqlQuery query(*mDb);
+        query.exec( queryString );
+        while( query.next() )  count++;
+    }
+    
     return count;
 }
 
 // -----------------------------------------------------------------------------
-// CLookupMapTileDatabase::FindEntryL()
+// LookupMapTileDatabase::findEntry()
 // Finds an entry in the lookup table.
 // -----------------------------------------------------------------------------
 //
-void CLookupMapTileDatabase::FindEntryL( TLookupItem& aLookupItem )
+bool LookupMapTileDatabase::findEntry( const MaptileLookupItem& aLookupItem )
 { 
-   
-    // used to check whether entry available or not
-    TBool entryAvailable = EFalse;
-  
-    if ( iDatabaseExists )
+    if( mDbOpen )
     {
-
-        // Create a query to find the item.
-        TFileName queryBuffer;
-        queryBuffer.Copy( KSelectAllFrom );
-        queryBuffer.Append( KMapTileLookupTable );
-        queryBuffer.Append( KStringWhere );
-        queryBuffer.Append( NCntColUid );
-        queryBuffer.Append( KStringEqual );
-        queryBuffer.AppendNum( aLookupItem.iUid );
-        queryBuffer.Append( KStringAnd );
-        queryBuffer.Append( NColSource );
-        queryBuffer.Append( KStringEqual );
-        queryBuffer.AppendNum( aLookupItem.iSource );
+        QString queryString; //  "SELECT * FROM maptilelookup WHERE sourceid = aLookupItem.iUid AND sourcetype = aLookupItem.iSource"
+        QTextStream ( &queryString ) <<  
+                KSelectAllFrom << KMaptileLookupTable << 
+                KWhere <<
+                KSourceId << KEqual << aLookupItem.iUid << 
+                KAnd << 
+                KSourceType << KEqual << aLookupItem.iSource ;
+        QSqlQuery query(*mDb);
+        query.exec( queryString );
         
-        TInt ret = iItemsDatabase.Open( iFsSession, iDbFileName );
-        
-        if( ret != KErrNone )
-        {          
-            //if already opened , close and open again
-            iItemsDatabase.Close();          
-            User::LeaveIfError( iItemsDatabase.Open( iFsSession, iDbFileName ) );
+        if ( query.first() ) 
+        {
+            return true;
         }
-        User::LeaveIfError( iItemsDatabase.Begin() );       
-        // Create a view of the table with the above query.
-        RDbView myView;
-        myView.Prepare( iItemsDatabase, TDbQuery( queryBuffer ) );
-        CleanupClosePushL( myView );
-        myView.EvaluateAll();
-        myView.FirstL();
-    
-        if( myView.AtRow() ) 
-        {  
-            // Item found. get the details.
-            myView.GetL();      
-            if( aLookupItem.iUid == myView.ColUint( KColumnUid ) )
-            {               
-                aLookupItem.iFilePath.Copy( myView.ColDes16( KColumnFilePath ) );
-                aLookupItem.iFetchingStatus = myView.ColUint( KColumnMapTileFetchingStatus );
-                entryAvailable = ETrue;
-            }      
-        } 
-    
-        CleanupStack::PopAndDestroy( &myView ); // myView
-        
-        //Close the database
-        iItemsDatabase.Close();
     }
-   
-    //No entry found 
-    if( !entryAvailable )
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+// LookupMapTileDatabase::getEntry()
+// Gets a lookup item from the lookup table using source id and type.
+// -----------------------------------------------------------------------------
+//
+bool LookupMapTileDatabase::getEntry( MaptileLookupItem& aLookupItem )
+{ 
+    if( mDbOpen )
     {
-        User::Leave( KErrNotFound );
+        QString queryString; //  "SELECT * FROM maptilelookup WHERE sourceid = aLookupItem.iUid AND sourcetype = aLookupItem.iSource"
+        QTextStream ( &queryString ) <<  
+                KSelectAllFrom << KMaptileLookupTable << 
+                KWhere <<
+                KSourceId << KEqual << aLookupItem.iUid << 
+                KAnd << 
+                KSourceType << KEqual << aLookupItem.iSource ;
+        QSqlQuery query(*mDb);
+        query.exec( queryString );
+        
+        if ( query.first() ) 
+        {
+            QSqlRecord rec = query.record();
+            aLookupItem.iFilePath = query.value( rec.indexOf( KFilePath ) ).toString();
+            aLookupItem.iFetchingStatus = query.value( rec.indexOf( KStatus ) ).toUInt();
+            aLookupItem.iUserSetting = query.value( rec.indexOf( KUserSetting ) ).toBool();
+            return true;
+            		
+        }
+    }
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+// LookupMapTileDatabase::findEntryByFilePath()
+// Finds an entry in the lookup table for maptile image file
+// -----------------------------------------------------------------------------
+//
+bool LookupMapTileDatabase::findEntryByFilePath( const QString& aFilePath )
+{
+    if( mDbOpen )
+    {
+        QString queryString; //  "SELECT filepath FROM maptilelookuptable WHERE filepath = ?"
+        QTextStream ( &queryString ) <<  
+                KSelectAllFrom << KMaptileLookupTable << 
+                KWhere <<
+                KFilePath << KEqual << " ? " ;
+        QSqlQuery query(*mDb);
+        query.prepare( queryString );
+        query.addBindValue( aFilePath );
+        
+        query.exec();
+        
+        if( query.first() )
+        {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+// LookupMapTileDatabase::updateUserSetting()
+// Updates an entry in the lookup table.
+// -----------------------------------------------------------------------------
+//
+void LookupMapTileDatabase::updateUserSetting( const MaptileLookupItem& aLookupItem )
+{
+    if( mDbOpen )
+    {
+      
+        QString queryString; 
+        QTextStream ( &queryString ) <<  
+                "UPDATE " << KMaptileLookupTable << " SET " <<
+                    KStatus << " = ? ," << KUserSetting << " = ? " << 
+                KWhere << 
+                KSourceId << " = ? " << KAnd  << KSourceType << " = ? ";
+                
+        QSqlQuery query(*mDb);
+        query.prepare( queryString );
+        query.addBindValue( aLookupItem.iFetchingStatus );
+        query.addBindValue( aLookupItem.iUserSetting );
+        query.addBindValue( aLookupItem.iUid );
+        query.addBindValue( aLookupItem.iSource );
+        query.exec();
     }
 }
 

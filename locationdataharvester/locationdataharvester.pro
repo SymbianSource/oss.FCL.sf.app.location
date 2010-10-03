@@ -33,3 +33,6 @@ iby.sources = mylocations.iby
 for(iby, iby.sources):BLD_INF_RULES.prj_exports += "./rom/$$iby $$deploy.path$$iby.path/$$iby"
 
 
+
+
+symbian:MMP_RULES += SMPSAFE

@@ -11,16 +11,19 @@
 *
 * Contributors:
 *
-* Description:  The locationpickerservice iby file.
+* Description:  The locationpickerservice_resources iby file.
 *
 */
-#ifndef __LOCATION_PICKER_SERVICE_IBY__
-#define __LOCATION_PICKER_SERVICE_IBY__
 
-// ---- locationpickerservice --------------------------------------------------------
+#include <data_caging_paths_for_iby.hrh> 
 
-file=ABI_DIR/BUILD_DIR/locationpickerservice.exe                   PROGRAMS_DIR/locationpickerservice.exe
-data=ZPRIVATE/10003a3f/import/apps/locationpickerservice_reg.rsc		/private/10003a3f/import/apps/locationpickerservice_reg.rsc	
+#ifndef __LOCATION_PICKER_SERVICE_RESOURCES_IBY__
+#define __LOCATION_PICKER_SERVICE_RESOURCES_IBY__
+
+// ---- locationpickerservice_resources --------------------------------------------------------
+
 data=DATAZ_/resource/apps/locationpickerservice.rsc		/resource/apps/locationpickerservice.rsc
+// Localizations
+data=DATAZ_\QT_TRANSLATIONS_DIR\lilpicker.qm     QT_TRANSLATIONS_DIR\lilpicker.qm
 
-#endif // __LOCATION_PICKER_SERVICE_IBY__
+#endif // __LOCATION_PICKER_SERVICE_RESOURCES_IBY__

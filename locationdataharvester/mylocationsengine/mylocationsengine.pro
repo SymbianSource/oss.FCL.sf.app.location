@@ -1,3 +1,19 @@
+//====
+#                                                                    
+# Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).   
+# All rights reserved.                                                
+# This component and the accompanying materials are made available    
+# under the terms of "Eclipse Public License v1.0"    
+# which accompanies this distribution, and is available               
+# at the URL "http://www.eclipse.org/legal/epl-v10.html".   
+#                                                                     
+# Initial Contributors:                                               
+# Nokia Corporation - initial contribution.                           
+#                                                                     
+# Contributors:                                                       
+#                                                                     
+# Description:                                                        
+#                                                                     
 
 TEMPLATE=app
 TARGET=mylocationsengine
@@ -10,6 +26,7 @@ INCLUDEPATH += ../../inc
 INCLUDEPATH += ../geocodeupdate/inc
 INCLUDEPATH += ../mylocationlogger/inc
 INCLUDEPATH += ../mylocationsdatabasemanager/inc
+INCLUDEPATH += ../maptileservice/inc
 INCLUDEPATH += /epoc32/include/app
 
 
@@ -35,9 +52,11 @@ symbian: {
         -lQtContacts \
         -lgeocodeupdate \
         -lecom \
+        -lcentralrepository \
 	-lcalinterimapi \
 	-llocationdatalookupdb \
-	-lmylocationsdatabasemanager
+	-lmylocationsdatabasemanager \
+	-lmaptileservice
 	
 	
 	myCrml.sources = ./conf/maptilestatuspublisher.qcrml
@@ -49,7 +68,6 @@ symbian: {
 SOURCES += src/appmain.cpp \
     src/mylocationsengine.cpp \
     src/maptileinterface.cpp \
-    src/lookupmaptiledb.cpp    \
     src/calendernotification.cpp \
     src/mylocationgeotagtimerao.cpp \
     src/contactsubscriber.cpp \
@@ -58,7 +76,6 @@ SOURCES += src/appmain.cpp \
 HEADERS += inc/appmain.h \
     inc/mylocationsengine.h \
     inc/maptileinterface.h \
-    inc/lookupmaptiledb.h \
     inc/calendernotification.h \
     inc/mylocationgeotagtimerao.h \
     inc/contactsubscriber.h \
@@ -67,3 +84,6 @@ HEADERS += inc/appmain.h \
 
 
 
+
+
+symbian:MMP_RULES += SMPSAFE

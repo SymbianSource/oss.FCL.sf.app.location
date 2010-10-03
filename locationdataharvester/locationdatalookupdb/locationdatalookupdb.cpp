@@ -22,14 +22,8 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QVariant>
-#include<locationservicedefines.h>
-
-// database name
-#ifdef LOCPICKER_UNIT_TEST
-const QString KLocationDataLookupDbName = "c:\\locationdatalookuptestdb.db"; 
-#else    
-const QString KLocationDataLookupDbName = "c:\\locationdatalookupdb.db"; 
-#endif
+#include <locationservicedefines.h>
+#include <mylocationsdefines.h>
 
 
 // ================= MEMBER FUNCTIONS =======================
@@ -74,7 +68,7 @@ LocationDataLookupDb::LocationDataLookupDb( QObject *parent) :
                                              "maptile varchar(255))");
     
     
-    query.exec("create table if not exists lplookupaddress ("
+    query.exec("create table if not exists calendarlocation ("
                                              "sourceid int,"
                                              "address varchar(255))");
     mDb->close();
@@ -173,22 +167,7 @@ void LocationDataLookupDb::createEntry( QLookupItem& aLookupItem )
         
         QVariant var = query.lastInsertId();
         aLookupItem.mId = var.toInt();
-        
-        if(aLookupItem.mSourceType==ESourceCalendar)
-        {
-            query.prepare("INSERT INTO lplookupaddress ("
-                    "sourceid ,"
-                    "address )"
-                    "VALUES ("
-                    ":sourceid, "
-                    ":address) " );
-            
-            query.bindValue(":sourceid", aLookupItem.mSourceUid);
-            query.bindValue(":address", aLookupItem.mSingleLineAddress);
-            query.exec();       
-                    
-        }
-        
+              
     }
 }
 
@@ -240,19 +219,7 @@ void LocationDataLookupDb::updateEntryBySourceIdAndType( const QLookupItem& aLoo
         query.addBindValue( aLookupItem.mSourceType );
     
         query.exec();
-        
-        if(aLookupItem.mSourceType==ESourceCalendar)
-        {
-            query.prepare("UPDATE lplookupaddress SET "
-                        "address = ? "
-                        "WHERE sourceid = ? ");
-            
-           
-            query.addBindValue( aLookupItem.mSingleLineAddress);
-            query.addBindValue( aLookupItem.mSourceUid);
-            query.exec();       
-                    
-        }
+       
     }
     
 }
@@ -325,17 +292,7 @@ void LocationDataLookupDb::updateEntryById( const QLookupItem& aLookupItem )
         query.addBindValue( aLookupItem.mId );
     
         query.exec();
-        
-        if(aLookupItem.mSourceType==ESourceCalendar)
-        {
-            query.prepare("UPDATE lplookupaddress SET "
-                          "address = ? " 
-                        "WHERE sourceid = ?");
-                     
-            query.addBindValue( aLookupItem.mSingleLineAddress);
-            query.addBindValue( aLookupItem.mSourceUid );
-            query.exec();     
-        }
+      
     }
 }
 
@@ -376,15 +333,7 @@ void LocationDataLookupDb::deleteEntryBySourceIdAndType( const QLookupItem& aLoo
         query.addBindValue( aLookupItem.mSourceType );
     
         query.exec();
-        
-        if(aLookupItem.mSourceType==ESourceCalendar)
-        {
-            query.prepare( "DELETE FROM lplookupaddress "
-                                   "WHERE sourceid = ? " );                
-            query.addBindValue( aLookupItem.mSourceUid );
-            query.exec();
-        }
-        
+                
     }
 }
 
@@ -603,7 +552,7 @@ QString LocationDataLookupDb::getAddressDetails( quint32 aId , quint32 aSourceTy
         }
         else if (aSourceType == ESourceCalendar)
         {
-            query.prepare("SELECT * FROM lplookupaddress "
+            query.prepare("SELECT * FROM calendarlocation "
                 "WHERE sourceid = ? ");
             query.addBindValue( aId );
             query.exec();
@@ -692,4 +641,68 @@ void LocationDataLookupDb::getCount( QList<int>& aCount, const quint32 /*aCollec
     }
 }
 
+// ---------------------------------------------------------
+// LocationDataLookupDb::updateCalendarLocationById()
+// ---------------------------------------------------------
+void LocationDataLookupDb::updateCalendarLocationById(quint32 id , QString location)
+{
+    QSqlQuery query(*mDb);
+    query.prepare("SELECT * FROM calendarlocation "
+        "WHERE sourceid = ? ");
+    query.addBindValue(id);
+    query.exec();
+    if (query.first()) {
+
+        query.prepare("UPDATE calendarlocation SET "
+            "address = ? "
+            "WHERE sourceid = ?");
+        query.addBindValue( location );
+        query.addBindValue( id); 
+
+    }
+    else {
+        query.prepare("INSERT INTO calendarlocation ("
+            "sourceid ,"
+            "address )"
+            "VALUES ("
+            ":sourceid, "
+            ":address) ");
+        query.bindValue(":sourceid", id);
+        query.bindValue(":address", location);       
+       
+    }
+    query.exec();
+
+}
+
+// ---------------------------------------------------------
+// LocationDataLookupDb::deleteCalendarEntry()
+// ---------------------------------------------------------
+void LocationDataLookupDb::deleteCalendarEntry(quint32 id)
+{
+    QSqlQuery query(*mDb);
+    query.prepare( "DELETE FROM calendarlocation "
+                                      "WHERE sourceid = ? " );                
+    query.addBindValue( id );
+    query.exec();
+
+}
+// ---------------------------------------------------------
+// LocationDataLookupDb::getAllCalendarEntry()
+// ---------------------------------------------------------
+void LocationDataLookupDb::getAllCalendarEntry(QList<QCalendarLocationDetails>& lookupItemArray)
+{
+    
+    QSqlQuery query(*mDb);
+    query.prepare( "SELECT * FROM calendarlocation ");    
+    query.exec();
+    while( query.next() ) {  
+    QCalendarLocationDetails calendarEntry;
+    QSqlRecord rec = query.record();
+    calendarEntry.mSourceUid = query.value( rec.indexOf("sourceid") ).toUInt();
+    calendarEntry.mOnelineLocation = query.value( rec.indexOf("address") ).toString();
+    lookupItemArray.append(calendarEntry);
+    }
+    
+}
 // End of file

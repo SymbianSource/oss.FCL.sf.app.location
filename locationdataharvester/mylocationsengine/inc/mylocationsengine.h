@@ -35,9 +35,9 @@
 #include<EPos_CPosLandmarkDatabase.h>
 
 // mylocations database manager
+#include "maptiledblookuptable.h"
 #include "maptileinterface.h"
 #include "mylocationsdatabasemanager.h"
-#include "lookupmaptiledb.h"
 #include "calendernotification.h"
 #include "mylocationgeotagtimerao.h"
 class GeocodeUpdate;
@@ -156,6 +156,15 @@ public:
 private:
 #endif
     
+    //cenrep setting for db in sync state.
+    enum TCenrepSetting
+    {
+        //get the value
+        EMapTileDbStatusGet=0,
+        //set the value
+        EMapTileDbStatusSet
+    };
+    
     /**
      * ConstructL.
      * 2nd phase constructor.
@@ -198,7 +207,7 @@ private:
     * @param aLookupItem Provides information about single address of contact.  
     */  
 	void UpdateMaptileDatabaseL(TInt aEventType ,
-	                             TLookupItem& aLookupItem );
+	                             MaptileLookupItem& aLookupItem );
 	
     /**
      *  Handles active object's request completion event. 
@@ -259,6 +268,11 @@ private:
     void RefreshCalendarEntryListL();    
 
     /**
+    * Deletes invalid calendar entries from mylocation databases.
+    */
+    void DeleteInvalidCalendarEntriesL();    
+    
+    /**
     * Returns True if a calendar entry is available for a given id.
     */
     TBool IsCalendarEntryValidL( TUint32 aId );    
@@ -291,7 +305,7 @@ private:
     /**
      * maptile database manipulation.
      */
-    void ManipulateMapTileDataBaseL(TLookupItem& aLookupItem);
+    void ManipulateMapTileDataBaseL(MaptileLookupItem& aLookupItem);
     
     /**
      * Crop and create multiple maptile images for different applications requirements.
@@ -307,6 +321,20 @@ private:
 	/**Get the contact name for this perticular id.
      */
 	void GetContactName( TInt32 iUId , TDes& aName );
+	
+    /**
+    * Publishing the entry after maptile db modification.
+    * @param aUid, entry id
+    * @param aLookupItem, all entry details
+    */
+    void PublishEntry(TInt32 aUId,  MaptileLookupItem& aLookupItem);
+    
+    /**
+    * Get/Set the maptile db status 
+    * @param aSettingType, Type of setting
+    * @param aValue, Value for the key
+    */
+    void MaptileDbSyncStatusL(const TCenrepSetting& aSettingType, TInt& aValue);
      
 public:  //From MMapTileObserver
     
@@ -365,7 +393,7 @@ private:
     CMyLocationsDatabaseManager*  iMyLocationsDatabaseManager;
     
     //maptiledb 
-    CLookupMapTileDatabase* iMaptileDatabase;
+    LookupMapTileDatabase* iMaptileDatabase;
 
     //Current event type
     TInt iEventType;

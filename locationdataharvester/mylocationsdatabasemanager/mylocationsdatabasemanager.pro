@@ -68,3 +68,6 @@ MMP_RULES += defBlock
 
 
 
+
+
+symbian:MMP_RULES += SMPSAFE

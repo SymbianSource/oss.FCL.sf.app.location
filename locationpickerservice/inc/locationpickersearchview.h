@@ -65,11 +65,15 @@ private slots:
     void handleLongPress();
     //delete context menu
     void deleteMenu();
+    //handle secondary back action
+    void backTriggered();
 signals:
     //signals to switch current view
     void switchView();
     //signals when any item is selected
     void selectItem( quint32 aLm );
+    //signal to send service complete
+    void completeService();
 #ifdef LOCPICKER_UNIT_TEST
 public:
 #else    
@@ -94,6 +98,8 @@ private:
     HbMenu* mLongPressMenu;
     //select action
     HbAction* mSelectAction;
+    //back action
+    HbAction *mBackAction;
 };
 
 

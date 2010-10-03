@@ -76,7 +76,8 @@ LocationPickerView::LocationPickerView( HbDocumentLoader* aLoader )
             QString("ascendingAction")));
     mDescendingAction = qobject_cast<HbAction*> (mDocumentLoader->findObject(
             QString("descendingAction")));
-    if( !mAllAction || !mCollectionAction || !mSearchAction || !mAscendingAction || !mDescendingAction )
+    if( !mAllAction || !mCollectionAction || !mSearchAction ||
+    	 !mAscendingAction || !mDescendingAction )
     {
         qFatal("Error Reading Docml");
     }
@@ -176,7 +177,8 @@ void LocationPickerView::init( Qt::Orientation aOrientation, QStandardItemModel 
     connect(mSearchAction, SIGNAL(triggered()), this,
             SLOT(searchTabTriggered()));
     // connect the signal of the list activated to a slot.
-    connect(mListView, SIGNAL(activated(const QModelIndex &)), this, SLOT(handleActivated(const QModelIndex &)));
+    connect(mListView, SIGNAL(activated(const QModelIndex &)), 
+    this, SLOT(handleActivated(const QModelIndex &)));
     connect(mListView,SIGNAL(longPressed(HbAbstractViewItem*, const QPointF &)),this,
             SLOT(launchPopUpMenu(HbAbstractViewItem*, const QPointF &)));
     //set widget according to orientation
@@ -216,7 +218,8 @@ void LocationPickerView::createHurriganesWidget()
             SLOT(orientationChanged(Qt::Orientation)));
 
     mWidget->setAcceptTouchEvents(true);
-    connect(mWidget, SIGNAL(activated(const QModelIndex &)),this, SLOT(handleActivated(const QModelIndex &)));
+    connect(mWidget, SIGNAL(activated(const QModelIndex &)),
+    this, SLOT(handleActivated(const QModelIndex &)));
     connect(mWidget, SIGNAL(longPressed(const QModelIndex &, const QPointF &)),this, 
             SLOT(launchPopUpMenu(const QModelIndex &, const QPointF &)));
     mWidget->setLongPressEnabled(true);
@@ -284,7 +287,8 @@ void LocationPickerView::manageListView()
         break;
         case ELocationPickerCollectionListContent:
         {
-            mListView->setModel(mLocationPickerCollectionListContent->getStandardModel(),mListItem);
+            mListView->setModel(mLocationPickerCollectionListContent->getStandardModel()
+            ,mListItem);
             mCollectionAction->setChecked(true);
             mAllAction->setChecked(false);
             if(mAscendingAction->isEnabled())
@@ -502,6 +506,11 @@ void LocationPickerView::colectionTabTriggered()
 // -----------------------------------------------------------------------------
 void LocationPickerView::searchTabTriggered()
 {
+    if (mCollectionContent)
+    {
+        delete mCollectionContent;
+        mCollectionContent = NULL;
+    }
     mWidget->hide();
     emit switchToSearchView();
 }
@@ -611,7 +620,7 @@ void LocationPickerView::launchPopUpMenu( HbAbstractViewItem *aItem, const QPoin
     mLongPressMenu = new HbMenu();
     mLongPressMenu->setTimeout(HbMenu::NoTimeout);
     connect(mLongPressMenu,SIGNAL(aboutToClose ()),this,SLOT(deleteMenu()));
-    mSelectAction  = mLongPressMenu->addAction(hbTrId("txt_lint_list_select"));
+    mSelectAction  = mLongPressMenu->addAction(hbTrId("txt_lint_menu_select"));
     if( mViewType == ELocationPickerCollectionContent || mViewType == ELocationPickerContent )
     {
         mDetailsAction  = mLongPressMenu->addAction(hbTrId("txt_lint_menu_details"));
@@ -631,7 +640,7 @@ void LocationPickerView::launchPopUpMenu( const QModelIndex &aIndex, const QPoin
     mLongPressMenu = new HbMenu();
     mLongPressMenu->setTimeout(HbMenu::NoTimeout);
     connect(mLongPressMenu,SIGNAL(aboutToClose ()),this,SLOT(deleteMenu()));
-    mSelectAction  = mLongPressMenu->addAction(hbTrId("txt_lint_list_select"));
+    mSelectAction  = mLongPressMenu->addAction(hbTrId("txt_lint_menu_select"));
     mIndex = aIndex;
     connect(mSelectAction, SIGNAL(triggered()), this, SLOT(handleSelect()));
     mLongPressMenu->setPreferredPos(aPoint);
@@ -693,8 +702,10 @@ void LocationPickerView::handleDetails()
     }
     else
     {
-        adressDetail = mCollectionContent->getProxyModel()->data(mIndex,Qt::UserRole+3).toStringList();
-        iconName =  mCollectionContent->getProxyModel()->data(mIndex,Qt::UserRole+1).toString();
+        adressDetail = mCollectionContent->getProxyModel()->data(mIndex,Qt::UserRole+3).
+        	toStringList();
+        iconName =  mCollectionContent->getProxyModel()->data(mIndex,Qt::UserRole+1).
+        	toString();
     }
     if(iconName.isEmpty())
     {
@@ -757,7 +768,8 @@ void LocationPickerView::displayNoEntries()
         mEmptyLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
         mEmptyLabel->setFontSpec(HbFontSpec(HbFontSpec::Primary));
         mEmptyLabel->setAlignment(Qt::AlignCenter);
-        mLinerLayout->removeItem(mListView);
+        mListView->reset();
+        mLinerLayout->removeItem(mListView);        
         mListView->hide();
         mWidget->setVisible(false);
         mLinerLayout->insertItem(0, mEmptyLabel);

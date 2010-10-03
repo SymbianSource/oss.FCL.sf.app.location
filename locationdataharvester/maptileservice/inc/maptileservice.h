@@ -24,6 +24,7 @@
 #include <QtGlobal>
 #include <QObject>
 #include <qmobilityglobal.h>
+#include <locationservicedefines.h>
 
 QTM_BEGIN_NAMESPACE
 class QValueSpacePublisher;
@@ -38,7 +39,6 @@ QTM_USE_NAMESPACE
 #define MAPTILESERVICE_EXPORT Q_DECL_IMPORT
 #endif
 
-class TLookupItem;
 
 // CLASS DECLARATION
 
@@ -113,15 +113,23 @@ public:
     * Gets a maptile image associated with a id(contact id/calendar id). 
     * Returns a maptile image path if it is available otherwise returns NULL.
     * 
-    * @param contactId  app id     
-    * @param sourceType Source address type( Preferred, Home , Work address )
+    * @param id,  entry id     
+    * @param sourceType , Source address type( Preferred, Home , Work address )
     * @param imagePath  Maptile image path associated with the app id
     * @param orientation Application current orientation.   
     *      
     * @return Returns the maptile fetching status.
     */
-    int getMapTileImage( int Id, AddressType sourceType, 
+    int getMapTileImage( int id, AddressType sourceType, 
              QString& imagePath, Qt::Orientations orientation = Qt::Vertical  );  
+    
+    /**
+    * keep existing location as per user confirmation . 
+    * @param id ,entry id     
+    * @param sourceType Source address type( Preferred, Home , Work address )
+    * @param value ,true if user confirm as yes otherwise false.
+    */
+    void keepExistingLocation(int id ,AddressType sourceType, bool value);
     
 public slots: 
     /**
@@ -165,7 +173,7 @@ private:
     * @param aNoOfAddress ,number of address read from databse 
     */
     int readEntryFromMaptileDataBase( int id, AddressType sourceType,
-                TLookupItem& aLookupItem, int& aNoOfAddress  );
+                MaptileLookupItem& aLookupItem, int& aNoOfAddress  );
 
 private:
     

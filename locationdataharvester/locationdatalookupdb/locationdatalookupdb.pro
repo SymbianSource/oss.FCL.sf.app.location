@@ -16,6 +16,7 @@
 TEMPLATE = lib
 DEPENDPATH += .
 INCLUDEPATH += .
+INCLUDEPATH += ..\inc
 
 
 # By default Qt adds dependencies to QtCore and QtGui, 
@@ -45,3 +46,6 @@ defBlock = \
 	"$${LITERAL_HASH}endif"
 MMP_RULES += defBlock
 
+
+
+symbian:MMP_RULES += SMPSAFE

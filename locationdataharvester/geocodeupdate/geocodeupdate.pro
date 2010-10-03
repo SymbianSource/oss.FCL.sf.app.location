@@ -68,3 +68,5 @@ defBlock = \
 MMP_RULES += defBlock
 
 # End of file	--Don't remove this.
+
+symbian:MMP_RULES += SMPSAFE

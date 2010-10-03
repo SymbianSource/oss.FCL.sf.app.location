@@ -47,10 +47,8 @@ GeocodeUpdate::GeocodeUpdate() :
 // ----------------------------------------------------------------------------
 GeocodeUpdate::~GeocodeUpdate()
 {
-    __TRACE_CALLSTACK;
-    if (mUtilInstanceCreated) {
-        delete mAgendaUtil;
-    }
+    __TRACE_CALLSTACK;    
+    delete mAgendaUtil;    
 }
 
 // ----------------------------------------------------------------------------
@@ -78,9 +76,11 @@ bool GeocodeUpdate::updateGeocodeToContactDB(const quint32 contactId, const int 
     contactManger = new QContactManager("symbian");
     MYLOCLOGSTRING("contactManger object created .");
 
+
     MYLOCLOGSTRING("contactManger object is not null .");
     QContact contact = contactManger->contact(contactId);
-    QContactGeoLocation location;
+    QContactGeoLocation *location=NULL;
+    location=new QContactGeoLocation();
 
     switch (addressType) {
         case ESourceContactsPref:
@@ -89,22 +89,26 @@ bool GeocodeUpdate::updateGeocodeToContactDB(const quint32 contactId, const int 
         }
         case ESourceContactsWork:
         {
-            location.setContexts(QContactDetail::ContextWork);
+            location->setContexts(QContactDetail::ContextWork);
             break;
         }
         case ESourceContactsHome:
         {
-            location.setContexts(QContactDetail::ContextHome);
+            location->setContexts(QContactDetail::ContextHome);
             break;
         }
         default:
         {
+            delete location;                
+            delete contactManger;
             return false;
         }
     }
-    location.setLongitude(longitude);
-    location.setLatitude(latitude);
-    contact.saveDetail(&location);
+    location->setLongitude(longitude);
+    location->setLatitude(latitude);
+    contact.saveDetail(location);
+    delete location;
+    location=NULL;
     bool ret = false;
     ret = contactManger->saveContact(&contact);
     delete contactManger;

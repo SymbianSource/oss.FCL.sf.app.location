@@ -43,8 +43,16 @@ LocationPickerSearchView::LocationPickerSearchView( HbDocumentLoader &aLoader )
     mVerticalLayout(NULL),
     mDocumentLoader(aLoader),
 	mLongPressMenu(NULL),
-	mSelectAction(NULL)
+	mSelectAction(NULL),
+	mBackAction(NULL)
 {
+    
+    // create back action
+    mBackAction = new HbAction(Hb::BackNaviAction);
+    // add back key action
+    setNavigationAction(mBackAction);
+    //connect to slots
+    connect(mBackAction, SIGNAL(triggered()), this,SLOT(backTriggered())); 
 
 }
 // ----------------------------------------------------
@@ -54,6 +62,7 @@ LocationPickerSearchView::~LocationPickerSearchView()
 {
     delete mProxyModel;
     delete mEmptyLabel;
+    delete mBackAction;
 }
 
 // ----------------------------------------------------
@@ -179,7 +188,7 @@ void LocationPickerSearchView::launchPopUpMenu(HbAbstractViewItem *aItem, const 
 {
     mLongPressMenu = new HbMenu();
     mLongPressMenu->setTimeout(HbMenu::NoTimeout);
-    mSelectAction  = mLongPressMenu->addAction(hbTrId("txt_lint_list_select"));
+    mSelectAction  = mLongPressMenu->addAction(hbTrId("txt_lint_menu_select"));
     mIndex = aItem->modelIndex();
     connect(mSelectAction, SIGNAL(triggered()),this, SLOT(handleLongPress()));
     mLongPressMenu->setPreferredPos(aPoint);
@@ -204,4 +213,16 @@ void LocationPickerSearchView::deleteMenu()
     mLongPressMenu = NULL;
     mSelectAction->deleteLater();
     mSelectAction = NULL;
+}
+
+// ----------------------------------------------------------------------------
+// LocationPickerSearchView::backButtonTriggered()
+// ----------------------------------------------------------------------------
+void LocationPickerSearchView::backTriggered()
+{
+    
+   //complete the service
+    emit completeService();
+    
+    
 }

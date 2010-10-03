@@ -33,6 +33,7 @@
 
 #include <locationdatalookupdb.h>
 #include <QString>
+#include <QList>
 // separator
 _LIT( KSeparator, ",");
 // space
@@ -288,11 +289,6 @@ void CMyLocationsDatabaseManager::HandleEntryAdditionL(CPosLandmark* aLandmark,
     lookupItem.mIsDuplicate = 0;
     lookupItem.mIconPath = "";
     lookupItem.mMapTilePath = "";
-    lookupItem.mSingleLineAddress="";
-    TPtrC16 dataPtr;
-    aLandmark->GetPositionField(EPositionFieldComment ,dataPtr);
-    lookupItem.mSingleLineAddress=QString::fromUtf16(dataPtr.Ptr(),
-            dataPtr.Length());
     //fill address into lookup item.
     FillLookupItemAddressDetails( aLandmark, lookupItem );
 
@@ -392,10 +388,6 @@ void CMyLocationsDatabaseManager::HandleEntryModificationL(
     lookupItem.mSourceUid = aUid;
     lookupItem.mSourceType = aSourceType;
     lookupItem.mIconType = QLookupItem::EIconTypeDefault;
-    TPtrC16 dataPtr;
-    aLandmark->GetPositionField(EPositionFieldComment ,dataPtr);
-    lookupItem.mSingleLineAddress=QString::fromUtf16(dataPtr.Ptr(),
-            dataPtr.Length());
 
     // Behavior: If an entry is modified, 
     // If this entry is not present in lookup table. add the entry and update the landmarks db.
@@ -1146,7 +1138,46 @@ EXPORT_C TBool CMyLocationsDatabaseManager::CheckIfAddressChanged(const TDesC& a
     {
         compareStatus= EFalse;
     }
+    else
+    {
+        iLocationAppLookupDb->updateCalendarLocationById(aId,source);   
+    }
     return compareStatus;
+}
+
+// -----------------------------------------------------------------------------
+// CMyLocationsDatabaseManager::UpdateCalendarLocationById()
+// -----------------------------------------------------------------------------
+//
+EXPORT_C void CMyLocationsDatabaseManager::UpdateCalendarLocationById(const TUint32 aUid, const TUint32 aChangeType,const TDesC& aLocation)
+{
+    
+    
+    switch (aChangeType)
+       {
+           case EEntryAdded:
+           case EEntryModified:
+               
+           {
+               QString location = QString( (QChar*)aLocation.Ptr(), aLocation.Length());
+               iLocationAppLookupDb->updateCalendarLocationById(aUid,location);
+               break;
+           }          
+           case EEntryDeleted:
+           {
+               iLocationAppLookupDb->deleteCalendarEntry(aUid);
+               break;
+           }
+       }       
+}
+
+// -----------------------------------------------------------------------------
+// CMyLocationsDatabaseManager::GetAllCalendarEntry()
+// -----------------------------------------------------------------------------
+//
+EXPORT_C void CMyLocationsDatabaseManager::GetAllCalendarEntry(QList<QCalendarLocationDetails>& aCalEntryArray)
+{
+    iLocationAppLookupDb->getAllCalendarEntry(aCalEntryArray);
 }
 
 // End of file

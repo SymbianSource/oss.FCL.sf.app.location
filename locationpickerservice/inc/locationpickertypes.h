@@ -27,6 +27,9 @@ const QString KSeparator(",");
 // space
 const QString KSpace(" ");
 
+//colon
+const QString KTitleSeparator(":");
+
 //Icon Paths
 
 // dummy image for a LandMarks

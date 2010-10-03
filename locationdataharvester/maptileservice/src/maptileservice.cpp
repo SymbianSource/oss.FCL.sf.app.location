@@ -25,6 +25,7 @@
 #include "mylocationlogger.h"
 
 #include "maptileservice.h"
+#include "mylocationsdefines.h"
 #include "maptiledblookuptable.h"
 #include <QVariant>
 // CONSTANTS
@@ -33,6 +34,7 @@ const TUid KUidMapTileInterface = { 0x2002E6E8 };
 
 // Central Repository Key IDs
 const TInt KEnableLocationFeature  = 0x1;
+const TInt KMaptileDbSyncState  = 0x2;
 
 const char *MAPTILE_STATUS_RECEIVER = "/maptilestatuspublisher/name";
 const char *MAPTILE_STATUS_PUBLISHER = "/maptilecontactpublisher";
@@ -129,12 +131,25 @@ int MapTileService::getMapTileImage( int id, AddressType sourceType,
 {
     __TRACE_CALLSTACK;
     
-    TLookupItem lookupItem;
+     if ( sourceType == AddressPlain ){
+         CRepository* centralRepository = NULL; 
+         TRAP_IGNORE( centralRepository = CRepository::NewL( KUidMapTileInterface ) );
+         int repValue=0;
+         if(centralRepository){
+            centralRepository->Get( KMaptileDbSyncState , repValue );            
+            delete centralRepository;   
+            if(repValue == 1){ 
+                publishCalEntry( id );
+                return MapTileFetchingInProgress;    
+            }
+        }
+    }    
     
+    MaptileLookupItem lookupItem;    
     int addressCount = 0;  
     int maptileStatus = MapTileFetchingUnknownError;
-
-    int error = readEntryFromMaptileDataBase( id, sourceType, lookupItem, addressCount );
+    int error;
+    error = readEntryFromMaptileDataBase( id, sourceType, lookupItem, addressCount );
         
     //if entry available returns the file path otherwise NULL. 
     if ( KErrNone == error  )
@@ -146,8 +161,7 @@ int MapTileService::getMapTileImage( int id, AddressType sourceType,
         if( maptileStatus == MapTileFetchingCompleted )
         {
             //Get the image path
-	          QString imageFile((QChar*)lookupItem.iFilePath.Ptr(),
-	                    lookupItem.iFilePath.Length());
+	          QString imageFile(lookupItem.iFilePath);
 	          imagePath = imageFile;
 	        
 	          if( orientation == Qt::Vertical )
@@ -346,43 +360,45 @@ void MapTileService::publishCalEntry( int id)
 // -----------------------------------------------------------------------------
 //
 int MapTileService::readEntryFromMaptileDataBase( 
-            int id, AddressType sourceType, TLookupItem& aLookupItem, int& aNoOfAddress )
+            int id, AddressType sourceType, MaptileLookupItem& aLookupItem, int& aNoOfAddress )
 {
     
+    TInt err = KErrUnknown;
+
     //Maptile database  instance
-    CLookupMapTileDatabase* mapTileDatabase = NULL;
-   
-    TRAPD( err, mapTileDatabase = CLookupMapTileDatabase::NewL(
-            KMapTileLookupDatabaseName ) );
+    LookupMapTileDatabase* mapTileDatabase = new LookupMapTileDatabase();
     
-    if ( KErrNone == err )
+    if ( mapTileDatabase )
     {     
-        TRAP( err,aNoOfAddress = mapTileDatabase->FindNumberOfAddressL(id) );
-        MYLOCLOGSTRING1("no of address  FindNumberOfAddressL returns - %d ", err );     
-       if ( KErrNone == err )
+       if( mapTileDatabase->open() )
        {
-            aLookupItem.iUid = id;
-            switch (sourceType)
-            {
-                case AddressPlain:
-                    aLookupItem.iSource = ESourceCalendar;
-                    break;
-                case AddressPreference:
-                    aLookupItem.iSource = ESourceContactsPref;
-                    break;
-                case AddressWork:
-                    aLookupItem.iSource = ESourceContactsWork;
-                    break;
-                case AddressHome:
-                    aLookupItem.iSource = ESourceContactsHome;
-                    break;
-                default:
-                    break;
-            }
-
-            TRAP( err , mapTileDatabase->FindEntryL( aLookupItem ) );
-
-            MYLOCLOGSTRING1("getMapTileImage FindEntryL returns - %d ", err );
+           err = KErrNone;
+           aNoOfAddress = mapTileDatabase->findNumberOfAddress(id);
+           aLookupItem.iUid = id;
+           switch (sourceType)
+           {
+               case AddressPlain:
+                   aLookupItem.iSource = ESourceCalendar;
+                   break;
+               case AddressPreference:
+                   aLookupItem.iSource = ESourceContactsPref;
+                   break;
+               case AddressWork:
+                   aLookupItem.iSource = ESourceContactsWork;
+                   break;
+               case AddressHome:
+                   aLookupItem.iSource = ESourceContactsHome;
+                   break;
+               default:
+                   break;
+           }
+           
+           if( !mapTileDatabase->getEntry( aLookupItem ) )
+           {
+              err = KErrNotFound;
+           }
+     
+           MYLOCLOGSTRING1("getMapTileImage getEntry returns - %d ", err );
         }
         //delet the database instance
         delete mapTileDatabase;
@@ -390,5 +406,39 @@ int MapTileService::readEntryFromMaptileDataBase(
     }
     
     return err;
+}
+
+// -----------------------------------------------------------------------------
+// MapTileService::keepExistingLocation()
+// update the map tile table user setting status according to user setting status
+// -----------------------------------------------------------------------------
+//
+void MapTileService::keepExistingLocation(int id ,AddressType sourceType, bool value)
+{
+    //Maptile database  instance
+    LookupMapTileDatabase mapTileDatabase ;
+    switch(sourceType)
+    {
+        case AddressPlain:
+        {
+            if( mapTileDatabase.open() )
+            {
+                MaptileLookupItem lookupItem;                
+                lookupItem.iUid=id;
+                lookupItem.iSource=sourceType;
+                mapTileDatabase.getEntry(lookupItem);                
+                lookupItem.iUserSetting=value;
+                if(!value)
+                {
+                    lookupItem.iFetchingStatus=MapTileFetchingInProgress;
+                }
+                mapTileDatabase.updateUserSetting(lookupItem);               
+            }
+            break;
+        }
+        default:
+            break;
+    }
+
 }
 // End of file

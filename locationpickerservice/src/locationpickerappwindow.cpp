@@ -66,7 +66,8 @@ LocationPickerAppWindow::LocationPickerAppWindow( QWidget *parent, Hb::WindowFla
     addView( mLocationPickerView );
     setCurrentView(mLocationPickerView);
     //connect to orientationChanged signal
-     connect(this, SIGNAL(orientationChanged(Qt::Orientation)),this, SLOT(changeOrientation(Qt::Orientation)));
+     connect(this, SIGNAL(orientationChanged(Qt::Orientation)),this, 
+     	SLOT(changeOrientation(Qt::Orientation)));
     connect(this, SIGNAL(aboutToChangeOrientation()),this, SLOT(closeDetailsDialog()));
      
     }
@@ -114,15 +115,20 @@ void LocationPickerAppWindow::activateSearchView()
         mLocationPickerDocumentLoader->load(":/locationpickersearchview.docml", &ok);
         Q_ASSERT_X(ok, "locationpickerService", "invalid DocML file");
         //find the LocationPickerSearchView
-        QGraphicsWidget *locationPickerSearchWidget = mLocationPickerDocumentLoader->findWidget("LocationPickerSearchView");
+        QGraphicsWidget *locationPickerSearchWidget = 
+        	mLocationPickerDocumentLoader->findWidget("LocationPickerSearchView");
         Q_ASSERT_X((locationPickerSearchWidget != 0), "locationpickerService", "invalid DocML file");
         mLocationPickerSearchView = qobject_cast<LocationPickerSearchView*>(locationPickerSearchWidget);
         Q_ASSERT_X((mLocationPickerSearchView != 0), "mLocationPickerSearchView", 
             "qobject cast failure");
         //initialize the action items and connect to slots
         mLocationPickerSearchView->init(mLocationPickerContent->getStandardModel());
-        connect(mLocationPickerSearchView,SIGNAL(switchView()),this,SLOT(activateLocationPickerView()));
-        connect(mLocationPickerSearchView,SIGNAL(selectItem( quint32 )),this,SLOT(itemSelected( quint32 )));
+        connect(mLocationPickerSearchView,SIGNAL(switchView()),
+        	this,SLOT(activateLocationPickerView()));
+        connect(mLocationPickerSearchView,SIGNAL(selectItem( quint32 )),
+        	this,SLOT(itemSelected( quint32 )));
+        connect(mLocationPickerSearchView,SIGNAL(completeService()),
+        	this,SLOT(serviceComplete()));
         addView(mLocationPickerSearchView);
     }
     //set LocationPickerSearchview as current view

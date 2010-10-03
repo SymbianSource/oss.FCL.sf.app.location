@@ -18,6 +18,31 @@
 
 #ifndef LOCATIONSERVICEDEFINES_H
 #define LOCATIONSERVICEDEFINES_H
+#include <QString>
+
+/**
+ * MaptileLookupItem struct.
+ * This structure defines a maptile lookup item.
+ */
+
+class MaptileLookupItem
+{
+public:
+    // Uid of the source entry
+    quint32 iUid;
+
+    // Source type
+    quint32 iSource;
+   
+    // File Path
+    QString iFilePath;
+    
+    // map tile fetching status
+    quint32 iFetchingStatus;
+    
+    // user setting status
+    bool iUserSetting;
+};
 
 /** Defines uid source type
  */

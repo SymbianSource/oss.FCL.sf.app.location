@@ -108,6 +108,18 @@ public:
 };
 
 /**
+* Location data for calendar specific.
+*/
+class QCalendarLocationDetails
+{
+public:
+    // Uid of the source entry
+    quint32 mSourceUid;
+    //One line address
+    QString mOnelineLocation;
+};
+
+/**
 * Location data lookup database class.
 */
 class DLL_EXPORT LocationDataLookupDb : public QObject
@@ -218,12 +230,30 @@ public: // Constructor
     QString getAddressDetails( quint32 mId , quint32 mSourceType );
     
     /**
-    * Gets single line address
+    * Updates the entry name 
     * @param id , id of the entry
     * @param sourceType , type of entry
     * @param name , name of entry
     */
     void updateEntryNameByIdAndType(quint32 id, quint32 sourceType , QString name);
+    
+    /**
+    * Updates the calendar entry  
+    * @param id , id of the calendar entry
+    * @param location , location  
+    */
+   void updateCalendarLocationById(quint32 id,QString location);    
+   
+    /**
+    * Delete the calendar entry  
+    * @param id , id of the calendar entry
+    */
+   void deleteCalendarEntry(quint32 id); 
+   /**
+    * gets all the calendar entry  
+    * @param lookupItemArray , refference to all entry
+    */
+   void getAllCalendarEntry(QList<QCalendarLocationDetails>& lookupItemArray);
     
 private:
 	

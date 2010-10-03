@@ -119,8 +119,21 @@ class  CMyLocationsDatabaseManager : public CBase
          * @return , true for match case .
          */
         IMPORT_C TBool CheckIfAddressChanged(const TDesC& aAddress,
-                const TUint32 aId, const TUidSourceType aAddressType);
+                const TUint32 aId, const TUidSourceType aAddressType);        
         
+    /**
+       * Updates the calendar entry  
+       * @param aId , id of the caleentry
+       * @param aChangeType , changetype of the calendar entry
+       * @param aLocation , location details of the calendar entry 
+       */
+        IMPORT_C void UpdateCalendarLocationById(const TUint32 aUid, const TUint32 aChangeType,const TDesC& aLocation);    
+      
+      /**
+       * gets all the calendar entry  
+       * @param aCalEntryArray , refference to all entry
+       */
+        IMPORT_C void GetAllCalendarEntry(QList<QCalendarLocationDetails>& aCalEntryArray);
 
 #ifdef LOCATION_DATA_HARVESTER_UNIT_TEST
 public:
