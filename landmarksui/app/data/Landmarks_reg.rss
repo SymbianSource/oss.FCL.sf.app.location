@@ -23,7 +23,7 @@
 
 
 #include <appinfo.rh>
-#include <landmarks.rsg>
+#include <Landmarks.rsg>
 #include "LmkUID.h"
 #include <data_caging_paths_strings.hrh>
 

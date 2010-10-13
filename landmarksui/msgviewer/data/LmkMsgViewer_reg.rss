@@ -25,7 +25,7 @@
 #include <data_caging_paths_strings.hrh>
 
 #include <appinfo.rh>
-#include <lmkmsgviewer.rsg>
+#include <LmkMsgViewer.rsg>
 #include "LmkUID.h"
 
 UID2 KUidAppRegistrationResourceFile

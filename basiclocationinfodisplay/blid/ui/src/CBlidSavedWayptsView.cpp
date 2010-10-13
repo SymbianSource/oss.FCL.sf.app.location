@@ -17,7 +17,7 @@
 
 
 // INCLUDE FILES
-#include <blid.rsg>
+#include <Blid.rsg>
 #include <EPos_CPosLandmarkDatabase.h>
 #include <eikmenub.h> // CEikMenuBar
 #include <avkon.hrh>

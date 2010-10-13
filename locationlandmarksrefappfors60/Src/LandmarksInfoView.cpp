@@ -24,7 +24,7 @@
 #include <lbspositioninfo.h>
 #include <EPos_Landmarks.h>
 
-#include <lmrefapp.rsg>
+#include <LmRefApp.rsg>
 #include "LmRefApp.hrh"
 
 #include "LandmarksAppUi.h"

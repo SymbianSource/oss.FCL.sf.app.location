@@ -25,7 +25,7 @@
 #include <aknnavide.h>
 
 #include "LmRefApp.hrh"
-#include <lmrefapp.rsg>
+#include <LmRefApp.rsg>
 #include "LandmarksAppUi.h"
 #include "LandmarksView.h"
 #include "LandmarksCategoriesView.h"

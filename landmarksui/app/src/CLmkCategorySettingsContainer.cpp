@@ -22,7 +22,7 @@
 // For RD_AVKON_UNBRANCH
 #include <bldvariant.hrh>
 #include <AknDef.h>
-#include <landmarks.rsg>
+#include <Landmarks.rsg>
 #include <lmkui.rsg>
 #include "landmarks.hrh"
 //#include "Landmarks.hlp.hrh"

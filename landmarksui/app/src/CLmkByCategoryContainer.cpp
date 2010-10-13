@@ -19,7 +19,7 @@
 // INCLUDE FILES
 #include <aknlists.h>
 #include <aknsfld.h>
-#include <landmarks.rsg>
+#include <Landmarks.rsg>
 // For RD_AVKON_UNBRANCH
 #include <bldvariant.hrh>
 #include <AknDef.h>

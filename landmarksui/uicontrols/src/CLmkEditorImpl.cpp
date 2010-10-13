@@ -66,7 +66,7 @@
 #include "lmkicondialog.h"
 #include "CLmkEditorListField.h"
 #include "CLmkEditorCoordinateField.h"
-#include <landmarks.rsg>
+#include <Landmarks.rsg>
 #include <uriutils.h>
 #include "LmkListProviderFactory.h"
 #include "CLmkListProviderBase.h"

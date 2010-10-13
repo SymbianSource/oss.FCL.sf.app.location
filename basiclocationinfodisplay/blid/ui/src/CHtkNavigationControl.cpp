@@ -30,7 +30,7 @@
 #include <AknsUtils.h>
 #include <akntabgrp.h>
 #include <blid.mbg>
-#include <blid.rsg>
+#include <Blid.rsg>
 #include <avkon.hrh>
 #include <eikenv.h>
 #include <aknsoundsystem.h>

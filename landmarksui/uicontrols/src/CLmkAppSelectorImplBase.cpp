@@ -24,7 +24,7 @@
 #include <eikclbd.h>
 #include <AknIconArray.h>
 #include <StringLoader.h>
-#include <landmarks.rsg>
+#include <Landmarks.rsg>
 #include <aknsfld.h>
 #include <aknlayout.cdl.h>
 #include "LmkConsts.h"

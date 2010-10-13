@@ -31,7 +31,7 @@
 #include <featmgr.h>
 #include <StringLoader.h>
 #include <eikmenub.h> // CEikMenuBar
-#include <landmarks.rsg>
+#include <Landmarks.rsg>
 #include "clmkmapnavigationinterface.h"
 #include <locationvariationdomaincrkeys.h>
 #include <centralrepository.h>

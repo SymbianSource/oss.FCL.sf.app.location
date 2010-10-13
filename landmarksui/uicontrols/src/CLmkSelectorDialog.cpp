@@ -24,7 +24,7 @@
 #include "CLmkLmItemListMemento.h"
 #include "LmkConsts.h"
 #include "CLmkListProviderBase.h"
-#include <landmarks.rsg>
+#include <Landmarks.rsg>
 #include <eikclbd.h>
 
 _LIT(KWildCard, "*");

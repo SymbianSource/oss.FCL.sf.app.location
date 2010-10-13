@@ -20,7 +20,7 @@
 // INCLUDE FILES
 #include <aknnavide.h>
 #include <aknlists.h>
-#include <blid.rsg>
+#include <Blid.rsg>
 #include <AknDef.h>
 #include <csxhelp/blid.hlp.hrh>
 

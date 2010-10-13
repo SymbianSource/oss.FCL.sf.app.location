@@ -22,7 +22,7 @@
 #include <eikmenub.h>
 #include <aknViewAppUi.h> 
 #include <aknlists.h>   // CAknSingleLargeStyleListBox
-#include <blid.rsg>
+#include <Blid.rsg>
 #include <AknsConstants.h>
 #include <AknIconArray.h>
 #include <aknnavide.h>

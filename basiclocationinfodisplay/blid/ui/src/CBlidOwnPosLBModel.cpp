@@ -19,7 +19,7 @@
 // INCLUDE FILES
 #include <StringLoader.h> 
 #include <AknUtils.h>
-#include <blid.rsg>
+#include <Blid.rsg>
 #include <aknlocationed.h>
 
 #include "CBlidOwnPosLBModel.h"

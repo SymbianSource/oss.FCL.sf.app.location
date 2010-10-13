@@ -18,7 +18,7 @@
 // INCLUDE FILES
 #include <aknsfld.h>
 #include <aknlists.h>
-#include <landmarks.rsg>
+#include <Landmarks.rsg>
 #include <eikmenub.h>
 #include <layoutmetadata.cdl.h> // To Check TOUCH Support
 #include <bldvariant.hrh>

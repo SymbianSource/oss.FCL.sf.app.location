@@ -20,7 +20,7 @@
 #include <aknlists.h>
 #include <aknViewAppUi.h>
 #include <akntextsettingpage.h> 
-#include <blid.rsg>
+#include <Blid.rsg>
 #include <aknradiobuttonsettingpage.h>
 #include <sysutil.h>
 #include <driveinfo.h>

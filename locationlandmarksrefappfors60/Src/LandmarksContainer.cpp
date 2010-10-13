@@ -24,7 +24,7 @@
 #include <AknQueryDialog.h>
 
 #include "LmRefApp.hrh"
-#include <lmrefapp.rsg>
+#include <LmRefApp.rsg>
 #include "LandmarksContainer.h"
 #include "LandmarksCommonData.h"
 #include "LandmarksListBoxModel.h"

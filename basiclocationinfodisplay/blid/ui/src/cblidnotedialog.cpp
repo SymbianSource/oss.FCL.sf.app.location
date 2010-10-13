@@ -19,7 +19,7 @@
 
 // INCLUDE FILES
 #include <aknnotedialog.h>
-#include <blid.rsg>
+#include <Blid.rsg>
 #include "cblidnotedialog.h"
 
 // ============================ MEMBER FUNCTIONS ==============================

@@ -35,7 +35,7 @@
 #include <AknsUtils.h>
 #include <AknWaitDialog.h>
 #include <EPos_CPosLandmarkDatabase.h>
-#include <lmkmsgviewer.rsg>
+#include <LmkMsgViewer.rsg>
 #include <aknnotewrappers.h>
 #include <StringLoader.h>
 #include "LmkNotes.h"

@@ -37,7 +37,7 @@
 #include <StringLoader.h>
 #include <aknnotewrappers.h>
 #include <AknQueryDialog.h>
-#include <landmarks.rsg>
+#include <Landmarks.rsg>
 #include <lmkerrors.h>
 
 #if defined(_DEBUG)
